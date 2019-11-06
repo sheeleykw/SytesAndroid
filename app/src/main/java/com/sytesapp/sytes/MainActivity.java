@@ -17,10 +17,11 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.sytesapp.sytes.ItemEntry.ItemDetails;
+import com.google.android.gms.maps.model.VisibleRegion;
 
 import java.io.Console;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnCameraIdleListener, GoogleMap.OnMarkerClickListener {
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final String MAPVIEW_BUNDLE_KEY = "MapViewBundleKey";
     private ItemDatabase dbHelper;
     private SQLiteDatabase itemDatabase;
+    private ArrayList<String> markerIds = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,44 +71,35 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         map.setMinZoomPreference(8);
         map.setOnCameraIdleListener(this);
         map.setOnMarkerClickListener(this);
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(28.538384, -81.385555), 8));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(28.538384, -81.385555), 18));
     }
 
     @Override
     public void onCameraIdle() {
-        System.out.println(map.getCameraPosition().bearing);
-        System.out.println(map.getCameraPosition().zoom);
-        System.out.println(map.getCameraPosition().target.latitude);
+        VisibleRegion vr = map.getProjection().getVisibleRegion();
 
+        String[] projection = { ItemDetails.COL_1, ItemDetails.COL_3, ItemDetails.COL_4, ItemDetails.COL_5, ItemDetails.COL_7 };
+        String selection = ItemDetails.COL_4 + " < ?  AND " + ItemDetails.COL_4 + " > ? AND " + ItemDetails.COL_5 + " < ? AND " + ItemDetails.COL_5 + " > ?"  ;
+        String[] selectionArgs = {  String.valueOf(vr.latLngBounds.northeast.latitude),
+                                    String.valueOf(vr.latLngBounds.southwest.latitude),
+                                    String.valueOf(vr.latLngBounds.northeast.longitude),
+                                    String.valueOf(vr.latLngBounds.southwest.longitude) };
 
-
-        String[] projection = { ItemDetails.COL_2, ItemDetails.COL_3 };
-        String selection = ItemDetails.COL_1 + " <= ?";
-        String[] selectionArgs = { "4" };
-
-        System.out.println(itemDatabase.getPath());
-        Cursor cursor = itemDatabase.query( ItemDetails.TABLE_NAME, null, selection, selectionArgs, null, null, null);
-        System.out.println(cursor.getCount());
-        for (int i = 0; i < cursor.getColumnCount(); i ++) {
-            System.out.println(cursor.getColumnName(i));
-        }
+        Cursor cursor = itemDatabase.query( ItemDetails.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
         while(cursor.moveToNext()) {
-            System.out.println();
-            map.addMarker(new MarkerOptions().title(cursor.getString(cursor.getColumnIndex(ItemDetails.COL_3))).snippet(cursor.getString(cursor.getColumnIndex(ItemDetails.COL_7))).position(new LatLng(cursor.getDouble(cursor.getColumnIndex(ItemDetails.COL_4)), cursor.getDouble(cursor.getColumnIndex(ItemDetails.COL_5)))));
+            if (!markerIds.contains(cursor.getString(cursor.getColumnIndex(ItemDetails.COL_1)))) {
+                map.addMarker(new MarkerOptions()
+                        .title(cursor.getString(cursor.getColumnIndex(ItemDetails.COL_3)))
+                        .snippet(cursor.getString(cursor.getColumnIndex(ItemDetails.COL_7)))
+                        .position(new LatLng(cursor.getDouble(cursor.getColumnIndex(ItemDetails.COL_4)), cursor.getDouble(cursor.getColumnIndex(ItemDetails.COL_5)))));
+                markerIds.add(cursor.getString(cursor.getColumnIndex(ItemDetails.COL_1)));
+            }
         }
-
-
-
-
     }
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        System.out.println("Marker ID:" + marker.getId());
-
-
-
-        System.out.println("End marker click event");
+        System.out.println(marker.getPosition().latitude + ", " + marker.getPosition().longitude);
         return false;
     }
 
