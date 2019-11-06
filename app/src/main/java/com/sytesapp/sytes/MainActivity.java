@@ -1,28 +1,28 @@
 package com.sytesapp.sytes;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.ContentValues;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 
-import com.google.android.gms.maps.CameraUpdate;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
 
-import java.io.Console;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnCameraIdleListener, GoogleMap.OnMarkerClickListener {
 
@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ItemDatabase dbHelper;
     private SQLiteDatabase itemDatabase;
     private ArrayList<String> markerIds = new ArrayList<String>();
+    private HashMap<String, Marker> markerHashMap = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +46,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         } catch (IOException mIOException) {
             throw new Error("UnableToUpdateDatabase");
         }
-
         try {
             itemDatabase = dbHelper.getReadableDatabase();
         } catch (SQLException mSQLException) {
@@ -66,6 +66,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
+
+        try {
+            map.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style));
+        } catch (Resources.NotFoundException e) {
+            throw new Error("Unable to process map style");
+        }
+
+        map.setIndoorEnabled(false);
         map.setBuildingsEnabled(false);
         map.setMaxZoomPreference(18);
         map.setMinZoomPreference(8);
@@ -86,20 +94,26 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                     String.valueOf(vr.latLngBounds.southwest.longitude) };
 
         Cursor cursor = itemDatabase.query( ItemDetails.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
-        while(cursor.moveToNext()) {
-            if (!markerIds.contains(cursor.getString(cursor.getColumnIndex(ItemDetails.COL_1)))) {
-                map.addMarker(new MarkerOptions()
+        while (cursor.moveToNext()) {
+            if(markerHashMap.get(cursor.getString(cursor.getColumnIndex(ItemDetails.COL_1))) == null) {
+                Marker marker = map.addMarker(new MarkerOptions()
                         .title(cursor.getString(cursor.getColumnIndex(ItemDetails.COL_3)))
                         .snippet(cursor.getString(cursor.getColumnIndex(ItemDetails.COL_7)))
-                        .position(new LatLng(cursor.getDouble(cursor.getColumnIndex(ItemDetails.COL_4)), cursor.getDouble(cursor.getColumnIndex(ItemDetails.COL_5)))));
-                markerIds.add(cursor.getString(cursor.getColumnIndex(ItemDetails.COL_1)));
+                        .position(new LatLng(cursor.getDouble(cursor.getColumnIndex(ItemDetails.COL_4)), cursor.getDouble(cursor.getColumnIndex(ItemDetails.COL_5))))
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.s)));
+                markerHashMap.put(cursor.getString(cursor.getColumnIndex(ItemDetails.COL_1)), marker);
+            }
+            else {
+                Marker marker = markerHashMap.get(cursor.getString(cursor.getColumnIndex(ItemDetails.COL_1)));
+                marker.remove();
+                markerHashMap.remove(cursor.getString(cursor.getColumnIndex(ItemDetails.COL_1)));
             }
         }
+
     }
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        System.out.println(marker.getPosition().latitude + ", " + marker.getPosition().longitude);
         return false;
     }
 
