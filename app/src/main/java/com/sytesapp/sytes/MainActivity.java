@@ -1,11 +1,13 @@
 package com.sytesapp.sytes;
 
+import android.animation.ObjectAnimator;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.util.Log;
+import android.widget.TableLayout;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,25 +21,48 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnCameraIdleListener, GoogleMap.OnMarkerClickListener {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnCameraIdleListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowCloseListener {
 
     private GoogleMap map;
     private MapView mMapView;
     private static final String MAPVIEW_BUNDLE_KEY = "MapViewBundleKey";
     private ItemDatabase dbHelper;
     private SQLiteDatabase itemDatabase;
-    private ArrayList<String> markerIds = new ArrayList<String>();
-    private HashMap<String, Marker> markerHashMap = new HashMap<>();
+    private BiMap<String, Marker> markerHashMap = HashBiMap.create();
+    private ObjectAnimator titleUpAnimation;
+    private ObjectAnimator titleDownAnimation;
+    private ObjectAnimator detailUpAnimation;
+    private ObjectAnimator detailDownAnimation;
+    private TableLayout detailView;
+    private TextView detailText;
+    private TextView titleText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        detailView  = findViewById(R.id.detailView);
+        detailText  = findViewById(R.id.detailText);
+        titleText = findViewById(R.id.titleText);
+
+        detailUpAnimation = ObjectAnimator.ofFloat(detailView, "translationY", 0);
+        detailUpAnimation.setDuration(600);
+        detailDownAnimation = ObjectAnimator.ofFloat(detailView, "translationY", 500 * getApplicationContext().getResources().getDisplayMetrics().density);
+        detailUpAnimation.setDuration(400);
+
+        titleDownAnimation = ObjectAnimator.ofFloat(titleText, "translationY", 0);
+        titleDownAnimation.setDuration(400);
+        titleUpAnimation = ObjectAnimator.ofFloat(titleText, "translationY", -500 * getApplicationContext().getResources().getDisplayMetrics().density);
+        titleUpAnimation.setDuration(400);
+
 
         dbHelper = new ItemDatabase(this);
 
@@ -79,15 +104,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         map.setMinZoomPreference(8);
         map.setOnCameraIdleListener(this);
         map.setOnMarkerClickListener(this);
+        map.setOnInfoWindowCloseListener(this);
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(28.538384, -81.385555), 18));
     }
 
     @Override
     public void onCameraIdle() {
         VisibleRegion vr = map.getProjection().getVisibleRegion();
+        ArrayList<String> currentStrings = new ArrayList<>();
+        ArrayList<String> removeStrings = new ArrayList<>();
 
         String[] projection = { ItemDetails.COL_1, ItemDetails.COL_3, ItemDetails.COL_4, ItemDetails.COL_5, ItemDetails.COL_7 };
-        String selection = ItemDetails.COL_4 + " < ?  AND " + ItemDetails.COL_4 + " > ? AND " + ItemDetails.COL_5 + " < ? AND " + ItemDetails.COL_5 + " > ?"  ;
+        String selection = ItemDetails.COL_4 + " < ?  AND " + ItemDetails.COL_4 + " > ? AND " + ItemDetails.COL_5 + " < ? AND " + ItemDetails.COL_5 + " > ?";
         String[] selectionArgs = {  String.valueOf(vr.latLngBounds.northeast.latitude),
                                     String.valueOf(vr.latLngBounds.southwest.latitude),
                                     String.valueOf(vr.latLngBounds.northeast.longitude),
@@ -95,26 +123,49 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         Cursor cursor = itemDatabase.query( ItemDetails.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
         while (cursor.moveToNext()) {
-            if(markerHashMap.get(cursor.getString(cursor.getColumnIndex(ItemDetails.COL_1))) == null) {
+            currentStrings.add(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_1)));
+            if(markerHashMap.get(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_1))) == null) {
                 Marker marker = map.addMarker(new MarkerOptions()
-                        .title(cursor.getString(cursor.getColumnIndex(ItemDetails.COL_3)))
-                        .snippet(cursor.getString(cursor.getColumnIndex(ItemDetails.COL_7)))
-                        .position(new LatLng(cursor.getDouble(cursor.getColumnIndex(ItemDetails.COL_4)), cursor.getDouble(cursor.getColumnIndex(ItemDetails.COL_5))))
+                        .title(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)))
+                        .snippet(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_7)))
+                        .position(new LatLng(cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_4)), cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_5))))
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.s)));
-                markerHashMap.put(cursor.getString(cursor.getColumnIndex(ItemDetails.COL_1)), marker);
-            }
-            else {
-                Marker marker = markerHashMap.get(cursor.getString(cursor.getColumnIndex(ItemDetails.COL_1)));
-                marker.remove();
-                markerHashMap.remove(cursor.getString(cursor.getColumnIndex(ItemDetails.COL_1)));
+                markerHashMap.put(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_1)), marker);
             }
         }
 
+        for (HashMap.Entry<String, Marker> entry : markerHashMap.entrySet()) {
+            if (!currentStrings.contains(entry.getKey())) {
+                removeStrings.add(entry.getKey());
+            }
+        }
+        for (String removal : removeStrings) {
+            markerHashMap.get(removal).remove();
+            markerHashMap.remove(removal);
+        }
     }
 
     @Override
     public boolean onMarkerClick(Marker marker) {
+        String[] projection = { ItemDetails.COL_2, ItemDetails.COL_3, ItemDetails.COL_6, ItemDetails.COL_7, ItemDetails.COL_8, ItemDetails.COL_9, ItemDetails.COL_10, ItemDetails.COL_11, ItemDetails.COL_12, ItemDetails.COL_13 };
+        String selection = ItemDetails.COL_1 + " = ?";
+        String[] selectionArgs = { markerHashMap.inverse().get(marker) };
+
+        Cursor cursor = itemDatabase.query( ItemDetails.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
+        cursor.moveToNext();
+        System.out.println(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)));
+
+        //detailText.append(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)) + "\nthis is a really long string and I'm sure if it will wrap or just crawl off the screen");
+        titleText.setText(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)));
+        detailUpAnimation.start();
+        titleDownAnimation.start();
         return false;
+    }
+
+    @Override
+    public void onInfoWindowClose(Marker marker) {
+        detailDownAnimation.start();
+        titleUpAnimation.start();
     }
 
     @Override
