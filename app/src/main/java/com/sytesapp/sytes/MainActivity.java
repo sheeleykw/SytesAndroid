@@ -1,11 +1,14 @@
 package com.sytesapp.sytes;
 
 import android.animation.ObjectAnimator;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
@@ -153,9 +156,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         Cursor cursor = itemDatabase.query( ItemDetails.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
         cursor.moveToNext();
-        System.out.println(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)));
 
-        //detailText.append(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)) + "\nthis is a really long string and I'm sure if it will wrap or just crawl off the screen");
+        detailText.setText( "Category: " + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_7)) +
+                            "\nReference Number: " + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_2)) +
+                            "\nDate added to register: " + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_6)) +
+                            "\nReported Street Address: " + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_8)) +
+                            "\nLocation: " + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_9)) + ", " + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_11)) +
+                            "\nCounty: " + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_10)) +
+                            "\nArchitects/Builders: " + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_12)));
         titleText.setText(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)));
         detailUpAnimation.start();
         titleDownAnimation.start();
@@ -167,6 +175,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         detailDownAnimation.start();
         titleUpAnimation.start();
     }
+
+    public void startFavoriteActivity(View view) {
+        Intent intent = new Intent(this, FavoriteActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        startActivity(intent);
+    }
+
+//    public void startSettingsActivity(View view) {
+////        Intent intent = new Intent(this, FavoriteActivity.class);
+////        startActivity(intent);
+//    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {

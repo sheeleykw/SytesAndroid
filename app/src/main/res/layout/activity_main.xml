@@ -8,7 +8,7 @@
     tools:context=".MainActivity">
 
     <RelativeLayout
-        android:id="@+id/searchArea"
+        android:id="@+id/topArea"
         android:layout_width="0dp"
         android:layout_height="70dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -45,7 +45,7 @@
         app:layout_constraintBottom_toTopOf="@id/mapView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/searchArea"/>
+        app:layout_constraintTop_toBottomOf="@id/topArea"/>
 
     <com.google.android.gms.maps.MapView
         android:id="@+id/mapView"
@@ -110,13 +110,15 @@
 
                 <TextView
                     android:id="@+id/detailText"
+                    android:layout_marginHorizontal="14dp"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_span="3"/>
+                    android:layout_span="3"
+                    android:textSize="14sp"
+                    android:lineSpacingExtra="2dp"/>
             </TableRow>
 
             <TableRow>
-
                 <View
                     android:layout_height="50dp"
                     android:layout_span="3"
@@ -137,19 +139,22 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:contentDescription='"Favorites Page Button"'
+                android:background="@drawable/imagebutton"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/mapButton"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/hearticon"/>
+                app:srcCompat="@drawable/hearticon"
+                android:onClick="startFavoriteActivity"/>
 
             <ImageButton
                 android:id="@+id/mapButton"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:contentDescription='"Map Page Button"'
+                android:background="@drawable/imagebutton"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/settingsButton"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -162,6 +167,7 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:contentDescription='"Settings Page Button"'
+                android:background="@drawable/imagebutton"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
