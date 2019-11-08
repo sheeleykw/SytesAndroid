@@ -26,7 +26,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:layout_marginHorizontal="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
             android:background="#ffffff"
             android:translationY="-500dp"
             android:text="@string/app_name"
@@ -76,6 +79,7 @@
             android:layout_alignParentTop="true"
             android:background="#ffffff"
             android:clickable="true"
+            android:focusable="true"
             android:orientation="vertical"
             android:stretchColumns="0,1"
             android:translationY="500dp">
@@ -90,16 +94,22 @@
 
             <TableRow>
                 <Button
-                    android:layout_marginVertical="5dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginStart="8dp"
                     android:layout_marginLeft="8dp"
+                    android:layout_marginEnd="2dp"
                     android:layout_marginRight="2dp"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:text="@string/photos"/>
 
                 <Button
-                    android:layout_marginVertical="5dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginStart="2dp"
                     android:layout_marginLeft="2dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_marginRight="8dp"
                     android:layout_width="50dp"
                     android:layout_height="50dp"

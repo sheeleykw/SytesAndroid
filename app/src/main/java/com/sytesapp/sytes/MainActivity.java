@@ -5,12 +5,9 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.media.Image;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TextView;
@@ -30,29 +27,27 @@ import com.google.android.gms.maps.model.VisibleRegion;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
-import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnCameraIdleListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowCloseListener {
 
     private GoogleMap map;
     private MapView mMapView;
     private static final String MAPVIEW_BUNDLE_KEY = "MapViewBundleKey";
-    private ItemDatabase dbHelper;
     private SQLiteDatabase itemDatabase;
     private BiMap<String, Marker> markerHashMap = HashBiMap.create();
     private ObjectAnimator titleUpAnimation;
     private ObjectAnimator titleDownAnimation;
     private ObjectAnimator detailUpAnimation;
     private ObjectAnimator detailDownAnimation;
-    private TableLayout detailView;
     private TextView detailText;
     private TextView titleText;
     private ImageButton favoriteButton;
-    private String currentId;
     private String currentFavorited;
+    public static String currentId;
+    public static boolean goingToPoint = false;
     public static ArrayList<String> currentFavorites = new ArrayList<>();
 
     @Override
@@ -60,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        detailView  = findViewById(R.id.detailView);
+        TableLayout detailView = findViewById(R.id.detailView);
         detailText  = findViewById(R.id.detailText);
         titleText = findViewById(R.id.titleText);
         favoriteButton = findViewById(R.id.favoriteButton);
@@ -75,18 +70,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         titleUpAnimation = ObjectAnimator.ofFloat(titleText, "translationY", -500 * getApplicationContext().getResources().getDisplayMetrics().density);
         titleUpAnimation.setDuration(400);
 
-
-        dbHelper = new ItemDatabase(this);
+        ItemDatabase dbHelper = new ItemDatabase(this);
 
         try {
             dbHelper.updateDataBase();
-        } catch (IOException mIOException) {
-            throw new Error("UnableToUpdateDatabase");
-        }
-        try {
             itemDatabase = dbHelper.getWritableDatabase();
-        } catch (SQLException mSQLException) {
-            throw mSQLException;
+        } catch (Exception exception) {
+            throw new Error("UnableToUpdateDatabase");
         }
 
         Bundle mapViewBundle = null;
@@ -96,20 +86,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         mMapView = findViewById((R.id.mapView));
         mMapView.onCreate(mapViewBundle);
-
         mMapView.getMapAsync(this);
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-
-        try {
-            map.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style));
-        } catch (Resources.NotFoundException e) {
-            throw new Error("Unable to process map style");
-        }
-
         map.setIndoorEnabled(false);
         map.setBuildingsEnabled(false);
         map.setMaxZoomPreference(18);
@@ -118,6 +100,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         map.setOnMarkerClickListener(this);
         map.setOnInfoWindowCloseListener(this);
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(28.538384, -81.385555), 18));
+
+        try {
+            map.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style));
+        } catch (Resources.NotFoundException e) {
+            throw new Error("Unable to process map style");
+        }
     }
 
     @Override
@@ -128,21 +116,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         String[] projection = { ItemDetails.COL_1, ItemDetails.COL_3, ItemDetails.COL_4, ItemDetails.COL_5, ItemDetails.COL_7 };
         String selection = ItemDetails.COL_4 + " < ?  AND " + ItemDetails.COL_4 + " > ? AND " + ItemDetails.COL_5 + " < ? AND " + ItemDetails.COL_5 + " > ?";
-        String[] selectionArgs = {  String.valueOf(vr.latLngBounds.northeast.latitude),
-                                    String.valueOf(vr.latLngBounds.southwest.latitude),
-                                    String.valueOf(vr.latLngBounds.northeast.longitude),
-                                    String.valueOf(vr.latLngBounds.southwest.longitude) };
+        String[] selectionArgs = {  String.valueOf(vr.latLngBounds.northeast.latitude), String.valueOf(vr.latLngBounds.southwest.latitude), String.valueOf(vr.latLngBounds.northeast.longitude), String.valueOf(vr.latLngBounds.southwest.longitude) };
 
         Cursor cursor = itemDatabase.query( ItemDetails.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
         while (cursor.moveToNext()) {
             currentStrings.add(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_1)));
             if(markerHashMap.get(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_1))) == null) {
-                Marker marker = map.addMarker(new MarkerOptions()
-                        .title(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)))
-                        .snippet(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_7)))
-                        .position(new LatLng(cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_4)), cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_5))))
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.s)));
+                Marker marker = map.addMarker(new MarkerOptions().title(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3))).snippet(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_7))).position(new LatLng(cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_4)), cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_5)))).icon(BitmapDescriptorFactory.fromResource(R.drawable.s)));
                 markerHashMap.put(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_1)), marker);
+            }
+            if (goingToPoint && cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_1)).equals(currentId)) {
+                markerHashMap.get(currentId).showInfoWindow();
+                onMarkerClick(markerHashMap.get(currentId));
+                goingToPoint = false;
             }
         }
 
@@ -155,25 +141,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             markerHashMap.get(removal).remove();
             markerHashMap.remove(removal);
         }
+
+        cursor.close();
     }
 
     @Override
     public boolean onMarkerClick(Marker marker) {
+        currentId = markerHashMap.inverse().get(marker);
+
         String[] projection = { ItemDetails.COL_2, ItemDetails.COL_3, ItemDetails.COL_6, ItemDetails.COL_7, ItemDetails.COL_8, ItemDetails.COL_9, ItemDetails.COL_10, ItemDetails.COL_11, ItemDetails.COL_12, ItemDetails.COL_13 };
         String selection = ItemDetails.COL_1 + " = ?";
-        currentId = markerHashMap.inverse().get(marker);
         String[] selectionArgs = { currentId };
 
         Cursor cursor = itemDatabase.query( ItemDetails.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
         cursor.moveToNext();
 
-        detailText.setText( "Category: " + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_7)) +
-                            "\nReference Number: " + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_2)) +
-                            "\nDate added to register: " + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_6)) +
-                            "\nReported Street Address: " + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_8)) +
-                            "\nLocation: " + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_9)) + ", " + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_11)) +
-                            "\nCounty: " + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_10)) +
-                            "\nArchitects/Builders: " + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_12)));
         if (cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_13)).equals("TRUE")) {
             favoriteButton.setImageResource(R.drawable.bluehearticon);
             currentFavorited = "TRUE";
@@ -182,9 +164,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             favoriteButton.setImageResource(R.drawable.bluehearticonhollow);
             currentFavorited = "FALSE";
         }
+
+        detailText.setText(MessageFormat.format("Category: {0}\nReference Number: {1}\nDate added to register: {2}\nReported Street Address: {3}\nLocation: {4}, {5}\nCounty: {6}\nArchitects/Builders: {7}", cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_7)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_2)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_6)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_8)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_9)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_11)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_10)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_12))));
         titleText.setText(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)));
         detailUpAnimation.start();
         titleDownAnimation.start();
+
+        cursor.close();
         return false;
     }
 
@@ -193,6 +179,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         detailDownAnimation.start();
         titleUpAnimation.start();
     }
+
 
     public void switchFavoriteStatus(View view) {
         String selection = ItemDetails.COL_1 + " = ?";
@@ -215,6 +202,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public void startFavoriteActivity(View view) {
         currentFavorites.clear();
+
         String[] projection = { ItemDetails.COL_1, ItemDetails.COL_3, ItemDetails.COL_7 };
         String selection = ItemDetails.COL_13 + " = ?";
         String[] selectionArgs = { "TRUE" };
@@ -223,16 +211,29 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         while (cursor.moveToNext()) {
             currentFavorites.add(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_1)) + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)) + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_7)));
         }
+        cursor.close();
 
         Intent intent = new Intent(this, FavoriteActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(intent);
     }
 
-//    public void startSettingsActivity(View view) {
+    //    public void startSettingsActivity(View view) {
 ////        Intent intent = new Intent(this, FavoriteActivity.class);
 ////        startActivity(intent);
 //    }
+
+    public void moveToPoint() {
+        String[] projection = { ItemDetails.COL_4, ItemDetails.COL_5 };
+        String selection = ItemDetails.COL_1 + " = ?";
+        String[] selectionArgs = { currentId };
+
+        Cursor cursor = itemDatabase.query( ItemDetails.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
+        cursor.moveToNext();
+
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_4)), cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_5))), 18));
+        cursor.close();
+    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -251,6 +252,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onResume() {
         super.onResume();
         mMapView.onResume();
+        if (goingToPoint) {
+            moveToPoint();
+        }
     }
 
     @Override
