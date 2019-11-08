@@ -21,11 +21,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         // each data item is just a string in this case
         public TextView nameText;
         public TextView categoryText;
+        public TextView idText;
         public MyViewHolder(View view) {
             super(view);
 
             nameText = view.findViewById(R.id.nameText);
             categoryText = view.findViewById(R.id.categoryText);
+            idText = view.findViewById(R.id.idText);
         }
     }
 
@@ -58,8 +60,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
         TextView nameText = holder.nameText;
         TextView categoryText = holder.categoryText;
+        TextView idText = holder.idText;
         nameText.setText(name);
         categoryText.setText(category);
+        idText.setText(id);
     }
 
     // Return the size of your dataset (invoked by the layout manager)

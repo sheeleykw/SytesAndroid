@@ -16,6 +16,7 @@ public class FavoriteActivity extends AppCompatActivity {
     private RecyclerView favoritesView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
+    private ArrayList<String> displayedFavorites;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,15 +34,15 @@ public class FavoriteActivity extends AppCompatActivity {
         favoritesView.setLayoutManager(layoutManager);
 
         // specify an adapter (see also next example)
-        ArrayList<String> myDataset = MainActivity.currentFavorites;
-        mAdapter = new MyAdapter(myDataset);
+        displayedFavorites = MainActivity.currentFavorites;
+        mAdapter = new MyAdapter(displayedFavorites);
         favoritesView.setAdapter(mAdapter);
 
     }
 
     @Override
     protected void onResume() {
-        ArrayList<String> myDataset = MainActivity.currentFavorites;
+        displayedFavorites = MainActivity.currentFavorites;
         super.onResume();
         mAdapter.notifyDataSetChanged();
     }
