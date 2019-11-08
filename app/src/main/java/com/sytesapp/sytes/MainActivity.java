@@ -1,14 +1,17 @@
 package com.sytesapp.sytes;
 
 import android.animation.ObjectAnimator;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.media.Image;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
@@ -30,6 +33,7 @@ import com.google.common.collect.HashBiMap;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnCameraIdleListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowCloseListener {
 
@@ -46,6 +50,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private TableLayout detailView;
     private TextView detailText;
     private TextView titleText;
+    private ImageButton favoriteButton;
+    private String currentId;
+    private String currentFavorited;
+    public static ArrayList<String> currentFavorites = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         detailView  = findViewById(R.id.detailView);
         detailText  = findViewById(R.id.detailText);
         titleText = findViewById(R.id.titleText);
+        favoriteButton = findViewById(R.id.favoriteButton);
 
         detailUpAnimation = ObjectAnimator.ofFloat(detailView, "translationY", 0);
         detailUpAnimation.setDuration(600);
@@ -75,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             throw new Error("UnableToUpdateDatabase");
         }
         try {
-            itemDatabase = dbHelper.getReadableDatabase();
+            itemDatabase = dbHelper.getWritableDatabase();
         } catch (SQLException mSQLException) {
             throw mSQLException;
         }
@@ -152,7 +161,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public boolean onMarkerClick(Marker marker) {
         String[] projection = { ItemDetails.COL_2, ItemDetails.COL_3, ItemDetails.COL_6, ItemDetails.COL_7, ItemDetails.COL_8, ItemDetails.COL_9, ItemDetails.COL_10, ItemDetails.COL_11, ItemDetails.COL_12, ItemDetails.COL_13 };
         String selection = ItemDetails.COL_1 + " = ?";
-        String[] selectionArgs = { markerHashMap.inverse().get(marker) };
+        currentId = markerHashMap.inverse().get(marker);
+        String[] selectionArgs = { currentId };
 
         Cursor cursor = itemDatabase.query( ItemDetails.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
         cursor.moveToNext();
@@ -164,6 +174,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             "\nLocation: " + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_9)) + ", " + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_11)) +
                             "\nCounty: " + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_10)) +
                             "\nArchitects/Builders: " + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_12)));
+        if (cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_13)).equals("TRUE")) {
+            favoriteButton.setImageResource(R.drawable.bluehearticon);
+            currentFavorited = "TRUE";
+        }
+        else {
+            favoriteButton.setImageResource(R.drawable.bluehearticonhollow);
+            currentFavorited = "FALSE";
+        }
         titleText.setText(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)));
         detailUpAnimation.start();
         titleDownAnimation.start();
@@ -176,7 +194,36 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         titleUpAnimation.start();
     }
 
+    public void switchFavoriteStatus(View view) {
+        String selection = ItemDetails.COL_1 + " = ?";
+        String[] selectionArgs = { currentId };
+
+        ContentValues values = new ContentValues();
+        if (currentFavorited.equals("TRUE")) {
+            values.put(ItemDetails.COL_13, "FALSE");
+            currentFavorited = "FALSE";
+            favoriteButton.setImageResource(R.drawable.bluehearticonhollow);
+        }
+        else {
+            values.put(ItemDetails.COL_13, "TRUE");
+            currentFavorited = "TRUE";
+            favoriteButton.setImageResource(R.drawable.bluehearticon);
+        }
+
+        itemDatabase.update( ItemDetails.TABLE_NAME, values, selection, selectionArgs);
+    }
+
     public void startFavoriteActivity(View view) {
+        currentFavorites.clear();
+        String[] projection = { ItemDetails.COL_1, ItemDetails.COL_3, ItemDetails.COL_7 };
+        String selection = ItemDetails.COL_13 + " = ?";
+        String[] selectionArgs = { "TRUE" };
+
+        Cursor cursor = itemDatabase.query( ItemDetails.TABLE_NAME, projection, selection, selectionArgs, null, null, ItemDetails.COL_3);
+        while (cursor.moveToNext()) {
+            currentFavorites.add(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_1)) + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)) + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_7)));
+        }
+
         Intent intent = new Intent(this, FavoriteActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(intent);

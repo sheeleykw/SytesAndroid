@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Sytes</string>
+    <string name="docs">Documents</string>
+    <string name="photos">Photos</string>
 </resources>
