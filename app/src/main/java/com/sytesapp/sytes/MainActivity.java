@@ -1,6 +1,7 @@
 package com.sytesapp.sytes;
 
 import android.animation.ObjectAnimator;
+import android.app.ActivityOptions;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -47,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ImageButton favoriteButton;
     private String currentFavorited;
     public static String currentId;
+    public String refNum;
     public static boolean goingToPoint = false;
     public static ArrayList<String> currentFavorites = new ArrayList<>();
 
@@ -165,6 +167,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             currentFavorited = "FALSE";
         }
 
+        refNum = cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_2));
         detailText.setText(MessageFormat.format("Category: {0}\nReference Number: {1}\nDate added to register: {2}\nReported Street Address: {3}\nLocation: {4}, {5}\nCounty: {6}\nArchitects/Builders: {7}", cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_7)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_2)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_6)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_8)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_9)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_11)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_10)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_12))));
         titleText.setText(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)));
         detailUpAnimation.start();
@@ -215,6 +218,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         Intent intent = new Intent(this, FavoriteActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        startActivity(intent);
+    }
+
+    public void startPdfRendererActivityPhotos(View view) {
+        Intent intent = new Intent(this, PdfRenderer.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        intent.putExtra("link", "https://npgallery.nps.gov/pdfhost/docs/NRHP/Photos/" + refNum + ".pdf");
+        startActivity(intent);
+    }
+
+    public void startPdfRendererActivityDocuments(View view) {
+        Intent intent = new Intent(this, PdfRenderer.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        intent.putExtra("link", "https://npgallery.nps.gov/pdfhost/docs/NRHP/Text/" + refNum + ".pdf");
         startActivity(intent);
     }
 

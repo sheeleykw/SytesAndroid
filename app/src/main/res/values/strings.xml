@@ -2,4 +2,5 @@
     <string name="app_name">Sytes</string>
     <string name="docs">Documents</string>
     <string name="photos">Photos</string>
+    <string name="title_activity_pdf_renderer">PdfRenderer</string>
 </resources>
