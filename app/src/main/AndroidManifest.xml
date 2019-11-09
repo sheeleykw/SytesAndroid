@@ -24,7 +24,7 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".FavoriteActivity"/>
+        <activity android:name=".FavoriteActivity" android:windowSoftInputMode="adjustPan"/>
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDUsBUXDaPG_5Yz6EBgnpou0986_c4N2ug"/>
