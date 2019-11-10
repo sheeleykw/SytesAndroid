@@ -173,8 +173,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         detailUpAnimation.start();
         titleDownAnimation.start();
 
+        VisibleRegion vr = map.getProjection().getVisibleRegion();
+        double oneFifthMapSpan = (vr.latLngBounds.northeast.latitude - vr.latLngBounds.southwest.latitude) / 5.0;
+        map.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(marker.getPosition().latitude - oneFifthMapSpan, marker.getPosition().longitude)), 500, null);
+        marker.showInfoWindow();
+
         cursor.close();
-        return false;
+        return true;
     }
 
     @Override
@@ -248,7 +253,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Cursor cursor = itemDatabase.query( ItemDetails.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
         cursor.moveToNext();
 
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_4)), cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_5))), 18));
+        VisibleRegion vr = map.getProjection().getVisibleRegion();
+        double oneFifthMapSpan = (vr.latLngBounds.northeast.latitude - vr.latLngBounds.southwest.latitude) / 5.0;
+        map.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_4)) - oneFifthMapSpan, cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_5)))), 500, null);
         cursor.close();
     }
 
