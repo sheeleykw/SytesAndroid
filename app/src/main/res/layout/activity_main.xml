@@ -97,9 +97,7 @@
                     android:layout_marginTop="5dp"
                     android:layout_marginBottom="5dp"
                     android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
                     android:layout_marginEnd="2dp"
-                    android:layout_marginRight="2dp"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:text="@string/photos"
@@ -109,9 +107,7 @@
                     android:layout_marginTop="5dp"
                     android:layout_marginBottom="5dp"
                     android:layout_marginStart="2dp"
-                    android:layout_marginLeft="2dp"
                     android:layout_marginEnd="8dp"
-                    android:layout_marginRight="8dp"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:text="@string/docs"
@@ -143,7 +139,6 @@
                         android:layout_height="50dp"
                         android:layout_gravity="bottom|end"
                         android:layout_marginEnd="8dp"
-                        android:layout_marginRight="8dp"
                         android:layout_marginBottom="8dp"
                         android:background="@drawable/imagebutton"
                         android:onClick="switchFavoriteStatus" />
@@ -153,10 +148,25 @@
             </TableRow>
 
             <TableRow>
-                <View
-                    android:layout_height="50dp"
-                    android:layout_span="3"
-                    android:background="#000000"/>
+
+                <LinearLayout
+                android:id="@+id/adSpace"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_span="3"
+                android:background="#000000">
+
+                <com.google.android.gms.ads.AdView
+                    xmlns:ads="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/detailAd"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    ads:adSize="BANNER"
+                    ads:adUnitId="ca-app-pub-3940256099942544/6300978111" />
+<!--                    TODO switch adId-->
+<!--                    ads:adUnitId="ca-app-pub-3281339494640251/9986601233" />-->
+
+                </LinearLayout>
             </TableRow>
 
         </TableLayout>

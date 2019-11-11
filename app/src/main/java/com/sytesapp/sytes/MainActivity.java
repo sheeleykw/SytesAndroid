@@ -1,7 +1,6 @@
 package com.sytesapp.sytes;
 
 import android.animation.ObjectAnimator;
-import android.app.ActivityOptions;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -15,6 +14,13 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.RequestConfiguration;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -30,7 +36,9 @@ import com.google.common.collect.HashBiMap;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnCameraIdleListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowCloseListener {
 
@@ -45,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ObjectAnimator detailDownAnimation;
     private TextView detailText;
     private TextView titleText;
+    private AdView detailAd;
     private ImageButton favoriteButton;
     private String currentFavorited;
     public static String currentId;
@@ -61,6 +70,22 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         detailText  = findViewById(R.id.detailText);
         titleText = findViewById(R.id.titleText);
         favoriteButton = findViewById(R.id.favoriteButton);
+
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            }
+        });
+
+        //TODO remove test id from code
+        List<String> testDeviceIds = Arrays.asList("481D9EB0E450EFE1F74321C81D584BCE");
+        RequestConfiguration configuration = new RequestConfiguration.Builder().setTestDeviceIds(testDeviceIds).build();
+        MobileAds.setRequestConfiguration(configuration);
+        //00000
+
+        detailAd = findViewById(R.id.detailAd);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        detailAd.loadAd(adRequest);
 
         detailUpAnimation = ObjectAnimator.ofFloat(detailView, "translationY", 0);
         detailUpAnimation.setDuration(600);
@@ -255,7 +280,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         VisibleRegion vr = map.getProjection().getVisibleRegion();
         double oneFifthMapSpan = (vr.latLngBounds.northeast.latitude - vr.latLngBounds.southwest.latitude) / 5.0;
-        map.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_4)) - oneFifthMapSpan, cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_5)))), 500, null);
+        map.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_4)) - oneFifthMapSpan, cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_5)))));
         cursor.close();
     }
 
@@ -279,6 +304,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (goingToPoint) {
             moveToPoint();
         }
+
+        AdRequest adRequest = new AdRequest.Builder().build();
+        detailAd.loadAd(adRequest);
     }
 
     @Override
