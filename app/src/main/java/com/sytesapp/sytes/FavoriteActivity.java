@@ -15,6 +15,7 @@ import java.util.ArrayList;
 public class FavoriteActivity extends AppCompatActivity {
 
     private RecyclerView.Adapter mAdapter;
+    private SearchView searchView;
     private ArrayList<String> displayedFavorites;
     private ArrayList<String> searchList;
     private String searchQuery;
@@ -43,13 +44,18 @@ public class FavoriteActivity extends AppCompatActivity {
         favoritesView.setLayoutManager(layoutManager);
         favoritesView.setAdapter(mAdapter);
 
-        final SearchView searchView = findViewById(R.id.searchView);
+        searchView = findViewById(R.id.searchView);
+        searchView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchView.setIconified(false);
+            }
+        });
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 return false;
             }
-
             @Override
             public boolean onQueryTextChange(String query) {
                 searchQuery = query.toLowerCase();
@@ -58,14 +64,6 @@ public class FavoriteActivity extends AppCompatActivity {
                 return false;
             }
         });
-    }
-
-    @Override
-    protected void onResume() {
-        searchList = (ArrayList)MainActivity.currentFavorites.clone();
-        searchInitialize();
-        super.onResume();
-        mAdapter.notifyDataSetChanged();
     }
 
     private void searchInitialize() {
@@ -88,9 +86,23 @@ public class FavoriteActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-//    public void startSettingsActivity(View view) {
-////        Intent intent = new Intent(this, FavoriteActivity.class);
-////        startActivity(intent);
-//    }
+    //TODO add settings button functionality
+    public void startSettingsActivity(View view) {
+        Intent intent = new Intent(this, FavoriteActivity.class);
+        startActivity(intent);
+    }
 
+    @Override
+    protected void onResume() {
+        searchList = (ArrayList)MainActivity.currentFavorites.clone();
+        searchInitialize();
+        super.onResume();
+        mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        searchView.clearFocus();
+    }
 }

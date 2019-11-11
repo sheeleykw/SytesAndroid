@@ -1,21 +1,25 @@
 package com.sytesapp.sytes;
 
 import android.animation.ObjectAnimator;
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageButton;
+import android.widget.SearchView;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.RequestConfiguration;
@@ -47,17 +51,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final String MAPVIEW_BUNDLE_KEY = "MapViewBundleKey";
     private SQLiteDatabase itemDatabase;
     private BiMap<String, Marker> markerHashMap = HashBiMap.create();
+
+    private AdView detailAd;
+    private TextView detailText;
+    private TextView titleText;
+    private SearchView searchView;
+    private ImageButton favoriteButton;
+
     private ObjectAnimator titleUpAnimation;
     private ObjectAnimator titleDownAnimation;
     private ObjectAnimator detailUpAnimation;
     private ObjectAnimator detailDownAnimation;
-    private TextView detailText;
-    private TextView titleText;
-    private AdView detailAd;
-    private ImageButton favoriteButton;
+
+    private String refNum;
     private String currentFavorited;
     public static String currentId;
-    public String refNum;
     public static boolean goingToPoint = false;
     public static ArrayList<String> currentFavorites = new ArrayList<>();
 
@@ -66,26 +74,41 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        TableLayout detailView = findViewById(R.id.detailView);
-        detailText  = findViewById(R.id.detailText);
-        titleText = findViewById(R.id.titleText);
-        favoriteButton = findViewById(R.id.favoriteButton);
-
-        MobileAds.initialize(this, new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {
-            }
-        });
-
         //TODO remove test id from code
         List<String> testDeviceIds = Arrays.asList("481D9EB0E450EFE1F74321C81D584BCE");
         RequestConfiguration configuration = new RequestConfiguration.Builder().setTestDeviceIds(testDeviceIds).build();
         MobileAds.setRequestConfiguration(configuration);
-        //00000
 
+        Bundle mapViewBundle = null;
+        if (savedInstanceState != null) {
+            mapViewBundle = savedInstanceState.getBundle(MAPVIEW_BUNDLE_KEY);
+        }
+
+        mMapView = findViewById((R.id.mapView));
+        mMapView.onCreate(mapViewBundle);
+        mMapView.getMapAsync(this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mMapView.onStart();
+
+        searchView = findViewById(R.id.searchView);
+        TableLayout detailView = findViewById(R.id.detailView);
+        detailText  = findViewById(R.id.detailText);
         detailAd = findViewById(R.id.detailAd);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        detailAd.loadAd(adRequest);
+        titleText = findViewById(R.id.titleText);
+        favoriteButton = findViewById(R.id.favoriteButton);
+
+        ItemDatabase dbHelper = new ItemDatabase(this);
+
+        try {
+            dbHelper.updateDataBase();
+            itemDatabase = dbHelper.getWritableDatabase();
+        } catch (Exception exception) {
+            throw new Error("UnableToUpdateDatabase");
+        }
 
         detailUpAnimation = ObjectAnimator.ofFloat(detailView, "translationY", 0);
         detailUpAnimation.setDuration(600);
@@ -97,23 +120,40 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         titleUpAnimation = ObjectAnimator.ofFloat(titleText, "translationY", -500 * getApplicationContext().getResources().getDisplayMetrics().density);
         titleUpAnimation.setDuration(400);
 
-        ItemDatabase dbHelper = new ItemDatabase(this);
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            }
+        });
 
-        try {
-            dbHelper.updateDataBase();
-            itemDatabase = dbHelper.getWritableDatabase();
-        } catch (Exception exception) {
-            throw new Error("UnableToUpdateDatabase");
+        searchView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchView.setIconified(false);
+            }
+        });
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+            @Override
+            public boolean onQueryTextChange(String query) {
+                return false;
+            }
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mMapView.onResume();
+        if (goingToPoint) {
+            moveToPoint();
         }
 
-        Bundle mapViewBundle = null;
-        if (savedInstanceState != null) {
-            mapViewBundle = savedInstanceState.getBundle(MAPVIEW_BUNDLE_KEY);
-        }
-
-        mMapView = findViewById((R.id.mapView));
-        mMapView.onCreate(mapViewBundle);
-        mMapView.getMapAsync(this);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        detailAd.loadAd(adRequest);
     }
 
     @Override
@@ -153,7 +193,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 markerHashMap.put(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_1)), marker);
             }
             if (goingToPoint && cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_1)).equals(currentId)) {
-                markerHashMap.get(currentId).showInfoWindow();
                 onMarkerClick(markerHashMap.get(currentId));
                 goingToPoint = false;
             }
@@ -174,6 +213,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public boolean onMarkerClick(Marker marker) {
+        InputMethodManager imm = (InputMethodManager)this.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        View view = this.getCurrentFocus();
+        if (view == null) view = new View(this);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
         currentId = markerHashMap.inverse().get(marker);
 
         String[] projection = { ItemDetails.COL_2, ItemDetails.COL_3, ItemDetails.COL_6, ItemDetails.COL_7, ItemDetails.COL_8, ItemDetails.COL_9, ItemDetails.COL_10, ItemDetails.COL_11, ItemDetails.COL_12, ItemDetails.COL_13 };
@@ -251,6 +295,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         startActivity(intent);
     }
 
+    //TODO add settings button functionality
+    public void startSettingsActivity(View view) {
+        Intent intent = new Intent(this, FavoriteActivity.class);
+        startActivity(intent);
+    }
+
     public void startPdfRendererActivityPhotos(View view) {
         Intent intent = new Intent(this, PdfRenderer.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
@@ -264,11 +314,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         intent.putExtra("link", "https://npgallery.nps.gov/pdfhost/docs/NRHP/Text/" + refNum + ".pdf");
         startActivity(intent);
     }
-
-    //    public void startSettingsActivity(View view) {
-////        Intent intent = new Intent(this, FavoriteActivity.class);
-////        startActivity(intent);
-//    }
 
     public void moveToPoint() {
         String[] projection = { ItemDetails.COL_4, ItemDetails.COL_5 };
@@ -285,7 +330,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         Bundle mapViewBundle = outState.getBundle(MAPVIEW_BUNDLE_KEY);
@@ -298,24 +343,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        mMapView.onResume();
-        if (goingToPoint) {
-            moveToPoint();
-        }
-
-        AdRequest adRequest = new AdRequest.Builder().build();
-        detailAd.loadAd(adRequest);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mMapView.onStart();
-    }
-
-    @Override
     protected void onStop() {
         super.onStop();
         mMapView.onStop();
@@ -325,6 +352,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onPause() {
         mMapView.onPause();
         super.onPause();
+        searchView.clearFocus();
     }
 
     @Override

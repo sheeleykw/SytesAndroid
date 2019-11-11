@@ -27,7 +27,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".PdfRenderer" android:theme="@style/AddedActivityTheme" />
-        <activity android:name=".FavoriteActivity" android:windowSoftInputMode="adjustPan" />
+        <activity android:name=".FavoriteActivity" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDUsBUXDaPG_5Yz6EBgnpou0986_c4N2ug" />

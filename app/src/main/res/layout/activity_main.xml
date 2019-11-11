@@ -18,8 +18,8 @@
         <SearchView
             android:id="@+id/searchView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-        </SearchView>
+            android:layout_height="match_parent"
+            android:queryBackground="@android:color/transparent"/>
 
         <TextView
             android:id="@+id/titleText"
@@ -36,7 +36,9 @@
             android:textAlignment="center"
             android:textSize="25sp"
             android:textStyle="bold"
-            android:textColor="#000000"/>
+            android:textColor="#000000"
+            android:clickable="true"
+            android:focusable="true" />
 
     </RelativeLayout>
 
@@ -81,23 +83,24 @@
             android:clickable="true"
             android:focusable="true"
             android:orientation="vertical"
-            android:stretchColumns="0,1"
+            android:stretchColumns="0,1,2"
             android:translationY="500dp">
 
             <TableRow>
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.2dp"
-                    android:layout_span="3"
+                    android:layout_span="4"
                     android:background="@color/dividerBar"/>
             </TableRow>
 
-            <TableRow>
+            <TableRow android:weightSum="2">
                 <Button
                     android:layout_marginTop="5dp"
                     android:layout_marginBottom="5dp"
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="2dp"
+                    android:layout_weight="1"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:text="@string/photos"
@@ -108,6 +111,7 @@
                     android:layout_marginBottom="5dp"
                     android:layout_marginStart="2dp"
                     android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:text="@string/docs"
@@ -115,17 +119,12 @@
             </TableRow>
 
             <TableRow android:layout_weight="1.0">
-
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_span="3"
-                    android:orientation="horizontal">
-
                     <TextView
                         android:id="@+id/detailText"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:layout_weight="1.0"
+                        android:layout_span="3"
                         android:layout_marginStart="14dp"
                         android:layout_marginLeft="14dp"
                         android:layout_marginEnd="14dp"
@@ -137,36 +136,23 @@
                         android:id="@+id/favoriteButton"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
-                        android:layout_gravity="bottom|end"
+                        android:layout_gravity="bottom"
                         android:layout_marginEnd="8dp"
                         android:layout_marginBottom="8dp"
                         android:background="@drawable/imagebutton"
                         android:onClick="switchFavoriteStatus" />
-
-                </FrameLayout>
-
             </TableRow>
 
             <TableRow>
-
-                <LinearLayout
-                android:id="@+id/adSpace"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_span="3"
-                android:background="#000000">
-
                 <com.google.android.gms.ads.AdView
                     xmlns:ads="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/detailAd"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    ads:adSize="BANNER"
+                    android:layout_height="50dp"
+                    android:layout_span="4"
+                    ads:adSize="SMART_BANNER"
                     ads:adUnitId="ca-app-pub-3940256099942544/6300978111" />
 <!--                    TODO switch adId-->
 <!--                    ads:adUnitId="ca-app-pub-3281339494640251/9986601233" />-->
-
-                </LinearLayout>
             </TableRow>
 
         </TableLayout>
