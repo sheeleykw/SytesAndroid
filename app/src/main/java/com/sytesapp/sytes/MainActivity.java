@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -22,7 +21,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.RequestConfiguration;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -40,9 +38,7 @@ import com.google.common.collect.HashBiMap;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnCameraIdleListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowCloseListener {
 
@@ -74,25 +70,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //TODO remove test id from code
-        List<String> testDeviceIds = Arrays.asList("481D9EB0E450EFE1F74321C81D584BCE");
-        RequestConfiguration configuration = new RequestConfiguration.Builder().setTestDeviceIds(testDeviceIds).build();
-        MobileAds.setRequestConfiguration(configuration);
-
-        Bundle mapViewBundle = null;
-        if (savedInstanceState != null) {
-            mapViewBundle = savedInstanceState.getBundle(MAPVIEW_BUNDLE_KEY);
-        }
-
-        mMapView = findViewById((R.id.mapView));
-        mMapView.onCreate(mapViewBundle);
-        mMapView.getMapAsync(this);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mMapView.onStart();
+//        //TODO remove test id from code
+//        List<String> testDeviceIds = Arrays.asList("481D9EB0E450EFE1F74321C81D584BCE");
+//        RequestConfiguration configuration = new RequestConfiguration.Builder().setTestDeviceIds(testDeviceIds).build();
+//        MobileAds.setRequestConfiguration(configuration);
 
         searchView = findViewById(R.id.searchView);
         TableLayout detailView = findViewById(R.id.detailView);
@@ -100,15 +81,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         detailAd = findViewById(R.id.detailAd);
         titleText = findViewById(R.id.titleText);
         favoriteButton = findViewById(R.id.favoriteButton);
-
-        ItemDatabase dbHelper = new ItemDatabase(this);
-
-        try {
-            dbHelper.updateDataBase();
-            itemDatabase = dbHelper.getWritableDatabase();
-        } catch (Exception exception) {
-            throw new Error("UnableToUpdateDatabase");
-        }
 
         detailUpAnimation = ObjectAnimator.ofFloat(detailView, "translationY", 0);
         detailUpAnimation.setDuration(600);
@@ -142,18 +114,24 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 return false;
             }
         });
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mMapView.onResume();
-        if (goingToPoint) {
-            moveToPoint();
+        ItemDatabase dbHelper = new ItemDatabase(this);
+
+        try {
+            dbHelper.updateDataBase();
+            itemDatabase = dbHelper.getWritableDatabase();
+        } catch (Exception exception) {
+            throw new Error("UnableToUpdateDatabase");
         }
 
-        AdRequest adRequest = new AdRequest.Builder().build();
-        detailAd.loadAd(adRequest);
+        Bundle mapViewBundle = null;
+        if (savedInstanceState != null) {
+            mapViewBundle = savedInstanceState.getBundle(MAPVIEW_BUNDLE_KEY);
+        }
+
+        mMapView = findViewById((R.id.mapView));
+        mMapView.onCreate(mapViewBundle);
+        mMapView.getMapAsync(this);
     }
 
     @Override
@@ -253,10 +231,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onInfoWindowClose(Marker marker) {
-        detailDownAnimation.start();
-        titleUpAnimation.start();
+        if(!goingToPoint) {
+            detailDownAnimation.start();
+            titleUpAnimation.start();
+        }
     }
-
 
     public void switchFavoriteStatus(View view) {
         String selection = ItemDetails.COL_1 + " = ?";
@@ -340,6 +319,24 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         mMapView.onSaveInstanceState(mapViewBundle);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mMapView.onStart();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mMapView.onResume();
+        if (goingToPoint) {
+            moveToPoint();
+        }
+
+        AdRequest adRequest = new AdRequest.Builder().build();
+        detailAd.loadAd(adRequest);
     }
 
     @Override

@@ -12,8 +12,8 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:icon="@drawable/s"
+        android:roundIcon="@drawable/s"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
@@ -26,8 +26,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".PdfRenderer" android:theme="@style/AddedActivityTheme" />
         <activity android:name=".FavoriteActivity" />
+        <activity android:name=".PdfRenderer" android:theme="@style/AddedActivityTheme" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDUsBUXDaPG_5Yz6EBgnpou0986_c4N2ug" />
