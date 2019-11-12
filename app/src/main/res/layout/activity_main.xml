@@ -10,7 +10,7 @@
     <RelativeLayout
         android:id="@+id/topArea"
         android:layout_width="0dp"
-        android:layout_height="70dp"
+        android:layout_height="80dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -19,26 +19,23 @@
             android:id="@+id/searchView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:queryBackground="@android:color/transparent"/>
+            android:queryBackground="@android:color/transparent" />
 
         <TextView
             android:id="@+id/titleText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
+            android:padding="8dp"
             android:background="#ffffff"
-            android:translationY="-500dp"
+            android:clickable="true"
+            android:focusable="true"
             android:text="@string/app_name"
             android:textAlignment="center"
+            android:textColor="#000000"
             android:textSize="25sp"
             android:textStyle="bold"
-            android:textColor="#000000"
-            android:clickable="true"
-            android:focusable="true" />
+            android:translationY="-500dp" />
 
     </RelativeLayout>
 
@@ -50,7 +47,7 @@
         app:layout_constraintBottom_toTopOf="@id/mapView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/topArea"/>
+        app:layout_constraintTop_toBottomOf="@id/topArea" />
 
     <com.google.android.gms.maps.MapView
         android:id="@+id/mapView"
@@ -60,7 +57,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/searchDivider"/>
+        app:layout_constraintTop_toBottomOf="@id/searchDivider" />
 
     <RelativeLayout
         android:id="@+id/bottomHalf"
@@ -87,72 +84,78 @@
             android:translationY="500dp">
 
             <TableRow>
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.2dp"
                     android:layout_span="4"
-                    android:background="@color/dividerBar"/>
+                    android:background="@color/dividerBar" />
             </TableRow>
 
             <TableRow android:weightSum="2">
-                <Button
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="5dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="2dp"
-                    android:layout_weight="1"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:text="@string/photos"
-                    android:onClick="startPdfRendererActivityPhotos"/>
 
                 <Button
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="5dp"
-                    android:layout_marginStart="2dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-                    android:text="@string/docs"
-                    android:onClick="startPdfRendererActivityDocuments"/>
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="2dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_weight="1"
+                    android:onClick="startPdfRendererActivityPhotos"
+                    android:text="@string/photos" />
+
+                <Button
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_weight="1"
+                    android:onClick="startPdfRendererActivityDocuments"
+                    android:text="@string/docs" />
             </TableRow>
 
             <TableRow android:layout_weight="1.0">
-                    <TextView
-                        android:id="@+id/detailText"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1.0"
-                        android:layout_span="3"
-                        android:layout_marginStart="14dp"
-                        android:layout_marginLeft="14dp"
-                        android:layout_marginEnd="14dp"
-                        android:layout_marginRight="14dp"
-                        android:lineSpacingExtra="2dp"
-                        android:textSize="14sp" />
 
-                    <ImageButton
-                        android:id="@+id/favoriteButton"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:layout_gravity="bottom"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginBottom="8dp"
-                        android:background="@drawable/imagebutton"
-                        android:onClick="switchFavoriteStatus" />
+                <TextView
+                    android:id="@+id/detailText"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="14dp"
+                    android:layout_marginLeft="14dp"
+                    android:layout_marginEnd="14dp"
+                    android:layout_marginRight="14dp"
+                    android:layout_span="3"
+                    android:layout_weight="1.0"
+                    android:fontFamily="@font/andalemono"
+                    android:lineSpacingExtra="2dp"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <ImageButton
+                    android:id="@+id/favoriteButton"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="bottom"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/imagebutton"
+                    android:tint="#5F90FE"
+                    android:onClick="switchFavoriteStatus" />
             </TableRow>
 
             <TableRow>
-                <com.google.android.gms.ads.AdView
-                    xmlns:ads="http://schemas.android.com/apk/res-auto"
+
+                <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/detailAd"
                     android:layout_height="50dp"
                     android:layout_span="4"
                     ads:adSize="SMART_BANNER"
                     ads:adUnitId="ca-app-pub-3940256099942544/6300978111" />
-<!--                    TODO switch adId-->
-<!--                    ads:adUnitId="ca-app-pub-3281339494640251/9986601233" />-->
+                <!--                    TODO switch adId-->
+                <!--                    ads:adUnitId="ca-app-pub-3281339494640251/9986601233" />-->
             </TableRow>
 
         </TableLayout>
@@ -160,50 +163,52 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/bottomBar"
             android:layout_width="match_parent"
-            android:layout_height="70dp"
+            android:layout_height="80dp"
             android:layout_alignParentBottom="true"
             android:background="#ffffff">
 
-            <ImageButton
-                android:id="@+id/favoritesButton"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:contentDescription='"Favorites Page Button"'
-                android:background="@drawable/imagebutton"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/mapButton"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/hearticon"
-                android:onClick="startFavoriteActivity"/>
+            <TextView
+                android:id="@+id/textView3"
+                style="@style/BottomText"
+                android:text="Favorites"
+                app:layout_constraintEnd_toEndOf="@id/favoritesButton"
+                app:layout_constraintStart_toStartOf="@id/favoritesButton"
+                app:layout_constraintTop_toBottomOf="@+id/favoritesButton" />
+
+            <TextView
+                android:id="@+id/textView4"
+                style="@style/BottomText"
+                android:text="Home"
+                app:layout_constraintEnd_toEndOf="@id/homeButton"
+                app:layout_constraintStart_toStartOf="@id/homeButton"
+                app:layout_constraintTop_toBottomOf="@+id/homeButton" />
+
+            <TextView
+                android:id="@+id/textView5"
+                style="@style/BottomText"
+                android:text="Settings"
+                app:layout_constraintEnd_toEndOf="@id/settingsButton"
+                app:layout_constraintStart_toStartOf="@id/settingsButton"
+                app:layout_constraintTop_toBottomOf="@+id/settingsButton"  />
 
             <ImageButton
-                android:id="@+id/mapButton"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:contentDescription='"Map Page Button"'
-                android:background="@drawable/imagebutton"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/settingsButton"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@id/favoritesButton"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/blackhouseicon"/>
+                android:id="@+id/favoritesButton"
+                style="@style/FavoritesImageButton"
+                app:layout_constraintEnd_toStartOf="@+id/homeButton"/>
+
+            <ImageButton
+                android:id="@+id/homeButton"
+                style="@style/ImageButton"
+                android:tint="#5F90FE"
+                app:layout_constraintEnd_toStartOf="@+id/settingsButton"
+                app:layout_constraintStart_toEndOf="@+id/favoritesButton"
+                app:srcCompat="@drawable/greyhouse"/>
 
             <ImageButton
                 android:id="@+id/settingsButton"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:contentDescription='"Settings Page Button"'
-                android:background="@drawable/imagebutton"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@id/mapButton"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/personicon"/>
+                style="@style/SettingsImageButton"
+                app:layout_constraintStart_toEndOf="@+id/homeButton" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <View
@@ -211,7 +216,7 @@
             android:layout_width="match_parent"
             android:layout_height="0.8dp"
             android:layout_above="@id/bottomBar"
-            android:background="@color/dividerBar"/>
+            android:background="@color/dividerBar" />
 
     </RelativeLayout>
 
@@ -220,6 +225,6 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.50"/>
+        app:layout_constraintGuide_percent="0.50" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

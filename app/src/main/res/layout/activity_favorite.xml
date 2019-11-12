@@ -9,7 +9,7 @@
     <SearchView
         android:id="@+id/searchView"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="80dp"
         app:layout_constraintBottom_toTopOf="@id/searchDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -51,7 +51,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bottomBar"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="80dp"
         android:layout_alignParentBottom="true"
         android:background="#ffffff"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -59,46 +59,47 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/bottomDivider">
 
-        <ImageButton
-            android:id="@+id/favoritesButton"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:contentDescription='"Favorites Page Button"'
-            android:background="@drawable/imagebutton"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/mapButton"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/blackhearticon" />
+        <TextView
+            android:id="@+id/textView3"
+            style="@style/BottomText"
+            android:text="Favorites"
+            app:layout_constraintEnd_toEndOf="@id/favoritesButton"
+            app:layout_constraintStart_toStartOf="@id/favoritesButton"
+            app:layout_constraintTop_toBottomOf="@+id/favoritesButton" />
+
+        <TextView
+            android:id="@+id/textView4"
+            style="@style/BottomText"
+            android:text="Home"
+            app:layout_constraintEnd_toEndOf="@id/homeButton"
+            app:layout_constraintStart_toStartOf="@id/homeButton"
+            app:layout_constraintTop_toBottomOf="@+id/homeButton" />
+
+        <TextView
+            android:id="@+id/textView5"
+            style="@style/BottomText"
+            android:text="Settings"
+            app:layout_constraintEnd_toEndOf="@id/settingsButton"
+            app:layout_constraintStart_toStartOf="@id/settingsButton"
+            app:layout_constraintTop_toBottomOf="@+id/settingsButton"  />
 
         <ImageButton
-            android:id="@+id/mapButton"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:contentDescription='"Map Page Button"'
-            android:background="@drawable/imagebutton"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/settingsButton"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@id/favoritesButton"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/houseicon"
-            android:onClick="startMapActivity"/>
+            android:id="@+id/favoritesButton"
+            style="@style/FavoritesImageButton"
+            android:tint="#5F90FE"
+            app:layout_constraintEnd_toStartOf="@+id/homeButton"/>
+
+        <ImageButton
+            android:id="@+id/homeButton"
+            style="@style/HomeImageButton"
+            app:layout_constraintEnd_toStartOf="@+id/settingsButton"
+            app:layout_constraintStart_toEndOf="@+id/favoritesButton"/>
 
         <ImageButton
             android:id="@+id/settingsButton"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:contentDescription='"Settings Page Button"'
-            android:background="@drawable/imagebutton"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@id/mapButton"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/personicon" />
+            style="@style/SettingsImageButton"
+            app:layout_constraintStart_toEndOf="@+id/homeButton" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,6 +7,9 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -173,7 +176,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         while (cursor.moveToNext()) {
             currentStrings.add(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_1)));
             if(markerHashMap.get(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_1))) == null) {
-                Marker marker = map.addMarker(new MarkerOptions().title(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3))).snippet(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_7))).position(new LatLng(cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_4)), cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_5)))).icon(BitmapDescriptorFactory.fromResource(R.drawable.s)));
+                Drawable drawable = getResources().getDrawable(R.drawable.swithoutshadow);
+                Canvas canvas = new Canvas();
+                Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+                canvas.setBitmap(bitmap);
+                drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+                drawable.draw(canvas);
+                Marker marker = map.addMarker(new MarkerOptions().title(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3))).snippet(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_7))).position(new LatLng(cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_4)), cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_5)))).icon(BitmapDescriptorFactory.fromBitmap(bitmap)));
                 markerHashMap.put(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_1)), marker);
             }
             if (goingToPoint && cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_1)).equals(currentId)) {
@@ -251,18 +260,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (currentFavorited.equals("TRUE")) {
             values.put(ItemDetails.COL_13, "FALSE");
             currentFavorited = "FALSE";
-            favoriteButton.setImageResource(R.drawable.bluehearticonhollow);
+            favoriteButton.setImageResource(R.drawable.greyheart);
         }
         else {
             values.put(ItemDetails.COL_13, "TRUE");
             currentFavorited = "TRUE";
-            favoriteButton.setImageResource(R.drawable.bluehearticon);
+            favoriteButton.setImageResource(R.drawable.bluehearticonhollow);
         }
 
         itemDatabase.update( ItemDetails.TABLE_NAME, values, selection, selectionArgs);
     }
 
-    public void startFavoriteActivity(View view) {
+    public void startFavoritesActivity(View view) {
         currentFavorites.clear();
 
         String[] projection = { ItemDetails.COL_1, ItemDetails.COL_3, ItemDetails.COL_7 };
@@ -288,8 +297,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     //TODO add settings button functionality
     public void startSettingsActivity(View view) {
-        Intent intent = new Intent(this, FavoriteActivity.class);
-        startActivity(intent);
+//        Intent intent = new Intent(this, FavoriteActivity.class);
+//        startActivity(intent);
     }
 
     public void startPdfRendererActivityPhotos(View view) {

@@ -15,5 +15,39 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+    
+    <style name="ImageButton" parent="android:Widget.ImageButton">
+        <item name="android:layout_width">50dp</item>
+        <item name="android:layout_height">50dp</item>
+        <item name="android:scaleType">centerInside</item>
+        <item name="android:background">@drawable/imagebutton</item>
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="layout_constraintTop_toTopOf">parent</item>
+    </style>
+
+    <style name="FavoritesImageButton" parent="@style/ImageButton">
+        <item name="android:layout_marginEnd">16dp</item>
+        <item name="layout_constraintStart_toStartOf">parent</item>
+        <item name="srcCompat">@drawable/greyheart</item>
+        <item name="android:onClick">startFavoritesActivity</item>
+    </style>
+
+    <style name="HomeImageButton" parent="@style/ImageButton">
+        <item name="srcCompat">@drawable/greyhouse</item>
+        <item name="android:onClick">startHomeActivity</item>
+    </style>
+
+    <style name="SettingsImageButton" parent="@style/ImageButton">
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="layout_constraintEnd_toEndOf">parent</item>
+        <item name="srcCompat">@drawable/greyman</item>
+        <item name="android:onClick">startSettingsActivity</item>
+    </style>
+
+    <style name="BottomText" parent="android:Widget.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAlignment">center</item>
+    </style>
 
 </resources>

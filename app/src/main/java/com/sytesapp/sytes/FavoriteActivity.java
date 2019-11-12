@@ -36,7 +36,7 @@ public class FavoriteActivity extends AppCompatActivity {
             public void onItemClick(View view, int position) {
                 MainActivity.goingToPoint = true;
                 MainActivity.currentId = ((TextView) view.findViewById(R.id.idText)).getText().toString();
-                startMapActivity(null);
+                startHomeActivity(null);
             }
         });
 
@@ -80,7 +80,7 @@ public class FavoriteActivity extends AppCompatActivity {
         }
     }
 
-    public void startMapActivity(View view) {
+    public void startHomeActivity(View view) {
         Intent intent = new Intent(this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(intent);
@@ -88,8 +88,8 @@ public class FavoriteActivity extends AppCompatActivity {
 
     //TODO add settings button functionality
     public void startSettingsActivity(View view) {
-        Intent intent = new Intent(this, FavoriteActivity.class);
-        startActivity(intent);
+//        Intent intent = new Intent(this, FavoriteActivity.class);
+//        startActivity(intent);
     }
 
     @Override
