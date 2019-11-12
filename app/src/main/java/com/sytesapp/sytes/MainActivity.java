@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GoogleMap map;
     private MapView mMapView;
     private static final String MAPVIEW_BUNDLE_KEY = "MapViewBundleKey";
-    private SQLiteDatabase itemDatabase;
+    public static SQLiteDatabase itemDatabase;
     private BiMap<String, Marker> markerHashMap = HashBiMap.create();
 
     private AdView detailAd;
@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private String refNum;
     private String currentFavorited;
+    public static String searchQuery;
     public static String currentId;
     public static boolean goingToPoint = false;
     public static ArrayList<String> currentFavorites = new ArrayList<>();
@@ -110,6 +111,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                searchQuery = query;
+                startSearchActivity(null);
                 return false;
             }
             @Override
@@ -277,6 +280,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         startActivity(intent);
     }
 
+    public void startSearchActivity(View view) {
+        Intent intent = new Intent(this, SearchActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        startActivity(intent);
+    }
+
     //TODO add settings button functionality
     public void startSettingsActivity(View view) {
         Intent intent = new Intent(this, FavoriteActivity.class);
@@ -334,6 +343,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onResume() {
         super.onResume();
         mMapView.onResume();
+        searchQuery = SearchActivity.searchQuery;
+        searchView.setQuery(searchQuery, false);
         if (goingToPoint) {
             moveToPoint();
         }
