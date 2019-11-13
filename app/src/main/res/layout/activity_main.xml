@@ -129,7 +129,6 @@
                     android:layout_marginRight="14dp"
                     android:layout_span="3"
                     android:layout_weight="1.0"
-                    android:fontFamily="@font/andalemono"
                     android:lineSpacingExtra="2dp"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -142,8 +141,8 @@
                     android:layout_marginEnd="8dp"
                     android:layout_marginBottom="8dp"
                     android:background="@drawable/imagebutton"
-                    android:onClick="switchFavoriteStatus" />
-<!--                    android:tint="#5F90FE"-->
+                    android:onClick="switchFavoriteStatus"
+                    android:tint="#5F90FE"/>
             </TableRow>
 
             <TableRow>

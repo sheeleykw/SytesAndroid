@@ -1,7 +1,5 @@
 package com.sytesapp.sytes;
 
-import android.animation.ObjectAnimator;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -29,7 +27,6 @@ import com.google.android.gms.maps.model.VisibleRegion;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnCameraIdleListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowCloseListener {
@@ -37,19 +34,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GoogleMap map;
     private MapView mMapView;
     private static final String MAPVIEW_BUNDLE_KEY = "MapViewBundleKey";
-    public static SQLiteDatabase itemDatabase;
     private BiMap<String, Marker> markerHashMap = HashBiMap.create();
 
     private AdView detailAd;
-    private TextView detailText;
-    private TextView titleText;
     private SearchView searchView;
-    private ImageButton favoriteButton;
-
-    private ObjectAnimator titleUpAnimation;
-    private ObjectAnimator titleDownAnimation;
-    private ObjectAnimator detailUpAnimation;
-    private ObjectAnimator detailDownAnimation;
 
     private String refNum;
     private String currentFavorited;
@@ -68,10 +56,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //        RequestConfiguration configuration = new RequestConfiguration.Builder().setTestDeviceIds(testDeviceIds).build();
 //        MobileAds.setRequestConfiguration(configuration);
 
-        detailText  = findViewById(R.id.detailText);
         detailAd = findViewById(R.id.detailAd);
-        titleText = findViewById(R.id.titleText);
-        favoriteButton = findViewById(R.id.favoriteButton);
 
         searchView = findViewById(R.id.searchView);
         searchView.setOnClickListener(new View.OnClickListener() {
@@ -153,30 +138,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         //ExtraneousMethods.HideKeyboard(this, this.getCurrentFocus());
 
         currentId = markerHashMap.inverse().get(marker);
-
-        Cursor cursor = ExtraneousMethods.GetCursorFromId(this, currentId);
+        Cursor cursor = ExtraneousMethods.GetCursorFromId_Data(this, currentId);
         cursor.moveToNext();
 
-        if (cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_13)).equals("TRUE")) {
-            favoriteButton.setImageResource(R.drawable.bluehearticon);
-            currentFavorited = "TRUE";
-        }
-        else {
-            favoriteButton.setImageResource(R.drawable.bluehearticonhollow);
-            currentFavorited = "FALSE";
-        }
-
         refNum = cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_2));
-        detailText.setText(MessageFormat.format("Category: {0}\nReference Number: {1}\nDate added to register: {2}\nReported Street Address: {3}\nLocation: {4}, {5}\nCounty: {6}\nArchitects/Builders: {7}", cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_7)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_2)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_6)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_8)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_9)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_11)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_10)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_12))));
-        titleText.setText(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)));
-        ExtraneousMethods.DisplayViews(this, (TableLayout)findViewById(R.id.detailView), titleText);
+        currentFavorited = ExtraneousMethods.UpdateText(cursor, (TextView)findViewById(R.id.detailText), (TextView)findViewById(R.id.titleText), (ImageButton)findViewById(R.id.favoriteButton));
+        ExtraneousMethods.DisplayViews(this, (TableLayout)findViewById(R.id.detailView), (TextView)findViewById(R.id.titleText));
 
-        VisibleRegion vr = map.getProjection().getVisibleRegion();
-        double oneFifthMapSpan = (vr.latLngBounds.northeast.latitude - vr.latLngBounds.southwest.latitude) / 5.0;
-        map.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(marker.getPosition().latitude - oneFifthMapSpan, marker.getPosition().longitude)), 500, null);
+        ExtraneousMethods.MoveMap(map, marker.getPosition().latitude, marker.getPosition().longitude, false, true);
         marker.showInfoWindow();
-
-        cursor.close();
         return true;
     }
 
@@ -188,32 +158,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void switchFavoriteStatus(View view) {
-        String selection = ItemDetails.COL_1 + " = ?";
-        String[] selectionArgs = { currentId };
+        ImageButton favoriteButton = findViewById(R.id.favoriteButton);
+        currentFavorited = ExtraneousMethods.UpdateFavoriteStatus(currentId, currentFavorited);
 
-        ContentValues values = new ContentValues();
         if (currentFavorited.equals("TRUE")) {
-            values.put(ItemDetails.COL_13, "FALSE");
-            currentFavorited = "FALSE";
-            favoriteButton.setImageResource(R.drawable.greyheart);
+            favoriteButton.setImageResource(R.drawable.bluehearticon);
         }
         else {
-            values.put(ItemDetails.COL_13, "TRUE");
-            currentFavorited = "TRUE";
-            favoriteButton.setImageResource(R.drawable.bluehearticonhollow);
+            favoriteButton.setImageResource(R.drawable.greyheart);
         }
-
-        itemDatabase.update( ItemDetails.TABLE_NAME, values, selection, selectionArgs);
     }
 
     public void startFavoritesActivity(View view) {
-        currentFavorites.clear();
-
-        Cursor cursor = ExtraneousMethods.GetCursorFromFavorited(this);
-        while (cursor.moveToNext()) {
-            currentFavorites.add(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_1)) + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)) + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_7)));
-        }
-        cursor.close();
+        ExtraneousMethods.GetFavorited(this);
 
         Intent intent = new Intent(this, FavoriteActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
@@ -247,16 +204,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void moveToPoint() {
-        String[] projection = { ItemDetails.COL_4, ItemDetails.COL_5 };
-        String selection = ItemDetails.COL_1 + " = ?";
-        String[] selectionArgs = { currentId };
-
-        Cursor cursor = itemDatabase.query( ItemDetails.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
+        Cursor cursor = ExtraneousMethods.GetCursorFromId_Location(this, currentId);
         cursor.moveToNext();
-
-        VisibleRegion vr = map.getProjection().getVisibleRegion();
-        double oneFifthMapSpan = (vr.latLngBounds.northeast.latitude - vr.latLngBounds.southwest.latitude) / 5.0;
-        map.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_4)) - oneFifthMapSpan, cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_5)))));
+        ExtraneousMethods.MoveMap(map, cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_4)), cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_5)), true, false);
         cursor.close();
     }
 
@@ -285,10 +235,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMapView.onResume();
         searchQuery = SearchActivity.searchQuery;
         searchView.setQuery(searchQuery, false);
+
         if (goingToPoint) {
             moveToPoint();
         }
-
         AdRequest adRequest = new AdRequest.Builder().build();
         detailAd.loadAd(adRequest);
     }

@@ -2,6 +2,7 @@ package com.sytesapp.sytes;
 
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -10,12 +11,15 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -23,6 +27,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
 import com.google.common.collect.BiMap;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -53,7 +58,7 @@ class ExtraneousMethods {
         return itemDatabase.query( ItemDetails.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
     }
 
-    static Cursor GetCursorFromId(Context context, String id) {
+    static Cursor GetCursorFromId_Data(Context context, String id) {
         if (!databasesReady) {
             InitializeDatabase(context);
         }
@@ -65,7 +70,19 @@ class ExtraneousMethods {
         return itemDatabase.query( ItemDetails.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
     }
 
-    static Cursor GetCursorFromFavorited(Context context) {
+    static Cursor GetCursorFromId_Location(Context context, String id) {
+        if (!databasesReady) {
+            InitializeDatabase(context);
+        }
+
+        String[] projection = { ItemDetails.COL_4, ItemDetails.COL_5 };
+        String selection = ItemDetails.COL_1 + " = ?";
+        String[] selectionArgs = { id };
+
+        return itemDatabase.query( ItemDetails.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
+    }
+
+    static void GetFavorited(Context context) {
         if (!databasesReady) {
             InitializeDatabase(context);
         }
@@ -74,7 +91,31 @@ class ExtraneousMethods {
         String selection = ItemDetails.COL_13 + " = ?";
         String[] selectionArgs = { "TRUE" };
 
-        return itemDatabase.query( ItemDetails.TABLE_NAME, projection, selection, selectionArgs, null, null, ItemDetails.COL_3);
+        Cursor cursor = itemDatabase.query( ItemDetails.TABLE_NAME, projection, selection, selectionArgs, null, null, ItemDetails.COL_3);
+
+        MainActivity.currentFavorites.clear();
+        while (cursor.moveToNext()) {
+            MainActivity.currentFavorites.add(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_1)) + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)) + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_7)));
+        }
+        cursor.close();
+    }
+
+    static void GetSearched(Context context, String searchQuery) {
+        if (!databasesReady) {
+            InitializeDatabase(context);
+        }
+
+        String[] projection = { ItemDetails.COL_1, ItemDetails.COL_3, ItemDetails.COL_9, ItemDetails.COL_11 };
+        String selection = ItemDetails.COL_3 + " LIKE ?";
+        String[] selectionArgs = { "%" + searchQuery + "%" };
+
+        Cursor cursor = itemDatabase.query( ItemDetails.TABLE_NAME, projection, selection, selectionArgs, null, null, ItemDetails.COL_3);
+        SearchActivity.searchList.clear();
+        while (cursor.moveToNext()) {
+            SearchActivity.searchList.add(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_1)) + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)) + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_9)) + ", " + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_11)));
+        }
+
+        cursor.close();
     }
 
     static MarkerOptions GetMarkerOptions(Context context, Cursor cursor) {
@@ -85,6 +126,57 @@ class ExtraneousMethods {
         markerOptions.icon(BitmapDescriptorFactory.fromBitmap(BitmapFromDrawable(context.getDrawable(R.drawable.swithoutshadow))));
 
         return markerOptions;
+    }
+
+    static void MoveMap(GoogleMap map, double latitude, double longitude, boolean zooming, boolean animating) {
+        if (zooming) {
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(map.getCameraPosition().target, 18));
+        }
+
+        VisibleRegion vr = map.getProjection().getVisibleRegion();
+        double oneFifthMapSpan = (vr.latLngBounds.northeast.latitude - vr.latLngBounds.southwest.latitude) / 5.0;
+
+        if (animating) {
+            map.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(latitude - oneFifthMapSpan, longitude)), 500, null);
+        }
+        else {
+            map.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(latitude - oneFifthMapSpan, longitude)));
+        }
+    }
+
+    static String UpdateText(Cursor cursor, TextView detailText, TextView titleText, ImageButton favoriteButton) {
+        String favorited = "FALSE";
+        if (cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_13)).equals("TRUE")) {
+            favoriteButton.setImageResource(R.drawable.bluehearticon);
+            favorited = "TRUE";
+        }
+        else {
+            favoriteButton.setImageResource(R.drawable.greyheart);
+        }
+        detailText.setText(MessageFormat.format("Category: {0}\nReference Number: {1}\nDate added to register: {2}\nReported Street Address: {3}\nLocation: {4}, {5}\nCounty: {6}\nArchitects/Builders: {7}", cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_7)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_2)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_6)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_8)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_9)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_11)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_10)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_12))));
+        titleText.setText(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)));
+        cursor.close();
+
+        return favorited;
+    }
+
+    static String UpdateFavoriteStatus(String id, String favorited) {
+        String selection = ItemDetails.COL_1 + " = ?";
+        String[] selectionArgs = { id };
+
+        ContentValues values = new ContentValues();
+        if (favorited.equals("TRUE")) {
+            values.put(ItemDetails.COL_13, "FALSE");
+            favorited = "FALSE";
+        }
+        else {
+            values.put(ItemDetails.COL_13, "TRUE");
+            favorited = "TRUE";
+        }
+
+        itemDatabase.update( ItemDetails.TABLE_NAME, values, selection, selectionArgs);
+
+        return favorited;
     }
 
     static void RemoveMarkers(BiMap<String, Marker> markerHashMap, VisibleRegion vr) {
@@ -153,6 +245,9 @@ class ExtraneousMethods {
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     //End Initialization related methods
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+
 
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     //Begin Other non-related methods

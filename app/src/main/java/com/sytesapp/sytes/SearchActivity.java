@@ -1,11 +1,10 @@
 package com.sytesapp.sytes;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.SearchView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -17,7 +16,7 @@ public class SearchActivity extends AppCompatActivity {
 
     private RecyclerView.Adapter mAdapter;
     private SearchView searchView;
-    private ArrayList<String> searchList = new ArrayList<>();
+    public static ArrayList<String> searchList = new ArrayList<>();
     public static String searchQuery;
 
     @Override
@@ -64,21 +63,7 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void searchInitialize() {
-        searchList.clear();
-
-        System.out.println(searchQuery);
-        String[] projection = { ItemDetails.COL_1, ItemDetails.COL_3, ItemDetails.COL_9, ItemDetails.COL_11 };
-        String selection = ItemDetails.COL_3 + " LIKE ?";
-        String[] selectionArgs = { "%" + searchQuery + "%" };
-
-        Cursor cursor = MainActivity.itemDatabase.query( ItemDetails.TABLE_NAME, projection, selection, selectionArgs, null, null, ItemDetails.COL_3);
-        System.out.println(cursor.getCount());
-        while (cursor.moveToNext()) {
-            searchList.add(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_1)) + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)) + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_9)) + ", " + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_11)));
-        }
-
-        cursor.close();
-
+        ExtraneousMethods.GetSearched(this, searchQuery);
         mAdapter.notifyDataSetChanged();
     }
 
