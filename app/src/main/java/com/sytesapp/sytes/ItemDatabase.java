@@ -1,7 +1,6 @@
 package com.sytesapp.sytes;
 
 import android.content.Context;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -13,16 +12,16 @@ import java.io.OutputStream;
 
 public class ItemDatabase extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 1;
-    public static final String DATABASE_NAME = "ItemDetails.db";
-    public static String DATABASE_PATH = "";
+    private static final int DATABASE_VERSION = 1;
+    private static final String DATABASE_NAME = "ItemDetails.db";
+    private static String DATABASE_PATH = "";
     private SQLiteDatabase database;
     private final Context mContext;
     private boolean needsUpdate = false;
     
-    public ItemDatabase(Context context) {
+    ItemDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        if (android.os.Build.VERSION.SDK_INT >= 17)
+        if (android.os.Build.VERSION.SDK_INT >= 21)
             DATABASE_PATH = context.getApplicationInfo().dataDir + "/databases/";
         else
             DATABASE_PATH = "/data/data/" + context.getPackageName() + "/databases/";
@@ -33,7 +32,7 @@ public class ItemDatabase extends SQLiteOpenHelper {
         this.getReadableDatabase();
     }
 
-    public void updateDataBase() throws IOException {
+    void updateDataBase() throws IOException {
         if (needsUpdate) {
             File dbFile = new File(DATABASE_PATH + DATABASE_NAME);
             if (dbFile.exists())
@@ -64,7 +63,6 @@ public class ItemDatabase extends SQLiteOpenHelper {
 
     private void copyDBFile() throws IOException {
         InputStream mInput = mContext.getAssets().open(DATABASE_NAME);
-        //InputStream mInput = mContext.getResources().openRawResource(R.raw.info);
         OutputStream mOutput = new FileOutputStream(DATABASE_PATH + DATABASE_NAME);
         byte[] mBuffer = new byte[1024];
         int mLength;
@@ -73,11 +71,6 @@ public class ItemDatabase extends SQLiteOpenHelper {
         mOutput.flush();
         mOutput.close();
         mInput.close();
-    }
-
-    public boolean openDataBase() throws SQLException {
-        database = SQLiteDatabase.openDatabase(DATABASE_PATH + DATABASE_NAME, null, SQLiteDatabase.CREATE_IF_NECESSARY);
-        return database != null;
     }
 
     @Override
