@@ -41,7 +41,6 @@ class ExtraneousMethods {
     private static ObjectAnimator titleDownAnimation;
     private static boolean databasesReady = false;
     private static boolean adsReady = false;
-    private static boolean animationsReady = false;
 
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     //Begin Map/Database related Methods
@@ -147,7 +146,7 @@ class ExtraneousMethods {
     static String UpdateText(Cursor cursor, TextView detailText, TextView titleText, ImageButton favoriteButton) {
         String favorited = "FALSE";
         if (cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_13)).equals("TRUE")) {
-            favoriteButton.setImageResource(R.drawable.bluehearticon);
+            favoriteButton.setImageResource(R.drawable.fullheart);
             favorited = "TRUE";
         }
         else {
@@ -215,7 +214,7 @@ class ExtraneousMethods {
         }
     }
 
-    private static void InitializeAnimations(Context context, TableLayout detailView, TextView titleView) {
+    static void InitializeAnimations(Context context, TableLayout detailView, TextView titleView) {
         detailUpAnimation = ObjectAnimator.ofFloat(detailView, "translationY", 0);
         detailUpAnimation.setDuration(600);
         detailDownAnimation = ObjectAnimator.ofFloat(detailView, "translationY", 500 * context.getApplicationContext().getResources().getDisplayMetrics().density);
@@ -225,8 +224,6 @@ class ExtraneousMethods {
         titleDownAnimation.setDuration(400);
         titleUpAnimation = ObjectAnimator.ofFloat(titleView, "translationY", -500 * context.getApplicationContext().getResources().getDisplayMetrics().density);
         titleUpAnimation.setDuration(400);
-
-        animationsReady = true;
     }
 
     private static void InitializeDatabase(Context context) {
@@ -268,11 +265,7 @@ class ExtraneousMethods {
         return bitmap;
     }
 
-    static void DisplayViews(Context context, TableLayout detailView, TextView titleView) {
-        if (!animationsReady) {
-            InitializeAnimations(context, detailView, titleView);
-        }
-
+    static void DisplayViews() {
         detailUpAnimation.start();
         titleDownAnimation.start();
     }

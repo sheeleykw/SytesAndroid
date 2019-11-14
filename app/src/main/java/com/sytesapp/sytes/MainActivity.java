@@ -134,7 +134,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        ExtraneousMethods.InitializeAds(this);
         //ExtraneousMethods.HideKeyboard(this, this.getCurrentFocus());
 
         currentId = markerHashMap.inverse().get(marker);
@@ -143,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         refNum = cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_2));
         currentFavorited = ExtraneousMethods.UpdateText(cursor, (TextView)findViewById(R.id.detailText), (TextView)findViewById(R.id.titleText), (ImageButton)findViewById(R.id.favoriteButton));
-        ExtraneousMethods.DisplayViews(this, (TableLayout)findViewById(R.id.detailView), (TextView)findViewById(R.id.titleText));
+        ExtraneousMethods.DisplayViews();
 
         ExtraneousMethods.MoveMap(map, marker.getPosition().latitude, marker.getPosition().longitude, false, true);
         marker.showInfoWindow();
@@ -162,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         currentFavorited = ExtraneousMethods.UpdateFavoriteStatus(currentId, currentFavorited);
 
         if (currentFavorited.equals("TRUE")) {
-            favoriteButton.setImageResource(R.drawable.bluehearticon);
+            favoriteButton.setImageResource(R.drawable.fullheart);
         }
         else {
             favoriteButton.setImageResource(R.drawable.greyheart);
@@ -233,6 +232,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onResume() {
         super.onResume();
         mMapView.onResume();
+
+        ExtraneousMethods.InitializeAds(this);
+        ExtraneousMethods.InitializeAnimations(this, (TableLayout)findViewById(R.id.detailView), (TextView)findViewById(R.id.titleText));
+
         searchQuery = SearchActivity.searchQuery;
         searchView.setQuery(searchQuery, false);
 
