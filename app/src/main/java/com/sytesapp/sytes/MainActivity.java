@@ -1,10 +1,12 @@
 package com.sytesapp.sytes;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
@@ -31,6 +33,11 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnCameraIdleListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowCloseListener {

@@ -29,6 +29,13 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
 import com.google.common.collect.BiMap;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -117,6 +124,7 @@ class ExtraneousMethods {
             InitializeCityDatabase(context);
         }
 
+
         String[] projection = { ItemDetails.COL_1, ItemDetails.COL_3, ItemDetails.COL_4, ItemDetails.COL_5, ItemDetails.COL_9, ItemDetails.COL_11 };
         String selection = ItemDetails.COL_3 + " LIKE ?";
         String[] selectionArgs = { "%" + searchQuery + "%" };
@@ -129,22 +137,19 @@ class ExtraneousMethods {
         }
         
         String[] cityProjection = { ItemDetails.COL_3, ItemDetails.COL_4, ItemDetails.COL_5, "StateName" };
+
         cursor = cityDatabase.query( "cities", cityProjection, selection, selectionArgs, null, null, ItemDetails.COL_3);
 
         while (cursor.moveToNext()) {
-            selection = ItemDetails.COL_9 + " LIKE ?";
-            String[] citySelectionArgs = { "%" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)) + "%" };
-
-            Cursor cityCount = itemDatabase.query( ItemDetails.TABLE_NAME, null, selection, citySelectionArgs, null, null, null);
-            cityCount.moveToNext();
-
-            SearchActivity.searchList.add("0" + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)) + ", " + cursor.getString(cursor.getColumnIndexOrThrow("StateName")) + "\n" + "Number of sites found in city: " + cityCount.getCount() + "\n" + cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_4)) + "," + cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_5)));
+            SearchActivity.searchList.add("0" + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)) + ", " + cursor.getString(cursor.getColumnIndexOrThrow("StateName")) + "\n" + "Number of sites found in city: " + cursor.getString(cursor.getColumnIndexOrThrow("NumOfPoints")) + "\n" + cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_4)) + "," + cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_5)));
         }
 
         if (MainActivity.userLocation != null ) {
             SortSearchList();
         }
         cursor.close();
+
+
     }
 
     static MarkerOptions GetMarkerOptions(Context context, Cursor cursor) {
@@ -306,11 +311,8 @@ class ExtraneousMethods {
         for (int listLength = SearchActivity.searchList.size(); listLength > 1; listLength--) {
             for (int index = 0; index < listLength - 1; index++) {
                 double currentLatitude = Double.valueOf(SearchActivity.searchList.get(index).split("\n")[3].split(",")[0]);
-                System.out.println(currentLatitude);
-
                 double currentLongitude = Double.valueOf(SearchActivity.searchList.get(index).split("\n")[3].split(",")[1]);
                 double currentDiff = Math.abs(currentLatitude - MainActivity.userLocation.getLatitude()) + Math.abs(currentLongitude - MainActivity.userLocation.getLongitude());
-                System.out.println(currentLongitude);
 
                 double nextLatitude = Double.valueOf(SearchActivity.searchList.get(index + 1).split("\n")[3].split(",")[0]);
                 double nextLongitude = Double.valueOf(SearchActivity.searchList.get(index + 1).split("\n")[3].split(",")[1]);
