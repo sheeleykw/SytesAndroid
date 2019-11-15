@@ -10,15 +10,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class ItemDatabase extends SQLiteOpenHelper {
+public class CityDatabase extends SQLiteOpenHelper {
 
     private static final int DATABASE_VERSION = 1;
-    private static final String DATABASE_NAME = "ItemDetails.db";
+    private static final String DATABASE_NAME = "CityLocations.db";
     private static String DATABASE_PATH = "";
     private final Context mContext;
     private boolean needsUpdate = false;
-    
-    ItemDatabase(Context context) {
+
+    CityDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         if (android.os.Build.VERSION.SDK_INT >= 21)
             DATABASE_PATH = context.getApplicationInfo().dataDir + "/databases/";

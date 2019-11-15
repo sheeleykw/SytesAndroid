@@ -41,15 +41,16 @@ class ExtraneousMethods {
     private static ObjectAnimator detailDownAnimation;
     private static ObjectAnimator titleUpAnimation;
     private static ObjectAnimator titleDownAnimation;
-    private static boolean databasesReady = false;
+    private static boolean itemDatabaseReady = false;
+    private static boolean cityDatabaseReady = false;
     private static boolean adsReady = false;
 
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     //Begin Map/Database related Methods
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     static Cursor GetCursorFromRegion(Context context, VisibleRegion vr) {
-        if (!databasesReady) {
-            InitializeDatabase(context);
+        if (!itemDatabaseReady) {
+            InitializeItemDatabase(context);
         }
 
         String[] projection = { ItemDetails.COL_1, ItemDetails.COL_3, ItemDetails.COL_4, ItemDetails.COL_5, ItemDetails.COL_7 };
@@ -60,8 +61,8 @@ class ExtraneousMethods {
     }
 
     static Cursor GetCursorFromId(Context context, String id) {
-        if (!databasesReady) {
-            InitializeDatabase(context);
+        if (!itemDatabaseReady) {
+            InitializeItemDatabase(context);
         }
 
         String[] projection = { ItemDetails.COL_2, ItemDetails.COL_3, ItemDetails.COL_6, ItemDetails.COL_7, ItemDetails.COL_8, ItemDetails.COL_9, ItemDetails.COL_10, ItemDetails.COL_11, ItemDetails.COL_12, ItemDetails.COL_13 };
@@ -72,8 +73,8 @@ class ExtraneousMethods {
     }
 
     static LatLng GetLatLngFromId(Context context, String id) {
-        if (!databasesReady) {
-            InitializeDatabase(context);
+        if (!itemDatabaseReady) {
+            InitializeItemDatabase(context);
         }
 
         if (id.equals("0")) {
@@ -91,15 +92,15 @@ class ExtraneousMethods {
     }
 
     static void GetFavorited(Context context) {
-        if (!databasesReady) {
-            InitializeDatabase(context);
+        if (!itemDatabaseReady) {
+            InitializeItemDatabase(context);
         }
 
         String[] projection = { ItemDetails.COL_1, ItemDetails.COL_3, ItemDetails.COL_7 };
         String selection = ItemDetails.COL_13 + " = ?";
         String[] selectionArgs = { "TRUE" };
 
-        Cursor cursor = itemDatabase.query( ItemDetails.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
+        Cursor cursor = itemDatabase.query( ItemDetails.TABLE_NAME, projection, selection, selectionArgs, null, null, ItemDetails.COL_3);
 
         MainActivity.currentFavorites.clear();
         while (cursor.moveToNext()) {
@@ -109,22 +110,40 @@ class ExtraneousMethods {
     }
 
     static void GetSearched(Context context, String searchQuery) {
-        if (!databasesReady) {
-            InitializeDatabase(context);
+        if (!itemDatabaseReady) {
+            InitializeItemDatabase(context);
+        }
+        if (!cityDatabaseReady) {
+            InitializeCityDatabase(context);
         }
 
-        String[] projection = { ItemDetails.COL_1, ItemDetails.COL_3, ItemDetails.COL_4, ItemDetails.COL_5 , ItemDetails.COL_9, ItemDetails.COL_11 };
+        String[] projection = { ItemDetails.COL_1, ItemDetails.COL_3, ItemDetails.COL_4, ItemDetails.COL_5, ItemDetails.COL_9, ItemDetails.COL_11 };
         String selection = ItemDetails.COL_3 + " LIKE ?";
         String[] selectionArgs = { "%" + searchQuery + "%" };
 
         Cursor cursor = itemDatabase.query( ItemDetails.TABLE_NAME, projection, selection, selectionArgs, null, null, ItemDetails.COL_3);
+
         SearchActivity.searchList.clear();
         while (cursor.moveToNext()) {
-
             SearchActivity.searchList.add(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_1)) + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)) + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_9)) + ", " + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_11)) + "\n" + cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_4)) + "," + cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_5)));
         }
+        
+        String[] cityProjection = { ItemDetails.COL_3, ItemDetails.COL_4, ItemDetails.COL_5, "StateName" };
+        cursor = cityDatabase.query( "cities", cityProjection, selection, selectionArgs, null, null, ItemDetails.COL_3);
 
-        SortSearchList();
+        while (cursor.moveToNext()) {
+            selection = ItemDetails.COL_9 + " LIKE ?";
+            String[] citySelectionArgs = { "%" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)) + "%" };
+
+            Cursor cityCount = itemDatabase.query( ItemDetails.TABLE_NAME, null, selection, citySelectionArgs, null, null, null);
+            cityCount.moveToNext();
+
+            SearchActivity.searchList.add("0" + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)) + ", " + cursor.getString(cursor.getColumnIndexOrThrow("StateName")) + "\n" + "Number of sites found in city: " + cityCount.getCount() + "\n" + cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_4)) + "," + cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_5)));
+        }
+
+        if (MainActivity.userLocation != null ) {
+            SortSearchList();
+        }
         cursor.close();
     }
 
@@ -138,17 +157,20 @@ class ExtraneousMethods {
         return markerOptions;
     }
 
-    static void MoveMap(GoogleMap map, double latitude, double longitude, float zoomLevel, boolean animating) {
+    static void MoveMap(GoogleMap map, double latitude, double longitude, float zoomLevel, boolean animating, boolean offCenter) {
+        double offCenterDistance = 0.0;
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(map.getCameraPosition().target, zoomLevel));
 
-        VisibleRegion vr = map.getProjection().getVisibleRegion();
-        double oneFifthMapSpan = (vr.latLngBounds.northeast.latitude - vr.latLngBounds.southwest.latitude) / 5.0;
+        if (offCenter) {
+            VisibleRegion vr = map.getProjection().getVisibleRegion();
+            offCenterDistance = (vr.latLngBounds.northeast.latitude - vr.latLngBounds.southwest.latitude) / 5.0;
+        }
 
         if (animating) {
-            map.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(latitude - oneFifthMapSpan, longitude)), 500, null);
+            map.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(latitude - offCenterDistance, longitude)), 500, null);
         }
         else {
-            map.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(latitude - oneFifthMapSpan, longitude)));
+            map.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(latitude - offCenterDistance, longitude)));
         }
     }
 
@@ -237,7 +259,7 @@ class ExtraneousMethods {
         titleUpAnimation.setDuration(400);
     }
 
-    private static void InitializeDatabase(Context context) {
+    private static void InitializeItemDatabase(Context context) {
 
         ItemDatabase dbHelper = new ItemDatabase(context);
 
@@ -248,7 +270,21 @@ class ExtraneousMethods {
             throw new Error("UnableToUpdateDatabase");
         }
 
-        databasesReady = true;
+        itemDatabaseReady = true;
+    }
+    
+    private static void InitializeCityDatabase(Context context) {
+
+        CityDatabase dbHelper = new CityDatabase(context);
+
+        try {
+            dbHelper.updateDataBase();
+            cityDatabase = dbHelper.getWritableDatabase();
+        } catch (Exception exception) {
+            throw new Error("UnableToUpdateDatabase");
+        }
+        
+        cityDatabaseReady = true;
     }
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     //End Initialization related methods
@@ -267,8 +303,26 @@ class ExtraneousMethods {
     }
 
     private static void SortSearchList() {
-        for (String item: SearchActivity.searchList) {
-            //item.split()
+        for (int listLength = SearchActivity.searchList.size(); listLength > 1; listLength--) {
+            for (int index = 0; index < listLength - 1; index++) {
+                double currentLatitude = Double.valueOf(SearchActivity.searchList.get(index).split("\n")[3].split(",")[0]);
+                System.out.println(currentLatitude);
+
+                double currentLongitude = Double.valueOf(SearchActivity.searchList.get(index).split("\n")[3].split(",")[1]);
+                double currentDiff = Math.abs(currentLatitude - MainActivity.userLocation.getLatitude()) + Math.abs(currentLongitude - MainActivity.userLocation.getLongitude());
+                System.out.println(currentLongitude);
+
+                double nextLatitude = Double.valueOf(SearchActivity.searchList.get(index + 1).split("\n")[3].split(",")[0]);
+                double nextLongitude = Double.valueOf(SearchActivity.searchList.get(index + 1).split("\n")[3].split(",")[1]);
+                double nextDiff = Math.abs(nextLatitude - MainActivity.userLocation.getLatitude()) + Math.abs(nextLongitude - MainActivity.userLocation.getLongitude());
+
+                if(currentDiff > nextDiff) {
+                    String currentString = SearchActivity.searchList.get(index);
+                    String nextString = SearchActivity.searchList.get(index + 1);
+                    SearchActivity.searchList.set(index, nextString);
+                    SearchActivity.searchList.set(index + 1, currentString);
+                }
+            }
         }
     }
 

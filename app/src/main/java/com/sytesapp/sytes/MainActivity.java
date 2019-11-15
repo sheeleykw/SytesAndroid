@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         currentFavorited = ExtraneousMethods.UpdateText(cursor, (TextView)findViewById(R.id.detailText), (TextView)findViewById(R.id.titleText), (ImageButton)findViewById(R.id.favoriteButton));
         ExtraneousMethods.DisplayViews();
 
-        ExtraneousMethods.MoveMap(map, marker.getPosition().latitude, marker.getPosition().longitude, map.getCameraPosition().zoom, true);
+        ExtraneousMethods.MoveMap(map, marker.getPosition().latitude, marker.getPosition().longitude, map.getCameraPosition().zoom, true, true);
         marker.showInfoWindow();
         return true;
     }
@@ -225,10 +225,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void moveToPoint() {
         LatLng pointPosition = ExtraneousMethods.GetLatLngFromId(this, currentId);
         if (currentId.equals("0")) {
-            ExtraneousMethods.MoveMap(map, pointPosition.latitude, pointPosition.longitude, 10, false);
+            ExtraneousMethods.MoveMap(map, pointPosition.latitude, pointPosition.longitude, 12, false, false);
+            goingToPoint = false;
         }
         else {
-            ExtraneousMethods.MoveMap(map, pointPosition.latitude, pointPosition.longitude, 18, false);
+            ExtraneousMethods.MoveMap(map, pointPosition.latitude, pointPosition.longitude, 18, false, true);
         }
     }
 
