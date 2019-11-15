@@ -21,21 +21,46 @@
             android:layout_height="match_parent"
             android:queryBackground="@android:color/transparent" />
 
-        <TextView
-            android:id="@+id/titleText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:padding="8dp"
-            android:background="#ffffff"
+        <RelativeLayout
+            android:id="@+id/titleView"
             android:clickable="true"
             android:focusable="true"
-            android:text="@string/app_name"
-            android:textAlignment="center"
-            android:textColor="#000000"
-            android:textSize="25sp"
-            android:textStyle="bold"
-            android:translationY="-500dp" />
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#FFFFFF"
+            android:translationY="-500dp" >
+
+            <TextView
+                android:id="@+id/titleText"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_toStartOf="@+id/favoriteButton"
+                android:padding="8dp"
+                android:paddingStart="15dp"
+                android:paddingEnd="15dp"
+                android:background="#ffffff"
+                android:clickable="true"
+                android:focusable="true"
+                android:text="@string/app_name"
+                android:gravity="start|center_vertical"
+                android:textAlignment="center"
+                android:textColor="#000000"
+                android:textSize="25sp"
+                android:textStyle="bold"/>
+
+            <ImageButton
+                android:id="@+id/favoriteButton"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/imagebutton"
+                android:onClick="switchFavoriteStatus"
+                android:tint="#5F90FE"
+                android:scaleType="fitCenter"/>
+
+        </RelativeLayout>
 
     </RelativeLayout>
 
@@ -103,7 +128,10 @@
                     android:layout_marginBottom="5dp"
                     android:layout_weight="1"
                     android:onClick="startPdfRendererActivityPhotos"
-                    android:text="@string/photos" />
+                    android:text="@string/photos"
+                    android:background="@drawable/buttonbackground"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold"/>
 
                 <Button
                     android:layout_width="50dp"
@@ -114,7 +142,11 @@
                     android:layout_marginBottom="5dp"
                     android:layout_weight="1"
                     android:onClick="startPdfRendererActivityDocuments"
-                    android:text="@string/docs" />
+                    android:text="@string/docs"
+                    android:background="@drawable/buttonbackground"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold"
+                    />
             </TableRow>
 
             <TableRow android:layout_weight="1.0">
@@ -133,16 +165,6 @@
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
-                <ImageButton
-                    android:id="@+id/favoriteButton"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_gravity="bottom"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:background="@drawable/imagebutton"
-                    android:onClick="switchFavoriteStatus"
-                    android:tint="#5F90FE"/>
             </TableRow>
 
             <TableRow>
@@ -193,7 +215,8 @@
             <ImageButton
                 android:id="@+id/favoritesButton"
                 style="@style/FavoritesImageButton"
-                app:layout_constraintEnd_toStartOf="@+id/homeButton"/>
+                app:layout_constraintEnd_toStartOf="@+id/homeButton"
+                android:onClick="startFavoritesActivity"/>
 
             <ImageButton
                 android:id="@+id/homeButton"

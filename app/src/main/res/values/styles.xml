@@ -29,7 +29,6 @@
         <item name="android:layout_marginEnd">16dp</item>
         <item name="layout_constraintStart_toStartOf">parent</item>
         <item name="srcCompat">@drawable/greyheart</item>
-        <item name="android:onClick">startFavoritesActivity</item>
     </style>
 
     <style name="HomeImageButton" parent="@style/ImageButton">

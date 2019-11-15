@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
@@ -214,7 +215,7 @@ class ExtraneousMethods {
         }
     }
 
-    static void InitializeAnimations(Context context, TableLayout detailView, TextView titleView) {
+    static void InitializeAnimations(Context context, TableLayout detailView, RelativeLayout titleView) {
         detailUpAnimation = ObjectAnimator.ofFloat(detailView, "translationY", 0);
         detailUpAnimation.setDuration(600);
         detailDownAnimation = ObjectAnimator.ofFloat(detailView, "translationY", 500 * context.getApplicationContext().getResources().getDisplayMetrics().density);

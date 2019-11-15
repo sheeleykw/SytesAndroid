@@ -6,7 +6,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.TableLayout;
 import android.widget.TextView;
@@ -234,7 +236,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMapView.onResume();
 
         ExtraneousMethods.InitializeAds(this);
-        ExtraneousMethods.InitializeAnimations(this, (TableLayout)findViewById(R.id.detailView), (TextView)findViewById(R.id.titleText));
+        ExtraneousMethods.InitializeAnimations(this, (TableLayout)findViewById(R.id.detailView), (RelativeLayout)findViewById(R.id.titleView));
 
         searchQuery = SearchActivity.searchQuery;
         searchView.setQuery(searchQuery, false);
