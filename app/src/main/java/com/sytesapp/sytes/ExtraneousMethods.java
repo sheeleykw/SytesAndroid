@@ -2,6 +2,7 @@ package com.sytesapp.sytes;
 
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.content.ClipData;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -58,7 +59,7 @@ class ExtraneousMethods {
         return itemDatabase.query( ItemDetails.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
     }
 
-    static Cursor GetCursorFromId_Data(Context context, String id) {
+    static Cursor GetCursorFromId(Context context, String id) {
         if (!databasesReady) {
             InitializeDatabase(context);
         }
@@ -70,16 +71,23 @@ class ExtraneousMethods {
         return itemDatabase.query( ItemDetails.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
     }
 
-    static Cursor GetCursorFromId_Location(Context context, String id) {
+    static LatLng GetLatLngFromId(Context context, String id) {
         if (!databasesReady) {
             InitializeDatabase(context);
         }
 
-        String[] projection = { ItemDetails.COL_4, ItemDetails.COL_5 };
-        String selection = ItemDetails.COL_1 + " = ?";
-        String[] selectionArgs = { id };
+        if (id.equals("0")) {
+            return new LatLng(Double.valueOf(SearchActivity.selectedPosition.split(",")[0]), Double.valueOf(SearchActivity.selectedPosition.split(",")[1]));
+        }
+        else {
+            String[] projection = { ItemDetails.COL_4, ItemDetails.COL_5 };
+            String selection = ItemDetails.COL_1 + " = ?";
+            String[] selectionArgs = { id };
+            Cursor cursor = itemDatabase.query( ItemDetails.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
+            cursor.moveToNext();
 
-        return itemDatabase.query( ItemDetails.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
+            return new LatLng(cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_4)), cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_5)));
+        }
     }
 
     static void GetFavorited(Context context) {
@@ -91,7 +99,7 @@ class ExtraneousMethods {
         String selection = ItemDetails.COL_13 + " = ?";
         String[] selectionArgs = { "TRUE" };
 
-        Cursor cursor = itemDatabase.query( ItemDetails.TABLE_NAME, projection, selection, selectionArgs, null, null, ItemDetails.COL_3);
+        Cursor cursor = itemDatabase.query( ItemDetails.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
 
         MainActivity.currentFavorites.clear();
         while (cursor.moveToNext()) {
@@ -105,16 +113,18 @@ class ExtraneousMethods {
             InitializeDatabase(context);
         }
 
-        String[] projection = { ItemDetails.COL_1, ItemDetails.COL_3, ItemDetails.COL_9, ItemDetails.COL_11 };
+        String[] projection = { ItemDetails.COL_1, ItemDetails.COL_3, ItemDetails.COL_4, ItemDetails.COL_5 , ItemDetails.COL_9, ItemDetails.COL_11 };
         String selection = ItemDetails.COL_3 + " LIKE ?";
         String[] selectionArgs = { "%" + searchQuery + "%" };
 
         Cursor cursor = itemDatabase.query( ItemDetails.TABLE_NAME, projection, selection, selectionArgs, null, null, ItemDetails.COL_3);
         SearchActivity.searchList.clear();
         while (cursor.moveToNext()) {
-            SearchActivity.searchList.add(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_1)) + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)) + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_9)) + ", " + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_11)));
+
+            SearchActivity.searchList.add(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_1)) + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)) + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_9)) + ", " + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_11)) + "\n" + cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_4)) + "," + cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_5)));
         }
 
+        SortSearchList();
         cursor.close();
     }
 
@@ -128,10 +138,8 @@ class ExtraneousMethods {
         return markerOptions;
     }
 
-    static void MoveMap(GoogleMap map, double latitude, double longitude, boolean zooming, boolean animating) {
-        if (zooming) {
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(map.getCameraPosition().target, 18));
-        }
+    static void MoveMap(GoogleMap map, double latitude, double longitude, float zoomLevel, boolean animating) {
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(map.getCameraPosition().target, zoomLevel));
 
         VisibleRegion vr = map.getProjection().getVisibleRegion();
         double oneFifthMapSpan = (vr.latLngBounds.northeast.latitude - vr.latLngBounds.southwest.latitude) / 5.0;
@@ -155,6 +163,8 @@ class ExtraneousMethods {
         }
         detailText.setText(MessageFormat.format("Category: {0}\nReference Number: {1}\nDate added to register: {2}\nReported Street Address: {3}\nLocation: {4}, {5}\nCounty: {6}\nArchitects/Builders: {7}", cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_7)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_2)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_6)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_8)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_9)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_11)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_10)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_12))));
         titleText.setText(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)));
+        MainActivity.photosLink = "https://npgallery.nps.gov/pdfhost/docs/NRHP/Photos/" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_2))+ ".pdf";
+        MainActivity.docsLink = "https://npgallery.nps.gov/pdfhost/docs/NRHP/Text/" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_2))+ ".pdf";
         cursor.close();
 
         return favorited;
@@ -254,6 +264,12 @@ class ExtraneousMethods {
         InputMethodManager imm = (InputMethodManager)context.getSystemService(Activity.INPUT_METHOD_SERVICE);
         if (view == null) view = new View(context);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    private static void SortSearchList() {
+        for (String item: SearchActivity.searchList) {
+            //item.split()
+        }
     }
 
     private static Bitmap BitmapFromDrawable(Drawable drawable) {

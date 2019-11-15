@@ -87,18 +87,21 @@
             android:id="@+id/favoritesButton"
             style="@style/FavoritesImageButton"
             android:tint="#5F90FE"
-            app:layout_constraintEnd_toStartOf="@+id/homeButton"/>
+            app:layout_constraintEnd_toStartOf="@+id/homeButton"
+            android:clickable="false"/>
 
         <ImageButton
             android:id="@+id/homeButton"
             style="@style/HomeImageButton"
             app:layout_constraintEnd_toStartOf="@+id/settingsButton"
-            app:layout_constraintStart_toEndOf="@+id/favoritesButton"/>
+            app:layout_constraintStart_toEndOf="@+id/favoritesButton"
+            android:onClick="startHomeActivity"/>
 
         <ImageButton
             android:id="@+id/settingsButton"
             style="@style/SettingsImageButton"
-            app:layout_constraintStart_toEndOf="@+id/homeButton" />
+            app:layout_constraintStart_toEndOf="@+id/homeButton"
+            android:onClick="startSettingsActivity"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

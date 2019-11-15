@@ -24,6 +24,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         private TextView nameText;
         private TextView categoryText;
         private TextView idText;
+        private TextView latLongText;
 
         MyViewHolder(final View view) {
             super(view);
@@ -31,6 +32,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             nameText = view.findViewById(R.id.nameText);
             categoryText = view.findViewById(R.id.categoryText);
             idText = view.findViewById(R.id.idText);
+            latLongText = view.findViewById(R.id.latLongText);
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -55,19 +57,20 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-
         String[] split = items.get(position).split("\n");
         String id = split[0];
         String name = split[1];
         String category = split[2];
 
-        TextView nameText = holder.nameText;
-        TextView categoryText = holder.categoryText;
-        TextView idText = holder.idText;
+        holder.nameText.setText(name);
+        holder.categoryText.setText(category);
+        holder.idText.setText(id);
 
-        nameText.setText(name);
-        categoryText.setText(category);
-        idText.setText(id);
+        if (id.equals("0")) {
+            String latLong = split[3];
+
+            holder.latLongText.setText(latLong);
+        }
     }
 
     @Override

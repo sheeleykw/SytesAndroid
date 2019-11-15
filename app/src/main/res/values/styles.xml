@@ -33,14 +33,12 @@
 
     <style name="HomeImageButton" parent="@style/ImageButton">
         <item name="srcCompat">@drawable/greyhouse</item>
-        <item name="android:onClick">startHomeActivity</item>
     </style>
 
     <style name="SettingsImageButton" parent="@style/ImageButton">
         <item name="android:layout_marginStart">16dp</item>
         <item name="layout_constraintEnd_toEndOf">parent</item>
         <item name="srcCompat">@drawable/greyman</item>
-        <item name="android:onClick">startSettingsActivity</item>
     </style>
 
     <style name="BottomText" parent="android:Widget.TextView">

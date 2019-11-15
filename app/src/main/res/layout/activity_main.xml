@@ -220,16 +220,17 @@
 
             <ImageButton
                 android:id="@+id/homeButton"
-                style="@style/ImageButton"
+                style="@style/HomeImageButton"
                 android:tint="#5F90FE"
                 app:layout_constraintEnd_toStartOf="@+id/settingsButton"
                 app:layout_constraintStart_toEndOf="@+id/favoritesButton"
-                app:srcCompat="@drawable/greyhouse"/>
+                android:clickable="false"/>
 
             <ImageButton
                 android:id="@+id/settingsButton"
                 style="@style/SettingsImageButton"
-                app:layout_constraintStart_toEndOf="@+id/homeButton" />
+                app:layout_constraintStart_toEndOf="@+id/homeButton"
+                android:onClick="startSettingsActivity"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

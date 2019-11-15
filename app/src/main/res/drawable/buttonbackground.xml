@@ -1,5 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true">
+        <layer-list>
+            <item>
+                <shape>
+                    <corners android:radius="10dp" />
+                    <solid android:color="#455A8C" />
+                </shape>
+            </item>
+            <item>
+                <shape>
+                    <corners android:radius="7dp" />
+                    <stroke android:width="4dp" android:color="#FFFFFF" />
+                </shape>
+            </item>
+            <item>
+                <shape>
+                    <corners android:radius="5dp" />
+                    <stroke android:width="2dp" android:color="@color/dividerBar" />
+                </shape>
+            </item>
+        </layer-list>
+    </item>
     <item>
         <layer-list>
             <item>
@@ -22,5 +44,4 @@
             </item>
         </layer-list>
     </item>
-
 </selector>

@@ -18,6 +18,7 @@ public class SearchActivity extends AppCompatActivity {
     private SearchView searchView;
     public static ArrayList<String> searchList = new ArrayList<>();
     public static String searchQuery;
+    public static String selectedPosition = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +34,9 @@ public class SearchActivity extends AppCompatActivity {
             public void onItemClick(View view, int position) {
                 MainActivity.goingToPoint = true;
                 MainActivity.currentId = ((TextView) view.findViewById(R.id.idText)).getText().toString();
+                if (MainActivity.currentId.equals("0")) {
+                    selectedPosition = ((TextView) view.findViewById(R.id.latLongText)).getText().toString();
+                }
                 startMapActivity(null);
             }
         });

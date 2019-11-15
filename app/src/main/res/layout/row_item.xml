@@ -38,6 +38,11 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:visibility="gone"/>
+    <TextView
+        android:id="@+id/latLongText"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"/>
     <View
         android:layout_width="match_parent"
         android:layout_height="0.2dp"

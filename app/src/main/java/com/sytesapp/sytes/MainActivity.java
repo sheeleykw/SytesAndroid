@@ -3,10 +3,9 @@ package com.sytesapp.sytes;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
@@ -18,6 +17,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -26,6 +27,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.VisibleRegion;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
@@ -41,11 +43,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private AdView detailAd;
     private SearchView searchView;
 
-    private String refNum;
     private String currentFavorited;
     public static String searchQuery;
     public static String currentId;
+    public static String photosLink = null;
+    public static String docsLink = null;
     public static boolean goingToPoint = false;
+    public static Location userLocation = null;
     public static ArrayList<String> currentFavorites = new ArrayList<>();
 
     @Override
@@ -88,6 +92,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMapView = findViewById((R.id.mapView));
         mMapView.onCreate(mapViewBundle);
         mMapView.getMapAsync(this);
+
+        FusedLocationProviderClient locationHandler = LocationServices.getFusedLocationProviderClient(this);
+
+        locationHandler.getLastLocation()
+                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        if (location != null) {
+                            userLocation = location;
+                            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()), 15));
+                        }
+                    }
+                });
     }
 
     @Override
@@ -95,12 +112,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         map = googleMap;
         map.setIndoorEnabled(false);
         map.setBuildingsEnabled(false);
+        map.setMyLocationEnabled(true);
         map.setMaxZoomPreference(18);
-        map.setMinZoomPreference(8);
+        map.setMinZoomPreference(10);
         map.setOnCameraIdleListener(this);
         map.setOnMarkerClickListener(this);
         map.setOnInfoWindowCloseListener(this);
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(28.538384, -81.385555), 18));
+
+        if (userLocation == null) {
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(39.706613, -90.652503), 15));
+        }
 
         try {
             map.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style));
@@ -129,9 +150,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
         cursor.close();
 
-        if (markerHashMap.size() > 100) {
-            ExtraneousMethods.RemoveMarkers(markerHashMap, vr);
-        }
+        ExtraneousMethods.RemoveMarkers(markerHashMap, vr);
     }
 
     @Override
@@ -139,14 +158,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         //ExtraneousMethods.HideKeyboard(this, this.getCurrentFocus());
 
         currentId = markerHashMap.inverse().get(marker);
-        Cursor cursor = ExtraneousMethods.GetCursorFromId_Data(this, currentId);
+        Cursor cursor = ExtraneousMethods.GetCursorFromId(this, currentId);
         cursor.moveToNext();
 
-        refNum = cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_2));
         currentFavorited = ExtraneousMethods.UpdateText(cursor, (TextView)findViewById(R.id.detailText), (TextView)findViewById(R.id.titleText), (ImageButton)findViewById(R.id.favoriteButton));
         ExtraneousMethods.DisplayViews();
 
-        ExtraneousMethods.MoveMap(map, marker.getPosition().latitude, marker.getPosition().longitude, false, true);
+        ExtraneousMethods.MoveMap(map, marker.getPosition().latitude, marker.getPosition().longitude, map.getCameraPosition().zoom, true);
         marker.showInfoWindow();
         return true;
     }
@@ -193,22 +211,25 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void startPdfRendererActivityPhotos(View view) {
         Intent intent = new Intent(this, PdfRenderer.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        intent.putExtra("link", "https://npgallery.nps.gov/pdfhost/docs/NRHP/Photos/" + refNum + ".pdf");
+        intent.putExtra("link", photosLink);
         startActivity(intent);
     }
 
     public void startPdfRendererActivityDocuments(View view) {
         Intent intent = new Intent(this, PdfRenderer.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        intent.putExtra("link", "https://npgallery.nps.gov/pdfhost/docs/NRHP/Text/" + refNum + ".pdf");
+        intent.putExtra("link", docsLink);
         startActivity(intent);
     }
 
-    public void moveToPoint() {
-        Cursor cursor = ExtraneousMethods.GetCursorFromId_Location(this, currentId);
-        cursor.moveToNext();
-        ExtraneousMethods.MoveMap(map, cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_4)), cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_5)), true, false);
-        cursor.close();
+    private void moveToPoint() {
+        LatLng pointPosition = ExtraneousMethods.GetLatLngFromId(this, currentId);
+        if (currentId.equals("0")) {
+            ExtraneousMethods.MoveMap(map, pointPosition.latitude, pointPosition.longitude, 10, false);
+        }
+        else {
+            ExtraneousMethods.MoveMap(map, pointPosition.latitude, pointPosition.longitude, 18, false);
+        }
     }
 
     @Override
@@ -228,6 +249,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onStart() {
         super.onStart();
         mMapView.onStart();
+
+        ExtraneousMethods.InitializeAds(this);
+        ExtraneousMethods.InitializeAnimations(this, (TableLayout)findViewById(R.id.detailView), (RelativeLayout)findViewById(R.id.titleView));
     }
 
     @Override
@@ -235,15 +259,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onResume();
         mMapView.onResume();
 
-        ExtraneousMethods.InitializeAds(this);
-        ExtraneousMethods.InitializeAnimations(this, (TableLayout)findViewById(R.id.detailView), (RelativeLayout)findViewById(R.id.titleView));
-
         searchQuery = SearchActivity.searchQuery;
         searchView.setQuery(searchQuery, false);
 
         if (goingToPoint) {
             moveToPoint();
         }
+
         AdRequest adRequest = new AdRequest.Builder().build();
         detailAd.loadAd(adRequest);
     }
