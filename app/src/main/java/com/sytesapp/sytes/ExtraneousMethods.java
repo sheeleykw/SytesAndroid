@@ -124,7 +124,6 @@ class ExtraneousMethods {
             InitializeCityDatabase(context);
         }
 
-
         String[] projection = { ItemDetails.COL_1, ItemDetails.COL_3, ItemDetails.COL_4, ItemDetails.COL_5, ItemDetails.COL_9, ItemDetails.COL_11 };
         String selection = ItemDetails.COL_3 + " LIKE ?";
         String[] selectionArgs = { "%" + searchQuery + "%" };
@@ -135,20 +134,20 @@ class ExtraneousMethods {
         while (cursor.moveToNext()) {
             SearchActivity.searchList.add(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_1)) + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)) + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_9)) + ", " + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_11)) + "\n" + cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_4)) + "," + cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_5)));
         }
+        cursor.close();
         
-        String[] cityProjection = { ItemDetails.COL_3, ItemDetails.COL_4, ItemDetails.COL_5, "StateName" };
+        String[] cityProjection = { ItemDetails.COL_3, ItemDetails.COL_4, ItemDetails.COL_5, "StateName", "NumOfPoints" };
 
         cursor = cityDatabase.query( "cities", cityProjection, selection, selectionArgs, null, null, ItemDetails.COL_3);
 
         while (cursor.moveToNext()) {
             SearchActivity.searchList.add("0" + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)) + ", " + cursor.getString(cursor.getColumnIndexOrThrow("StateName")) + "\n" + "Number of sites found in city: " + cursor.getString(cursor.getColumnIndexOrThrow("NumOfPoints")) + "\n" + cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_4)) + "," + cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_5)));
         }
+        cursor.close();
 
         if (MainActivity.userLocation != null ) {
             SortSearchList();
         }
-        cursor.close();
-
 
     }
 
@@ -190,8 +189,8 @@ class ExtraneousMethods {
         }
         detailText.setText(MessageFormat.format("Category: {0}\nReference Number: {1}\nDate added to register: {2}\nReported Street Address: {3}\nLocation: {4}, {5}\nCounty: {6}\nArchitects/Builders: {7}", cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_7)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_2)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_6)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_8)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_9)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_11)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_10)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_12))));
         titleText.setText(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)));
-        MainActivity.photosLink = "https://npgallery.nps.gov/pdfhost/docs/NRHP/Photos/" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_2))+ ".pdf";
-        MainActivity.docsLink = "https://npgallery.nps.gov/pdfhost/docs/NRHP/Text/" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_2))+ ".pdf";
+        MainActivity.photosLink = "https://npgallery.nps.gov/pdfhost/docs/NRHP/Photos/" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_2)) + ".pdf";
+        MainActivity.docsLink = "https://npgallery.nps.gov/pdfhost/docs/NRHP/Text/" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_2)) + ".pdf";
         cursor.close();
 
         return favorited;
