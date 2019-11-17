@@ -2,7 +2,6 @@ package com.sytesapp.sytes;
 
 import android.animation.ObjectAnimator;
 import android.app.Activity;
-import android.content.ClipData;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -18,8 +17,10 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.RequestConfiguration;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.android.gms.ads.mediation.admob.AdMobExtras;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -29,16 +30,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
 import com.google.common.collect.BiMap;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 class ExtraneousMethods {
 

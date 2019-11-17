@@ -78,7 +78,7 @@
         android:id="@+id/mapView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="70dp"
+        android:layout_marginBottom="80.8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -168,15 +168,14 @@
             </TableRow>
 
             <TableRow>
-
                 <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/detailAd"
                     android:layout_height="50dp"
                     android:layout_span="4"
-                    ads:adSize="SMART_BANNER"
-                    ads:adUnitId="ca-app-pub-3940256099942544/6300978111" />
-                <!--                    TODO switch adId-->
-                <!--                    ads:adUnitId="ca-app-pub-3281339494640251/9986601233" />-->
+                    ads:adSize="BANNER"
+                    ads:adUnitId="ca-app-pub-3281339494640251/9986601233" />
+<!--                ads:adUnitId="ca-app-pub-3940256099942544/6300978111" />-->
+                <!--TODO switch adId-->
             </TableRow>
 
         </TableLayout>
