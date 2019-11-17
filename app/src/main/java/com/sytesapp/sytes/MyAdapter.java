@@ -8,6 +8,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+
 import java.util.ArrayList;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
@@ -25,6 +28,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         private TextView categoryText;
         private TextView idText;
         private TextView latLongText;
+        private AdView adView;
 
         MyViewHolder(final View view) {
             super(view);
@@ -33,6 +37,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             categoryText = view.findViewById(R.id.categoryText);
             idText = view.findViewById(R.id.idText);
             latLongText = view.findViewById(R.id.latLongText);
+            adView = view.findViewById(R.id.listAd);
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -62,15 +67,28 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         String name = split[1];
         String category = split[2];
 
-        holder.nameText.setText(name);
-        holder.categoryText.setText(category);
         holder.idText.setText(id);
 
-        if (id.equals("0")) {
-            String latLong = split[3];
-
-            holder.latLongText.setText(latLong);
+        if (id.equals("Ad")) {
+            holder.nameText.setVisibility(View.GONE);
+            holder.categoryText.setVisibility(View.GONE);
+            holder.adView.setVisibility(View.VISIBLE);
+            holder.adView.loadAd(MainActivity.adRequest);
         }
+        else {
+            holder.nameText.setVisibility(View.VISIBLE);
+            holder.categoryText.setVisibility(View.VISIBLE);
+            holder.adView.setVisibility(View.GONE);
+            holder.nameText.setText(name);
+            holder.categoryText.setText(category);
+
+            if (id.equals("0")) {
+                String latLong = split[3];
+
+                holder.latLongText.setText(latLong);
+            }
+        }
+
     }
 
     @Override

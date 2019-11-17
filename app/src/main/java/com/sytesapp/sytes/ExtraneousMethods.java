@@ -107,7 +107,14 @@ class ExtraneousMethods {
 
         MainActivity.currentFavorites.clear();
         while (cursor.moveToNext()) {
+            if ((MainActivity.currentFavorites.size() % 4) == 0) {
+                MainActivity.currentFavorites.add("Ad\n______\nnull");
+                System.out.println("Add ad");
+            }
             MainActivity.currentFavorites.add(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_1)) + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)) + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_7)));
+        }
+        for(String item: MainActivity.currentFavorites) {
+            System.out.println(item);
         }
         cursor.close();
     }

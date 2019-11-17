@@ -8,6 +8,7 @@
     android:layout_marginEnd="8dp"
     android:layout_marginRight="8dp"
     android:background="@drawable/imagebutton">
+
     <TextView
         android:id="@+id/nameText"
         android:layout_width="match_parent"
@@ -22,7 +23,8 @@
         android:layout_marginRight="8dp"
         android:scrollHorizontally="false"
         android:maxLines="1"
-        android:ellipsize="end"/>
+        android:ellipsize="end"
+        android:visibility="gone"/>
     <TextView
         android:id="@+id/categoryText"
         android:layout_width="match_parent"
@@ -32,7 +34,21 @@
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"/>
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="5dp"
+        android:visibility="gone"/>
+    <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/listAd"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        ads:adSize="BANNER"
+        ads:adUnitId="ca-app-pub-3281339494640251/9986601233"
+        android:visibility="gone"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.2dp"
+        android:background="@color/dividerBar"/>
     <TextView
         android:id="@+id/idText"
         android:layout_width="0dp"
@@ -43,9 +59,4 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:visibility="gone"/>
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0.2dp"
-        android:background="@color/dividerBar"
-        android:layout_marginTop="5dp"/>
 </LinearLayout>

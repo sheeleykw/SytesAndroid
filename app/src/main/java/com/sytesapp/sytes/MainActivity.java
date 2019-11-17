@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public static String docsLink = null;
     public static boolean goingToPoint = false;
     public static Location userLocation = null;
+    public static AdRequest adRequest;
     public static ArrayList<String> currentFavorites = new ArrayList<>();
 
     @Override
@@ -60,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //        //TODO remove test id from code
 
         detailAd = findViewById(R.id.detailAd);
+        adRequest = new AdRequest.Builder().addTestDevice("481D9EB0E450EFE1F74321C81D584BCE").build();
 
         searchView = findViewById(R.id.searchView);
         searchView.setOnClickListener(new View.OnClickListener() {
@@ -264,7 +266,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             moveToPoint();
         }
 
-        AdRequest adRequest = new AdRequest.Builder().addTestDevice("481D9EB0E450EFE1F74321C81D584BCE").build();
         detailAd.loadAd(adRequest);
     }
 

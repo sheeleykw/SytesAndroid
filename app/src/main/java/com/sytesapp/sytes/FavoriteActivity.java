@@ -34,9 +34,11 @@ public class FavoriteActivity extends AppCompatActivity {
         ((MyAdapter) mAdapter).setOnItemClickListener(new MyAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                MainActivity.goingToPoint = true;
-                MainActivity.currentId = ((TextView) view.findViewById(R.id.idText)).getText().toString();
-                startHomeActivity(null);
+                if (!((TextView) view.findViewById(R.id.idText)).getText().toString().equals("Ad")) {
+                    MainActivity.goingToPoint = true;
+                    MainActivity.currentId = ((TextView) view.findViewById(R.id.idText)).getText().toString();
+                    startHomeActivity(null);
+                }
             }
         });
 

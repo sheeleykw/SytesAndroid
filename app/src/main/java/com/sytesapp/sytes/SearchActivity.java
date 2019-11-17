@@ -32,12 +32,14 @@ public class SearchActivity extends AppCompatActivity {
         ((MyAdapter) mAdapter).setOnItemClickListener(new MyAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                MainActivity.goingToPoint = true;
-                MainActivity.currentId = ((TextView) view.findViewById(R.id.idText)).getText().toString();
-                if (MainActivity.currentId.equals("0")) {
-                    selectedPosition = ((TextView) view.findViewById(R.id.latLongText)).getText().toString();
+                if (!((TextView) view.findViewById(R.id.idText)).getText().toString().equals("Ad")) {
+                    MainActivity.goingToPoint = true;
+                    MainActivity.currentId = ((TextView) view.findViewById(R.id.idText)).getText().toString();
+                    if (MainActivity.currentId.equals("0")) {
+                        selectedPosition = ((TextView) view.findViewById(R.id.latLongText)).getText().toString();
+                    }
+                    startMapActivity(null);
                 }
-                startMapActivity(null);
             }
         });
 
