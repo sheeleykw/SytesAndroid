@@ -107,14 +107,10 @@ class ExtraneousMethods {
 
         MainActivity.currentFavorites.clear();
         while (cursor.moveToNext()) {
-            if ((MainActivity.currentFavorites.size() % 4) == 0) {
-                MainActivity.currentFavorites.add("Ad\n______\nnull");
-                System.out.println("Add ad");
-            }
             MainActivity.currentFavorites.add(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_1)) + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)) + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_7)));
-        }
-        for(String item: MainActivity.currentFavorites) {
-            System.out.println(item);
+            if (((MainActivity.currentFavorites.size() + 1) % 4) == 0) {
+                MainActivity.currentFavorites.add("Ad\n______\nnull");
+            }
         }
         cursor.close();
     }
@@ -131,7 +127,7 @@ class ExtraneousMethods {
         String selection = ItemDetails.COL_3 + " LIKE ?";
         String[] selectionArgs = { "%" + searchQuery + "%" };
 
-        Cursor cursor = itemDatabase.query( ItemDetails.TABLE_NAME, projection, selection, selectionArgs, null, null, ItemDetails.COL_3);
+        Cursor cursor = itemDatabase.query(ItemDetails.TABLE_NAME, projection, selection, selectionArgs, null, null, ItemDetails.COL_3);
 
         SearchActivity.searchList.clear();
         while (cursor.moveToNext()) {
@@ -303,12 +299,6 @@ class ExtraneousMethods {
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     //Begin Other non-related methods
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    static void HideKeyboard(Context context, View view) {
-        InputMethodManager imm = (InputMethodManager)context.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        if (view == null) view = new View(context);
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-    }
-
     private static void SortSearchList() {
         for (int listLength = SearchActivity.searchList.size(); listLength > 1; listLength--) {
             for (int index = 0; index < listLength - 1; index++) {

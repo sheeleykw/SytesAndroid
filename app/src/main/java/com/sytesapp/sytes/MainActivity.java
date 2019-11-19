@@ -1,11 +1,16 @@
 package com.sytesapp.sytes;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.location.Location;
 import android.os.Bundle;
+import android.provider.Contacts;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
@@ -14,6 +19,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -23,6 +30,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
@@ -33,7 +41,7 @@ import com.google.common.collect.HashBiMap;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnCameraIdleListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowCloseListener {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnCameraIdleListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowCloseListener, ActivityCompat.OnRequestPermissionsResultCallback {
 
     private GoogleMap map;
     private MapView mMapView;
@@ -55,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -92,18 +101,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMapView.onCreate(mapViewBundle);
         mMapView.getMapAsync(this);
 
-        FusedLocationProviderClient locationHandler = LocationServices.getFusedLocationProviderClient(this);
-
-        locationHandler.getLastLocation()
-                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        if (location != null) {
-                            userLocation = location;
-                            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()), 15));
-                        }
-                    }
-                });
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+        }
     }
 
     @Override
@@ -111,21 +111,22 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         map = googleMap;
         map.setIndoorEnabled(false);
         map.setBuildingsEnabled(false);
-        map.setMyLocationEnabled(true);
+        map.getUiSettings().setRotateGesturesEnabled(false);
         map.setMaxZoomPreference(18);
         map.setMinZoomPreference(10);
         map.setOnCameraIdleListener(this);
         map.setOnMarkerClickListener(this);
         map.setOnInfoWindowCloseListener(this);
-
-        if (userLocation == null) {
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(39.706613, -90.652503), 15));
-        }
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(39.706613, -90.652503), 15));
 
         try {
             map.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style));
         } catch (Resources.NotFoundException e) {
             throw new Error("Unable to process map style");
+        }
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            EnableUserLocation();
         }
     }
 
@@ -154,7 +155,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        //ExtraneousMethods.HideKeyboard(this, this.getCurrentFocus());
+        InputMethodManager imm = (InputMethodManager)this.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        View view = this.getCurrentFocus();
+
+        if (view == null) {
+            view = new View(this);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
         currentId = markerHashMap.inverse().get(marker);
         Cursor cursor = ExtraneousMethods.GetCursorFromId(this, currentId);
@@ -173,6 +180,30 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if(!goingToPoint) {
             ExtraneousMethods.HideViews();
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == 0) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                EnableUserLocation();
+            }
+        }
+    }
+
+    private void EnableUserLocation() {
+        map.setMyLocationEnabled(true);
+        FusedLocationProviderClient locationHandler = LocationServices.getFusedLocationProviderClient(this);
+        locationHandler.getLastLocation()
+                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        if (location != null) {
+                            userLocation = location;
+                            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()), 15));
+                        }
+                    }
+                });
     }
 
     public void switchFavoriteStatus(View view) {
