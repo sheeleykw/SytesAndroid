@@ -30,7 +30,7 @@ public class FavoriteActivity extends AppCompatActivity {
         RecyclerView favoritesView = findViewById(R.id.favoritesView);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
 
-        mAdapter = new MyAdapter(displayedFavorites);
+        mAdapter = new MyAdapter(this, displayedFavorites);
         ((MyAdapter) mAdapter).setOnItemClickListener(new MyAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {

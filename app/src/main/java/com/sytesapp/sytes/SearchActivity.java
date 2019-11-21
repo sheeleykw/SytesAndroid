@@ -28,7 +28,7 @@ public class SearchActivity extends AppCompatActivity {
         final RecyclerView searchListView = findViewById(R.id.searchListView);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
 
-        mAdapter = new MyAdapter(searchList);
+        mAdapter = new MyAdapter(this, searchList);
         ((MyAdapter) mAdapter).setOnItemClickListener(new MyAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {

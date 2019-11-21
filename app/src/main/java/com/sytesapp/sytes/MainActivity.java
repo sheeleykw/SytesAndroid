@@ -9,8 +9,11 @@ import android.database.Cursor;
 import android.location.Location;
 import android.os.Bundle;
 import android.provider.Contacts;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
@@ -23,6 +26,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -48,7 +52,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final String MAPVIEW_BUNDLE_KEY = "MapViewBundleKey";
     private BiMap<String, Marker> markerHashMap = HashBiMap.create();
 
-    private AdView detailAd;
     private SearchView searchView;
 
     private String currentFavorited;
@@ -58,7 +61,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public static String docsLink = null;
     public static boolean goingToPoint = false;
     public static Location userLocation = null;
-    public static AdRequest adRequest;
     public static ArrayList<String> currentFavorites = new ArrayList<>();
 
     @Override
@@ -67,10 +69,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        //TODO remove test id from code
+        ExtraneousMethods.InitializeAds(this);
 
-        detailAd = findViewById(R.id.detailAd);
-        adRequest = new AdRequest.Builder().addTestDevice("481D9EB0E450EFE1F74321C81D584BCE").build();
+//        //TODO remove test id from code
+        FrameLayout adSpace = findViewById(R.id.adSpace);
+        adSpace.addView(ExtraneousMethods.detailAdView);
 
         searchView = findViewById(R.id.searchView);
         searchView.setOnClickListener(new View.OnClickListener() {
@@ -281,7 +284,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onStart();
         mMapView.onStart();
 
-        ExtraneousMethods.InitializeAds(this);
         ExtraneousMethods.InitializeAnimations(this, (TableLayout)findViewById(R.id.detailView), (RelativeLayout)findViewById(R.id.titleView));
     }
 
@@ -297,7 +299,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             moveToPoint();
         }
 
-        detailAd.loadAd(adRequest);
+        //detailAd.loadAd(adRequest);
     }
 
     @Override

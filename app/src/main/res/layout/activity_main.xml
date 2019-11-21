@@ -168,13 +168,13 @@
             </TableRow>
 
             <TableRow>
-                <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
-                    android:id="@+id/detailAd"
-                    android:layout_width="wrap_content"
+                <FrameLayout
+                    android:id="@+id/adSpace"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_span="4"
-                    ads:adSize="BANNER"
-                    ads:adUnitId="ca-app-pub-3281339494640251/9986601233" />
+                    android:layout_span="4"/>
+<!--                <com.google.android.gms.ads.AdView-->
+<!--                    android:id="@+id/detailAd"/>-->
 <!--                ads:adUnitId="ca-app-pub-3940256099942544/6300978111" />-->
                 <!--TODO switch adId-->
             </TableRow>

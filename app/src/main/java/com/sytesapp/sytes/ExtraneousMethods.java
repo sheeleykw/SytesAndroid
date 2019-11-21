@@ -1,7 +1,6 @@
 package com.sytesapp.sytes;
 
 import android.animation.ObjectAnimator;
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -9,18 +8,20 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
+import android.util.DisplayMetrics;
+import android.view.Display;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.RequestConfiguration;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
-import com.google.android.gms.ads.mediation.admob.AdMobExtras;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -32,9 +33,7 @@ import com.google.common.collect.BiMap;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 class ExtraneousMethods {
 
@@ -44,6 +43,8 @@ class ExtraneousMethods {
     private static ObjectAnimator detailDownAnimation;
     private static ObjectAnimator titleUpAnimation;
     private static ObjectAnimator titleDownAnimation;
+    static AdView detailAdView;
+    private static AdRequest adRequest;
     private static boolean itemDatabaseReady = false;
     private static boolean cityDatabaseReady = false;
     private static boolean adsReady = false;
@@ -246,6 +247,18 @@ class ExtraneousMethods {
                 }
             });
 
+            adRequest = new AdRequest.Builder().addTestDevice("481D9EB0E450EFE1F74321C81D584BCE").build();
+
+            detailAdView = new AdView(context);
+            detailAdView.setAdUnitId("ca-app-pub-3281339494640251/9986601233");
+
+            float widthPixels = context.getApplicationContext().getResources().getDisplayMetrics().widthPixels;
+            float density = context.getApplicationContext().getResources().getDisplayMetrics().density;
+            int adWidth = (int) (widthPixels / density);
+
+            detailAdView.setAdSize(AdSize.getPortraitAnchoredAdaptiveBannerAdSize(context, adWidth));
+            detailAdView.loadAd(adRequest);
+
             adsReady = true;
         }
     }
@@ -318,6 +331,23 @@ class ExtraneousMethods {
                 }
             }
         }
+    }
+
+    static AdView GetAdViewForList(Context context) {
+        if (adsReady) {
+            AdView listAdView = new AdView(context);
+            listAdView.setAdUnitId("ca-app-pub-3281339494640251/4734274558");
+
+            float widthPixels = context.getApplicationContext().getResources().getDisplayMetrics().widthPixels;
+            float density = context.getApplicationContext().getResources().getDisplayMetrics().density;
+            int adWidth = (int) (widthPixels / density);
+
+            listAdView.setAdSize(AdSize.getPortraitAnchoredAdaptiveBannerAdSize(context, adWidth - 16));
+            listAdView.loadAd(adRequest);
+
+            return listAdView;
+        }
+        return null;
     }
 
     private static Bitmap BitmapFromDrawable(Drawable drawable) {

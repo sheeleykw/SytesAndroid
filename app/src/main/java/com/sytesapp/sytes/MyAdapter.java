@@ -1,8 +1,10 @@
 package com.sytesapp.sytes;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,8 +19,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     private ArrayList<String> items;
     private OnItemClickListener listener;
+    private Context context;
 
-    MyAdapter(ArrayList<String> receivedItems) {
+    MyAdapter(Context context, ArrayList<String> receivedItems) {
+        this.context = context;
         items = receivedItems;
     }
 
@@ -28,7 +32,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         private TextView categoryText;
         private TextView idText;
         private TextView latLongText;
-        private AdView adView;
+        private FrameLayout adSpace;
 
         MyViewHolder(final View view) {
             super(view);
@@ -37,7 +41,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             categoryText = view.findViewById(R.id.categoryText);
             idText = view.findViewById(R.id.idText);
             latLongText = view.findViewById(R.id.latLongText);
-            adView = view.findViewById(R.id.listAd);
+            adSpace = view.findViewById(R.id.adSpace);
+            adSpace.addView(ExtraneousMethods.GetAdViewForList(context));
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -72,13 +77,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         if (id.equals("Ad")) {
             holder.nameText.setVisibility(View.GONE);
             holder.categoryText.setVisibility(View.GONE);
-            holder.adView.setVisibility(View.VISIBLE);
-            holder.adView.loadAd(MainActivity.adRequest);
+            holder.adSpace.setVisibility(View.VISIBLE);
         }
         else {
             holder.nameText.setVisibility(View.VISIBLE);
             holder.categoryText.setVisibility(View.VISIBLE);
-            holder.adView.setVisibility(View.GONE);
+            holder.adSpace.setVisibility(View.GONE);
+
             holder.nameText.setText(name);
             holder.categoryText.setText(category);
 
