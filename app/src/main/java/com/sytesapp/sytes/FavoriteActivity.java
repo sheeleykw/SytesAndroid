@@ -28,7 +28,7 @@ public class FavoriteActivity extends AppCompatActivity {
         searchList = (ArrayList)MainActivity.currentFavorites.clone();
         displayedFavorites = (ArrayList)searchList.clone();
         RecyclerView favoritesView = findViewById(R.id.favoritesView);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
 
         mAdapter = new MyAdapter(this, displayedFavorites);
         ((MyAdapter) mAdapter).setOnItemClickListener(new MyAdapter.OnItemClickListener() {
@@ -78,6 +78,7 @@ public class FavoriteActivity extends AppCompatActivity {
             }
             else {
                 displayedFavorites.add(searchList.get(i));
+                ExtraneousMethods.listAds.get(1).loadAd(ExtraneousMethods.adRequest);
             }
         }
     }
@@ -96,6 +97,7 @@ public class FavoriteActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        ExtraneousMethods.ResetListAds();
         searchList = (ArrayList)MainActivity.currentFavorites.clone();
         searchInitialize();
         super.onResume();

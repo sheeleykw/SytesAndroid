@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
@@ -43,8 +44,13 @@ class ExtraneousMethods {
     private static ObjectAnimator detailDownAnimation;
     private static ObjectAnimator titleUpAnimation;
     private static ObjectAnimator titleDownAnimation;
+    static int adWidth;
+    static int numOfFavorites;
+    static int currentAd = -1;
+    static AdRequest adRequest;
     static AdView detailAdView;
-    private static AdRequest adRequest;
+    static ArrayList<AdView> listAds = new ArrayList<>();
+    static ArrayList<FrameLayout> listFrames = new ArrayList<>();
     private static boolean itemDatabaseReady = false;
     private static boolean cityDatabaseReady = false;
     private static boolean adsReady = false;
@@ -113,6 +119,24 @@ class ExtraneousMethods {
                 MainActivity.currentFavorites.add("Ad\n______\nnull");
             }
         }
+
+        numOfFavorites = cursor.getCount();
+        AddListAds(context);
+
+        cursor.close();
+    }
+
+    private static void GetFavoritedCount(Context context) {
+        if (!itemDatabaseReady) {
+            InitializeItemDatabase(context);
+        }
+
+        String[] projection = { ItemDetails.COL_1, ItemDetails.COL_3, ItemDetails.COL_7 };
+        String selection = ItemDetails.COL_13 + " = ?";
+        String[] selectionArgs = { "TRUE" };
+
+        Cursor cursor = itemDatabase.query( ItemDetails.TABLE_NAME, projection, selection, selectionArgs, null, null, ItemDetails.COL_3);
+        numOfFavorites = cursor.getCount();
         cursor.close();
     }
 
@@ -248,16 +272,18 @@ class ExtraneousMethods {
             });
 
             adRequest = new AdRequest.Builder().addTestDevice("481D9EB0E450EFE1F74321C81D584BCE").build();
+            float widthPixels = context.getApplicationContext().getResources().getDisplayMetrics().widthPixels;
+            float density = context.getApplicationContext().getResources().getDisplayMetrics().density;
+            adWidth = (int) (widthPixels / density);
 
             detailAdView = new AdView(context);
             detailAdView.setAdUnitId("ca-app-pub-3281339494640251/9986601233");
 
-            float widthPixels = context.getApplicationContext().getResources().getDisplayMetrics().widthPixels;
-            float density = context.getApplicationContext().getResources().getDisplayMetrics().density;
-            int adWidth = (int) (widthPixels / density);
-
             detailAdView.setAdSize(AdSize.getPortraitAnchoredAdaptiveBannerAdSize(context, adWidth));
             detailAdView.loadAd(adRequest);
+
+            GetFavoritedCount(context);
+            AddListAds(context);
 
             adsReady = true;
         }
@@ -333,21 +359,32 @@ class ExtraneousMethods {
         }
     }
 
-    static AdView GetAdViewForList(Context context) {
-        if (adsReady) {
+    private static void AddListAds(Context context) {
+        while(listAds.size() < (numOfFavorites / 3)) {
             AdView listAdView = new AdView(context);
             listAdView.setAdUnitId("ca-app-pub-3281339494640251/4734274558");
 
-            float widthPixels = context.getApplicationContext().getResources().getDisplayMetrics().widthPixels;
-            float density = context.getApplicationContext().getResources().getDisplayMetrics().density;
-            int adWidth = (int) (widthPixels / density);
-
             listAdView.setAdSize(AdSize.getPortraitAnchoredAdaptiveBannerAdSize(context, adWidth - 16));
             listAdView.loadAd(adRequest);
-
-            return listAdView;
+            listAds.add(listAdView);
         }
-        return null;
+    }
+
+    static void AddListAdToFrame(FrameLayout frame) {
+        if (adsReady) {
+            currentAd++;
+            if (currentAd < listAds.size()) {
+                frame.addView(listAds.get(currentAd));
+                listFrames.add(frame);
+            }
+        }
+    }
+
+    static void ResetListAds() {
+        currentAd = -1;
+        for(FrameLayout layout: listFrames) {
+            layout.removeAllViews();
+        }
     }
 
     private static Bitmap BitmapFromDrawable(Drawable drawable) {

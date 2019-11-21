@@ -10,7 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 
 import java.util.ArrayList;
@@ -18,11 +18,10 @@ import java.util.ArrayList;
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     private ArrayList<String> items;
+    private ArrayList<AdView> ads = new ArrayList<>();
     private OnItemClickListener listener;
-    private Context context;
 
     MyAdapter(Context context, ArrayList<String> receivedItems) {
-        this.context = context;
         items = receivedItems;
     }
 
@@ -41,8 +40,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             categoryText = view.findViewById(R.id.categoryText);
             idText = view.findViewById(R.id.idText);
             latLongText = view.findViewById(R.id.latLongText);
-            adSpace = view.findViewById(R.id.adSpace);
-            adSpace.addView(ExtraneousMethods.GetAdViewForList(context));
+            adSpace = view.findViewById(R.id.listAdSpace);
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -78,6 +76,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             holder.nameText.setVisibility(View.GONE);
             holder.categoryText.setVisibility(View.GONE);
             holder.adSpace.setVisibility(View.VISIBLE);
+
+            ExtraneousMethods.AddListAdToFrame(holder.adSpace);
         }
         else {
             holder.nameText.setVisibility(View.VISIBLE);
