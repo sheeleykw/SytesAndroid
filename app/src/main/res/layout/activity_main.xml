@@ -164,6 +164,11 @@
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
 
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="0.2dp"
+                                android:background="@color/dividerBar"/>
+
                             <RelativeLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="60dp">
@@ -175,34 +180,25 @@
                                     android:layout_alignParentStart="true"/>
                                 <TextView
                                     android:id="@+id/categoryLabel"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="14dp"
-                                    android:layout_marginLeft="14dp"
-                                    android:layout_marginEnd="14dp"
-                                    android:layout_marginRight="14dp"
-                                    android:lineSpacingExtra="2dp"
-                                    android:layout_alignEnd="@+id/categoryImage"
+                                    style="@style/DetailText"
+                                    android:layout_toEndOf="@+id/categoryImage"
                                     android:layout_alignParentTop="true"
                                     android:textSize="16sp"
                                     android:textStyle="bold"
-                                    android:textColor="#FFFFFF"/>
+                                    android:text="CATEGORY:"/>
                                 <TextView
                                     android:id="@+id/categoryText"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="14dp"
-                                    android:layout_marginLeft="14dp"
-                                    android:layout_marginEnd="14dp"
-                                    android:layout_marginRight="14dp"
+                                    style="@style/DetailText"
+                                    android:layout_toEndOf="@+id/categoryImage"
                                     android:layout_below="@+id/categoryLabel"
-                                    android:lineSpacingExtra="2dp"
-                                    android:textSize="16sp"
-                                    android:textStyle="bold"
-                                    android:textColor="#FFFFFF"
-                                    android:text="CATEGORY:"/>
+                                    android:textSize="15sp"/>
 
                             </RelativeLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="0.2dp"
+                                android:background="@color/dividerBar"/>
 
                             <RelativeLayout
                                 android:layout_width="match_parent"
@@ -215,34 +211,25 @@
                                     android:layout_alignParentStart="true"/>
                                 <TextView
                                     android:id="@+id/dateLabel"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="14dp"
-                                    android:layout_marginLeft="14dp"
-                                    android:layout_marginEnd="14dp"
-                                    android:layout_marginRight="14dp"
-                                    android:lineSpacingExtra="2dp"
-                                    android:layout_alignEnd="@+id/dateImage"
+                                    style="@style/DetailText"
+                                    android:layout_toEndOf="@+id/dateImage"
                                     android:layout_alignParentTop="true"
                                     android:textSize="16sp"
                                     android:textStyle="bold"
-                                    android:textColor="#FFFFFF"
                                     android:text="DATE ADDED TO REGISTER:"/>
                                 <TextView
                                     android:id="@+id/dateText"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="14dp"
-                                    android:layout_marginLeft="14dp"
-                                    android:layout_marginEnd="14dp"
-                                    android:layout_marginRight="14dp"
+                                    style="@style/DetailText"
+                                    android:layout_toEndOf="@+id/dateImage"
                                     android:layout_below="@+id/dateLabel"
-                                    android:lineSpacingExtra="2dp"
-                                    android:textSize="16sp"
-                                    android:textStyle="bold"
-                                    android:textColor="#FFFFFF"/>
+                                    android:textSize="15sp"/>
 
                             </RelativeLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="0.2dp"
+                                android:background="@color/dividerBar"/>
 
                             <RelativeLayout
                                 android:layout_width="match_parent"
@@ -255,34 +242,25 @@
                                     android:layout_alignParentStart="true"/>
                                 <TextView
                                     android:id="@+id/refLabel"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="14dp"
-                                    android:layout_marginLeft="14dp"
-                                    android:layout_marginEnd="14dp"
-                                    android:layout_marginRight="14dp"
-                                    android:lineSpacingExtra="2dp"
-                                    android:layout_alignEnd="@+id/refImage"
+                                    style="@style/DetailText"
+                                    android:layout_toEndOf="@+id/refImage"
                                     android:layout_alignParentTop="true"
                                     android:textSize="16sp"
                                     android:textStyle="bold"
-                                    android:textColor="#FFFFFF"
                                     android:text="REFERENCE NUMBER:"/>
                                 <TextView
                                     android:id="@+id/refText"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="14dp"
-                                    android:layout_marginLeft="14dp"
-                                    android:layout_marginEnd="14dp"
-                                    android:layout_marginRight="14dp"
+                                    style="@style/DetailText"
+                                    android:layout_toEndOf="@+id/refImage"
                                     android:layout_below="@+id/refLabel"
-                                    android:lineSpacingExtra="2dp"
-                                    android:textSize="16sp"
-                                    android:textStyle="bold"
-                                    android:textColor="#FFFFFF"/>
+                                    android:textSize="15sp"/>
 
                             </RelativeLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="0.2dp"
+                                android:background="@color/dividerBar"/>
 
                             <RelativeLayout
                                 android:layout_width="match_parent"
@@ -295,34 +273,25 @@
                                     android:layout_alignParentStart="true"/>
                                 <TextView
                                     android:id="@+id/streetLabel"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="14dp"
-                                    android:layout_marginLeft="14dp"
-                                    android:layout_marginEnd="14dp"
-                                    android:layout_marginRight="14dp"
-                                    android:lineSpacingExtra="2dp"
-                                    android:layout_alignEnd="@+id/streetImage"
+                                    style="@style/DetailText"
+                                    android:layout_toEndOf="@+id/streetImage"
                                     android:layout_alignParentTop="true"
                                     android:textSize="16sp"
                                     android:textStyle="bold"
-                                    android:textColor="#FFFFFF"
                                     android:text="REPORTED STREET ADDRESS:"/>
                                 <TextView
                                     android:id="@+id/streetText"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="14dp"
-                                    android:layout_marginLeft="14dp"
-                                    android:layout_marginEnd="14dp"
-                                    android:layout_marginRight="14dp"
+                                    style="@style/DetailText"
+                                    android:layout_toEndOf="@+id/streetImage"
                                     android:layout_below="@+id/streetLabel"
-                                    android:lineSpacingExtra="2dp"
-                                    android:textSize="16sp"
-                                    android:textStyle="bold"
-                                    android:textColor="#FFFFFF"/>
+                                    android:textSize="15sp"/>
 
                             </RelativeLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="0.2dp"
+                                android:background="@color/dividerBar"/>
 
                             <RelativeLayout
                                 android:layout_width="match_parent"
@@ -335,34 +304,25 @@
                                     android:layout_alignParentStart="true"/>
                                 <TextView
                                     android:id="@+id/locationLabel"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="14dp"
-                                    android:layout_marginLeft="14dp"
-                                    android:layout_marginEnd="14dp"
-                                    android:layout_marginRight="14dp"
-                                    android:lineSpacingExtra="2dp"
-                                    android:layout_alignEnd="@+id/locationImage"
+                                    style="@style/DetailText"
+                                    android:layout_toEndOf="@+id/locationImage"
                                     android:layout_alignParentTop="true"
                                     android:textSize="16sp"
                                     android:textStyle="bold"
-                                    android:textColor="#FFFFFF"
                                     android:text="LOCATION:"/>
                                 <TextView
                                     android:id="@+id/locationText"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="14dp"
-                                    android:layout_marginLeft="14dp"
-                                    android:layout_marginEnd="14dp"
-                                    android:layout_marginRight="14dp"
+                                    style="@style/DetailText"
+                                    android:layout_toEndOf="@+id/locationImage"
                                     android:layout_below="@+id/locationLabel"
-                                    android:lineSpacingExtra="2dp"
-                                    android:textSize="16sp"
-                                    android:textStyle="bold"
-                                    android:textColor="#FFFFFF"/>
+                                    android:textSize="15sp"/>
 
                             </RelativeLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="0.2dp"
+                                android:background="@color/dividerBar"/>
 
                             <RelativeLayout
                                 android:layout_width="match_parent"
@@ -375,34 +335,25 @@
                                     android:layout_alignParentStart="true"/>
                                 <TextView
                                     android:id="@+id/countyLabel"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="14dp"
-                                    android:layout_marginLeft="14dp"
-                                    android:layout_marginEnd="14dp"
-                                    android:layout_marginRight="14dp"
-                                    android:lineSpacingExtra="2dp"
-                                    android:layout_alignEnd="@+id/countyImage"
+                                    style="@style/DetailText"
+                                    android:layout_toEndOf="@+id/countyImage"
                                     android:layout_alignParentTop="true"
                                     android:textSize="16sp"
                                     android:textStyle="bold"
-                                    android:textColor="#FFFFFF"
                                     android:text="COUNTY:"/>
                                 <TextView
                                     android:id="@+id/countyText"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="14dp"
-                                    android:layout_marginLeft="14dp"
-                                    android:layout_marginEnd="14dp"
-                                    android:layout_marginRight="14dp"
+                                    style="@style/DetailText"
+                                    android:layout_toEndOf="@+id/countyImage"
                                     android:layout_below="@+id/countyLabel"
-                                    android:lineSpacingExtra="2dp"
-                                    android:textSize="16sp"
-                                    android:textStyle="bold"
-                                    android:textColor="#FFFFFF"/>
+                                    android:textSize="15sp"/>
 
                             </RelativeLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="0.2dp"
+                                android:background="@color/dividerBar"/>
 
                             <RelativeLayout
                                 android:layout_width="match_parent"
@@ -415,32 +366,18 @@
                                     android:layout_alignParentStart="true"/>
                                 <TextView
                                     android:id="@+id/buildersLabel"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="14dp"
-                                    android:layout_marginLeft="14dp"
-                                    android:layout_marginEnd="14dp"
-                                    android:layout_marginRight="14dp"
-                                    android:lineSpacingExtra="2dp"
-                                    android:layout_alignEnd="@+id/buildersImage"
+                                    style="@style/DetailText"
+                                    android:layout_toEndOf="@+id/buildersImage"
                                     android:layout_alignParentTop="true"
                                     android:textSize="16sp"
                                     android:textStyle="bold"
-                                    android:textColor="#FFFFFF"
                                     android:text="ARCHITECTS/BUILDERS:"/>
                                 <TextView
                                     android:id="@+id/buildersText"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="14dp"
-                                    android:layout_marginLeft="14dp"
-                                    android:layout_marginEnd="14dp"
-                                    android:layout_marginRight="14dp"
+                                    style="@style/DetailText"
+                                    android:layout_toEndOf="@+id/buildersImage"
                                     android:layout_below="@+id/buildersLabel"
-                                    android:lineSpacingExtra="2dp"
-                                    android:textSize="16sp"
-                                    android:textStyle="bold"
-                                    android:textColor="#FFFFFF"/>
+                                    android:textSize="15sp"/>
 
                             </RelativeLayout>
 

@@ -47,4 +47,15 @@
         <item name="android:textAlignment">center</item>
     </style>
 
+    <style name="DetailText" parent="android:Widget.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:layout_marginStart">14dp</item>
+        <item name="android:layout_marginRight">14dp</item>
+        <item name="android:layout_marginLeft">14dp</item>
+        <item name="android:layout_marginEnd">14dp</item>
+        <item name="android:lineSpacingExtra">2dp</item>
+    </style>
+
 </resources>
