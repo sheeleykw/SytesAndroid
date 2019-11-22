@@ -13,6 +13,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.SearchView;
 import android.widget.TableLayout;
 import android.widget.TextView;
@@ -158,6 +159,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             view = new View(this);
         }
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
+        ((ScrollView)findViewById(R.id.scrollView)).fullScroll(View.FOCUS_UP);
 
         currentId = markerHashMap.inverse().get(marker);
         Cursor cursor = ExtraneousMethods.GetCursorFromId(this, currentId);
