@@ -44,13 +44,14 @@ class ExtraneousMethods {
     private static ObjectAnimator detailDownAnimation;
     private static ObjectAnimator titleUpAnimation;
     private static ObjectAnimator titleDownAnimation;
-    static int adWidth;
-    static int numOfFavorites;
-    static int currentAd = -1;
+    private static int adWidth;
+    private static int numOfFavorites;
+    private static int currentAd = -1;
+    private static int spaceBetweenAds = 5;
     static AdRequest adRequest;
     static AdView detailAdView;
     static ArrayList<AdView> listAds = new ArrayList<>();
-    static ArrayList<FrameLayout> listFrames = new ArrayList<>();
+    private static ArrayList<FrameLayout> listFrames = new ArrayList<>();
     private static boolean itemDatabaseReady = false;
     private static boolean cityDatabaseReady = false;
     private static boolean adsReady = false;
@@ -115,7 +116,7 @@ class ExtraneousMethods {
         MainActivity.currentFavorites.clear();
         while (cursor.moveToNext()) {
             MainActivity.currentFavorites.add(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_1)) + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)) + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_7)));
-            if (((MainActivity.currentFavorites.size() + 1) % 4) == 0) {
+            if (((MainActivity.currentFavorites.size() + 1) % spaceBetweenAds) == 0) {
                 MainActivity.currentFavorites.add("Ad\n______\nnull");
             }
         }
@@ -360,7 +361,7 @@ class ExtraneousMethods {
     }
 
     private static void AddListAds(Context context) {
-        while(listAds.size() < (numOfFavorites / 3)) {
+        while(listAds.size() < (numOfFavorites / spaceBetweenAds)) {
             AdView listAdView = new AdView(context);
             listAdView.setAdUnitId("ca-app-pub-3281339494640251/4734274558");
 
@@ -385,6 +386,7 @@ class ExtraneousMethods {
         for(FrameLayout layout: listFrames) {
             layout.removeAllViews();
         }
+        listFrames.clear();
     }
 
     private static Bitmap BitmapFromDrawable(Drawable drawable) {

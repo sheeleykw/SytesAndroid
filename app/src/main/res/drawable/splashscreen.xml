@@ -4,7 +4,8 @@
     <item android:drawable="@color/colorPrimary"/>
     <item>
         <bitmap
+            android:opacity="opaque"
             android:gravity="center"
-            android:src="@drawable/background"/>
+            android:src="@drawable/splashscreenimage"/>
     </item>
 </layer-list>
