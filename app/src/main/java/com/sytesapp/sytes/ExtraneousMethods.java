@@ -35,6 +35,7 @@ import com.google.common.collect.BiMap;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 class ExtraneousMethods {
 
@@ -181,7 +182,7 @@ class ExtraneousMethods {
         markerOptions.title(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)));
         markerOptions.snippet(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_7)));
         markerOptions.position(new LatLng(cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_4)), cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_5))));
-        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(BitmapFromDrawable(context.getDrawable(R.drawable.swithoutshadow))));
+        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(BitmapFromDrawable(Objects.requireNonNull(context.getDrawable(R.drawable.swithoutshadow)))));
 
         return markerOptions;
     }
@@ -203,7 +204,7 @@ class ExtraneousMethods {
         }
     }
 
-    static String UpdateText(Cursor cursor, TextView detailText, TextView titleText, ImageButton favoriteButton) {
+    static String UpdateText(Cursor cursor, TextView titleText, TextView categoryText, TextView dateText, TextView refText, TextView streetText, TextView locationText, TextView countyText, TextView buildersText, ImageButton favoriteButton) {
         String favorited = "FALSE";
         if (cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_13)).equals("TRUE")) {
             favoriteButton.setImageResource(R.drawable.fullheart);
@@ -212,8 +213,17 @@ class ExtraneousMethods {
         else {
             favoriteButton.setImageResource(R.drawable.greyheart);
         }
-        detailText.setText(MessageFormat.format("Category: {0}\nReference Number: {1}\nDate added to register: {2}\nReported Street Address: {3}\nLocation: {4}, {5}\nCounty: {6}\nArchitects/Builders: {7}", cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_7)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_2)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_6)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_8)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_9)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_11)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_10)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_12))));
+
         titleText.setText(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)));
+
+        categoryText.setText(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_7)));
+        dateText.setText(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_6)));
+        refText.setText(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_2)));
+        streetText.setText(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_8)));
+        locationText.setText(MessageFormat.format("{0}, {1}", cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_9)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_11))));
+        countyText.setText(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_10)));
+        buildersText.setText(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_12)));
+
         MainActivity.photosLink = "https://npgallery.nps.gov/pdfhost/docs/NRHP/Photos/" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_2)) + ".pdf";
         MainActivity.docsLink = "https://npgallery.nps.gov/pdfhost/docs/NRHP/Text/" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_2)) + ".pdf";
         cursor.close();

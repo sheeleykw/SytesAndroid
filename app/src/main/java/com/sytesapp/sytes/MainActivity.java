@@ -8,9 +8,6 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.location.Location;
 import android.os.Bundle;
-import android.provider.Contacts;
-import android.util.DisplayMetrics;
-import android.view.Display;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
@@ -25,16 +22,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.AdView;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
@@ -170,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Cursor cursor = ExtraneousMethods.GetCursorFromId(this, currentId);
         cursor.moveToNext();
 
-        currentFavorited = ExtraneousMethods.UpdateText(cursor, (TextView)findViewById(R.id.detailText), (TextView)findViewById(R.id.titleText), (ImageButton)findViewById(R.id.favoriteButton));
+        currentFavorited = ExtraneousMethods.UpdateText(cursor, (TextView)findViewById(R.id.titleText), (TextView)findViewById(R.id.categoryText), (TextView)findViewById(R.id.dateText), (TextView)findViewById(R.id.refText), (TextView)findViewById(R.id.streetText), (TextView)findViewById(R.id.locationText), (TextView)findViewById(R.id.countyText), (TextView)findViewById(R.id.buildersText), (ImageButton)findViewById(R.id.favoriteButton));
         ExtraneousMethods.DisplayViews();
 
         ExtraneousMethods.MoveMap(map, marker.getPosition().latitude, marker.getPosition().longitude, map.getCameraPosition().zoom, true, true);

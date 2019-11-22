@@ -105,8 +105,8 @@
             android:clickable="true"
             android:focusable="true"
             android:orientation="vertical"
-            android:stretchColumns="0,1,2"
-            android:translationY="500dp">
+            android:stretchColumns="0,1,2">
+<!--            android:translationY="500dp">-->
 
             <TableRow>
 
@@ -156,19 +156,334 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_span="3"
-                        android:layout_weight="1.0">
-                        <TextView
-                            android:id="@+id/detailText"
+                        android:layout_weight="1.0"
+                        android:background="@color/colorPrimary">
+
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="14dp"
-                            android:layout_marginLeft="14dp"
-                            android:layout_marginEnd="14dp"
-                            android:layout_marginRight="14dp"
-                            android:lineSpacingExtra="2dp"
-                            android:textSize="16sp"
-                            android:textStyle="bold" />
+                            android:orientation="vertical">
 
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="60dp">
+
+                                <ImageView
+                                    android:id="@+id/categoryImage"
+                                    android:layout_width="50dp"
+                                    android:layout_height="50dp"
+                                    android:layout_alignParentStart="true"/>
+                                <TextView
+                                    android:id="@+id/categoryLabel"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="14dp"
+                                    android:layout_marginLeft="14dp"
+                                    android:layout_marginEnd="14dp"
+                                    android:layout_marginRight="14dp"
+                                    android:lineSpacingExtra="2dp"
+                                    android:layout_alignEnd="@+id/categoryImage"
+                                    android:layout_alignParentTop="true"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    android:textColor="#FFFFFF"/>
+                                <TextView
+                                    android:id="@+id/categoryText"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="14dp"
+                                    android:layout_marginLeft="14dp"
+                                    android:layout_marginEnd="14dp"
+                                    android:layout_marginRight="14dp"
+                                    android:layout_below="@+id/categoryLabel"
+                                    android:lineSpacingExtra="2dp"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    android:textColor="#FFFFFF"
+                                    android:text="CATEGORY:"/>
+
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="60dp">
+
+                                <ImageView
+                                    android:id="@+id/dateImage"
+                                    android:layout_width="50dp"
+                                    android:layout_height="50dp"
+                                    android:layout_alignParentStart="true"/>
+                                <TextView
+                                    android:id="@+id/dateLabel"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="14dp"
+                                    android:layout_marginLeft="14dp"
+                                    android:layout_marginEnd="14dp"
+                                    android:layout_marginRight="14dp"
+                                    android:lineSpacingExtra="2dp"
+                                    android:layout_alignEnd="@+id/dateImage"
+                                    android:layout_alignParentTop="true"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    android:textColor="#FFFFFF"
+                                    android:text="DATE ADDED TO REGISTER:"/>
+                                <TextView
+                                    android:id="@+id/dateText"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="14dp"
+                                    android:layout_marginLeft="14dp"
+                                    android:layout_marginEnd="14dp"
+                                    android:layout_marginRight="14dp"
+                                    android:layout_below="@+id/dateLabel"
+                                    android:lineSpacingExtra="2dp"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    android:textColor="#FFFFFF"/>
+
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="60dp">
+
+                                <ImageView
+                                    android:id="@+id/refImage"
+                                    android:layout_width="50dp"
+                                    android:layout_height="50dp"
+                                    android:layout_alignParentStart="true"/>
+                                <TextView
+                                    android:id="@+id/refLabel"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="14dp"
+                                    android:layout_marginLeft="14dp"
+                                    android:layout_marginEnd="14dp"
+                                    android:layout_marginRight="14dp"
+                                    android:lineSpacingExtra="2dp"
+                                    android:layout_alignEnd="@+id/refImage"
+                                    android:layout_alignParentTop="true"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    android:textColor="#FFFFFF"
+                                    android:text="REFERENCE NUMBER:"/>
+                                <TextView
+                                    android:id="@+id/refText"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="14dp"
+                                    android:layout_marginLeft="14dp"
+                                    android:layout_marginEnd="14dp"
+                                    android:layout_marginRight="14dp"
+                                    android:layout_below="@+id/refLabel"
+                                    android:lineSpacingExtra="2dp"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    android:textColor="#FFFFFF"/>
+
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="60dp">
+
+                                <ImageView
+                                    android:id="@+id/streetImage"
+                                    android:layout_width="50dp"
+                                    android:layout_height="50dp"
+                                    android:layout_alignParentStart="true"/>
+                                <TextView
+                                    android:id="@+id/streetLabel"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="14dp"
+                                    android:layout_marginLeft="14dp"
+                                    android:layout_marginEnd="14dp"
+                                    android:layout_marginRight="14dp"
+                                    android:lineSpacingExtra="2dp"
+                                    android:layout_alignEnd="@+id/streetImage"
+                                    android:layout_alignParentTop="true"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    android:textColor="#FFFFFF"
+                                    android:text="REPORTED STREET ADDRESS:"/>
+                                <TextView
+                                    android:id="@+id/streetText"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="14dp"
+                                    android:layout_marginLeft="14dp"
+                                    android:layout_marginEnd="14dp"
+                                    android:layout_marginRight="14dp"
+                                    android:layout_below="@+id/streetLabel"
+                                    android:lineSpacingExtra="2dp"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    android:textColor="#FFFFFF"/>
+
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="60dp">
+
+                                <ImageView
+                                    android:id="@+id/locationImage"
+                                    android:layout_width="50dp"
+                                    android:layout_height="50dp"
+                                    android:layout_alignParentStart="true"/>
+                                <TextView
+                                    android:id="@+id/locationLabel"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="14dp"
+                                    android:layout_marginLeft="14dp"
+                                    android:layout_marginEnd="14dp"
+                                    android:layout_marginRight="14dp"
+                                    android:lineSpacingExtra="2dp"
+                                    android:layout_alignEnd="@+id/locationImage"
+                                    android:layout_alignParentTop="true"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    android:textColor="#FFFFFF"
+                                    android:text="LOCATION:"/>
+                                <TextView
+                                    android:id="@+id/locationText"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="14dp"
+                                    android:layout_marginLeft="14dp"
+                                    android:layout_marginEnd="14dp"
+                                    android:layout_marginRight="14dp"
+                                    android:layout_below="@+id/locationLabel"
+                                    android:lineSpacingExtra="2dp"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    android:textColor="#FFFFFF"/>
+
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="60dp">
+
+                                <ImageView
+                                    android:id="@+id/countyImage"
+                                    android:layout_width="50dp"
+                                    android:layout_height="50dp"
+                                    android:layout_alignParentStart="true"/>
+                                <TextView
+                                    android:id="@+id/countyLabel"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="14dp"
+                                    android:layout_marginLeft="14dp"
+                                    android:layout_marginEnd="14dp"
+                                    android:layout_marginRight="14dp"
+                                    android:lineSpacingExtra="2dp"
+                                    android:layout_alignEnd="@+id/countyImage"
+                                    android:layout_alignParentTop="true"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    android:textColor="#FFFFFF"
+                                    android:text="COUNTY:"/>
+                                <TextView
+                                    android:id="@+id/countyText"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="14dp"
+                                    android:layout_marginLeft="14dp"
+                                    android:layout_marginEnd="14dp"
+                                    android:layout_marginRight="14dp"
+                                    android:layout_below="@+id/countyLabel"
+                                    android:lineSpacingExtra="2dp"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    android:textColor="#FFFFFF"/>
+
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="60dp">
+
+                                <ImageView
+                                    android:id="@+id/buildersImage"
+                                    android:layout_width="50dp"
+                                    android:layout_height="50dp"
+                                    android:layout_alignParentStart="true"/>
+                                <TextView
+                                    android:id="@+id/buildersLabel"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="14dp"
+                                    android:layout_marginLeft="14dp"
+                                    android:layout_marginEnd="14dp"
+                                    android:layout_marginRight="14dp"
+                                    android:lineSpacingExtra="2dp"
+                                    android:layout_alignEnd="@+id/buildersImage"
+                                    android:layout_alignParentTop="true"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    android:textColor="#FFFFFF"
+                                    android:text="ARCHITECTS/BUILDERS:"/>
+                                <TextView
+                                    android:id="@+id/buildersText"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="14dp"
+                                    android:layout_marginLeft="14dp"
+                                    android:layout_marginEnd="14dp"
+                                    android:layout_marginRight="14dp"
+                                    android:layout_below="@+id/buildersLabel"
+                                    android:lineSpacingExtra="2dp"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    android:textColor="#FFFFFF"/>
+
+                            </RelativeLayout>
+
+                        </LinearLayout>
+
+<!--                        <RelativeLayout-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="60dp">-->
+
+<!--                            <ImageView-->
+<!--                                android:id="@+id/categoryImage"-->
+<!--                                android:layout_width="50dp"-->
+<!--                                android:layout_height="50dp"-->
+<!--                                android:layout_alignParentStart="true"/>-->
+<!--                            <TextView-->
+<!--                                android:id="@+id/categoryLabel"-->
+<!--                                android:layout_width="wrap_content"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:layout_marginStart="14dp"-->
+<!--                                android:layout_marginLeft="14dp"-->
+<!--                                android:layout_marginEnd="14dp"-->
+<!--                                android:layout_marginRight="14dp"-->
+<!--                                android:lineSpacingExtra="2dp"-->
+<!--                                android:layout_alignEnd="@+id/categoryImage"-->
+<!--                                android:layout_alignParentTop="true"-->
+<!--                                android:textSize="16sp"-->
+<!--                                android:textStyle="bold"-->
+<!--                                android:textColor="#FFFFFF"/>-->
+<!--                            <TextView-->
+<!--                                android:id="@+id/categoryText"-->
+<!--                                android:layout_width="match_parent"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:layout_marginStart="14dp"-->
+<!--                                android:layout_marginLeft="14dp"-->
+<!--                                android:layout_marginEnd="14dp"-->
+<!--                                android:layout_marginRight="14dp"-->
+<!--                                android:layout_below="@+id/categoryLabel"-->
+<!--                                android:lineSpacingExtra="2dp"-->
+<!--                                android:textSize="16sp"-->
+<!--                                android:textStyle="bold"-->
+<!--                                android:textColor="#FFFFFF"/>-->
+
+<!--                        </RelativeLayout>-->
                     </ScrollView>
 
             </TableRow>
