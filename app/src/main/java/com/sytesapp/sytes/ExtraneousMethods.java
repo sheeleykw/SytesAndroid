@@ -8,6 +8,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.StyleSpan;
+import android.text.style.UnderlineSpan;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.ViewGroup;
@@ -216,13 +221,49 @@ class ExtraneousMethods {
 
         titleText.setText(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)));
 
-        categoryText.setText(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_7)));
-        dateText.setText(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_6)));
-        refText.setText(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_2)));
-        streetText.setText(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_8)));
-        locationText.setText(MessageFormat.format("{0}, {1}", cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_9)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_11))));
-        countyText.setText(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_10)));
-        buildersText.setText(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_12)));
+
+        SpannableString category = new SpannableString(MessageFormat.format("CATEGORY:\n{0}", cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_7))));
+        category.setSpan(new UnderlineSpan(),0, 9, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        category.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),0, 9, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        category.setSpan(new RelativeSizeSpan(1.2f),0, 9, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        SpannableString date = new SpannableString(MessageFormat.format("DATE ADDED TO REGISTER:\n{0}", cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_6))));
+        date.setSpan(new UnderlineSpan(),0, 23, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        date.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),0, 23, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        date.setSpan(new RelativeSizeSpan(1.2f),0, 23, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        SpannableString ref = new SpannableString(MessageFormat.format("REFERENCE NUMBER:\n{0}", cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_2))));
+        ref.setSpan(new UnderlineSpan(),0, 17, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ref.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),0, 17, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ref.setSpan(new RelativeSizeSpan(1.2f),0, 17, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        SpannableString street = new SpannableString(MessageFormat.format("REPORTED STREET ADDRESS:\n{0}", cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_8))));
+        street.setSpan(new UnderlineSpan(),0, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        street.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),0, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        street.setSpan(new RelativeSizeSpan(1.2f),0, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        SpannableString location = new SpannableString(MessageFormat.format("LOCATION:\n{0}, {1}", cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_9)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_11))));
+        location.setSpan(new UnderlineSpan(),0, 10, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        location.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),0, 10, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        location.setSpan(new RelativeSizeSpan(1.2f),0, 10, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        SpannableString county = new SpannableString(MessageFormat.format("COUNTY:\n{0}", cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_10))));
+        county.setSpan(new UnderlineSpan(),0, 7, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        county.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),0, 7, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        county.setSpan(new RelativeSizeSpan(1.2f),0, 7, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        SpannableString builders = new SpannableString(MessageFormat.format("ARCHITECTS/BUILDERS:\n{0}", cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_12))));
+        builders.setSpan(new UnderlineSpan(),0, 20, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        builders.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),0, 20, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        builders.setSpan(new RelativeSizeSpan(1.2f),0, 20, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        categoryText.setText(category);
+        dateText.setText(date);
+        refText.setText(ref);
+        streetText.setText(street);
+        locationText.setText(location);
+        countyText.setText(county);
+        buildersText.setText(builders);
 
         MainActivity.photosLink = "https://npgallery.nps.gov/pdfhost/docs/NRHP/Photos/" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_2)) + ".pdf";
         MainActivity.docsLink = "https://npgallery.nps.gov/pdfhost/docs/NRHP/Text/" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_2)) + ".pdf";

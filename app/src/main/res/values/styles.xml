@@ -1,5 +1,5 @@
 <resources>
-    <!-- Base application theme. -->
+
     <style name="AppColorSchemeTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -14,6 +14,17 @@
 
     <style name="SplashTheme" parent="AppTheme">
         <item name="android:windowBackground">@drawable/splashscreen</item>
+    </style>
+
+    <style name="DetailItem">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="DividerBar">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0.8dp</item>
+        <item name="android:background">@color/dividerBar</item>
     </style>
     
     <style name="ImageButton" parent="android:Widget.ImageButton">
@@ -55,20 +66,11 @@
         <item name="android:layout_marginRight">14dp</item>
         <item name="android:layout_marginLeft">14dp</item>
         <item name="android:layout_marginEnd">14dp</item>
-        <item name="android:lineSpacingExtra">2dp</item>
-    </style>
-
-    <style name="LabelArea" parent="DetailText">
-        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:lineSpacingExtra">0dp</item>
         <item name="android:layout_alignParentTop">true</item>
         <item name="android:textSize">16sp</item>
-        <item name="android:textStyle">bold</item>
-    </style>
-
-    <style name="TextArea" parent="DetailText">
-        <item name="android:layout_marginBottom">10dp</item>
-        <item name="android:layout_alignParentBottom">true</item>
-        <item name="android:textSize">15sp</item>
     </style>
 
 </resources>

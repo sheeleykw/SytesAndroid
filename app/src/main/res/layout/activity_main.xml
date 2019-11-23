@@ -65,10 +65,8 @@
     </RelativeLayout>
 
     <View
+        style="@style/DividerBar"
         android:id="@+id/searchDivider"
-        android:layout_width="0dp"
-        android:layout_height="0.8dp"
-        android:background="@color/dividerBar"
         app:layout_constraintBottom_toTopOf="@id/mapView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -167,12 +165,10 @@
 
                             <View
                                 android:layout_width="match_parent"
-                                android:layout_height="0.5dp"
+                                android:layout_height="0.8dp"
                                 android:background="@color/dividerBar"/>
 
-                            <RelativeLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="60dp">
+                            <RelativeLayout style="@style/DetailItem">
 
                                 <ImageView
                                     android:id="@+id/categoryImage"
@@ -180,25 +176,15 @@
                                     android:layout_height="50dp"
                                     android:layout_alignParentStart="true"/>
                                 <TextView
-                                    android:id="@+id/categoryLabel"
-                                    style="@style/LabelArea"
-                                    android:layout_toEndOf="@+id/categoryImage"
-                                    android:text="CATEGORY:"/>
-                                <TextView
                                     android:id="@+id/categoryText"
-                                    style="@style/TextArea"
+                                    style="@style/DetailText"
                                     android:layout_toEndOf="@+id/categoryImage"/>
 
                             </RelativeLayout>
 
-                            <View
-                                android:layout_width="match_parent"
-                                android:layout_height="0.5dp"
-                                android:background="@color/dividerBar"/>
+                            <View style="@style/DividerBar"/>
 
-                            <RelativeLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="60dp">
+                            <RelativeLayout style="@style/DetailItem">
 
                                 <ImageView
                                     android:id="@+id/dateImage"
@@ -206,25 +192,15 @@
                                     android:layout_height="50dp"
                                     android:layout_alignParentStart="true"/>
                                 <TextView
-                                    android:id="@+id/dateLabel"
-                                    style="@style/LabelArea"
-                                    android:layout_toEndOf="@+id/dateImage"
-                                    android:text="DATE ADDED TO REGISTER:"/>
-                                <TextView
                                     android:id="@+id/dateText"
-                                    style="@style/TextArea"
+                                    style="@style/DetailText"
                                     android:layout_toEndOf="@+id/dateImage"/>
 
                             </RelativeLayout>
 
-                            <View
-                                android:layout_width="match_parent"
-                                android:layout_height="0.5dp"
-                                android:background="@color/dividerBar"/>
+                            <View style="@style/DividerBar"/>
 
-                            <RelativeLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="60dp">
+                            <RelativeLayout style="@style/DetailItem">
 
                                 <ImageView
                                     android:id="@+id/refImage"
@@ -232,25 +208,15 @@
                                     android:layout_height="50dp"
                                     android:layout_alignParentStart="true"/>
                                 <TextView
-                                    android:id="@+id/refLabel"
-                                    style="@style/LabelArea"
-                                    android:layout_toEndOf="@+id/refImage"
-                                    android:text="REFERENCE NUMBER:"/>
-                                <TextView
                                     android:id="@+id/refText"
-                                    style="@style/TextArea"
+                                    style="@style/DetailText"
                                     android:layout_toEndOf="@+id/refImage"/>
 
                             </RelativeLayout>
 
-                            <View
-                                android:layout_width="match_parent"
-                                android:layout_height="0.5dp"
-                                android:background="@color/dividerBar"/>
+                            <View style="@style/DividerBar"/>
 
-                            <RelativeLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="60dp">
+                            <RelativeLayout style="@style/DetailItem">
 
                                 <ImageView
                                     android:id="@+id/streetImage"
@@ -258,25 +224,15 @@
                                     android:layout_height="50dp"
                                     android:layout_alignParentStart="true"/>
                                 <TextView
-                                    android:id="@+id/streetLabel"
-                                    style="@style/LabelArea"
-                                    android:layout_toEndOf="@+id/streetImage"
-                                    android:text="REPORTED STREET ADDRESS:"/>
-                                <TextView
                                     android:id="@+id/streetText"
-                                    style="@style/TextArea"
+                                    style="@style/DetailText"
                                     android:layout_toEndOf="@+id/streetImage"/>
 
                             </RelativeLayout>
 
-                            <View
-                                android:layout_width="match_parent"
-                                android:layout_height="0.5dp"
-                                android:background="@color/dividerBar"/>
+                            <View style="@style/DividerBar"/>
 
-                            <RelativeLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="60dp">
+                            <RelativeLayout style="@style/DetailItem">
 
                                 <ImageView
                                     android:id="@+id/locationImage"
@@ -284,25 +240,15 @@
                                     android:layout_height="50dp"
                                     android:layout_alignParentStart="true"/>
                                 <TextView
-                                    android:id="@+id/locationLabel"
-                                    style="@style/LabelArea"
-                                    android:layout_toEndOf="@+id/locationImage"
-                                    android:text="LOCATION:"/>
-                                <TextView
                                     android:id="@+id/locationText"
-                                    style="@style/TextArea"
+                                    style="@style/DetailText"
                                     android:layout_toEndOf="@+id/locationImage"/>
 
                             </RelativeLayout>
 
-                            <View
-                                android:layout_width="match_parent"
-                                android:layout_height="0.5dp"
-                                android:background="@color/dividerBar"/>
+                            <View style="@style/DividerBar"/>
 
-                            <RelativeLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="60dp">
+                            <RelativeLayout style="@style/DetailItem">
 
                                 <ImageView
                                     android:id="@+id/countyImage"
@@ -310,25 +256,15 @@
                                     android:layout_height="50dp"
                                     android:layout_alignParentStart="true"/>
                                 <TextView
-                                    android:id="@+id/countyLabel"
-                                    style="@style/LabelArea"
-                                    android:layout_toEndOf="@+id/countyImage"
-                                    android:text="COUNTY:"/>
-                                <TextView
                                     android:id="@+id/countyText"
-                                    style="@style/TextArea"
+                                    style="@style/DetailText"
                                     android:layout_toEndOf="@+id/countyImage"/>
 
                             </RelativeLayout>
 
-                            <View
-                                android:layout_width="match_parent"
-                                android:layout_height="0.5dp"
-                                android:background="@color/dividerBar"/>
+                            <View style="@style/DividerBar"/>
 
-                            <RelativeLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="60dp">
+                            <RelativeLayout style="@style/DetailItem">
 
                                 <ImageView
                                     android:id="@+id/buildersImage"
@@ -336,13 +272,8 @@
                                     android:layout_height="50dp"
                                     android:layout_alignParentStart="true"/>
                                 <TextView
-                                    android:id="@+id/buildersLabel"
-                                    style="@style/LabelArea"
-                                    android:layout_toEndOf="@+id/buildersImage"
-                                    android:text="ARCHITECTS/BUILDERS:"/>
-                                <TextView
                                     android:id="@+id/buildersText"
-                                    style="@style/TextArea"
+                                    style="@style/DetailText"
                                     android:layout_toEndOf="@+id/buildersImage"/>
 
                             </RelativeLayout>
@@ -455,11 +386,9 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <View
+            style="@style/DividerBar"
             android:id="@+id/bottomDivider"
-            android:layout_width="match_parent"
-            android:layout_height="0.8dp"
-            android:layout_above="@id/bottomBar"
-            android:background="@color/dividerBar" />
+            android:layout_above="@id/bottomBar" />
 
     </RelativeLayout>
 

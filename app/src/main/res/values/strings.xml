@@ -3,4 +3,11 @@
     <string name="docs">Documents</string>
     <string name="photos">Photos</string>
     <string name="title_activity_pdf_renderer">PdfRenderer</string>
+    <string name="category"><u>CATEGORY:</u></string>
+    <string name="date"><u>DATE ADDED TO REGISTER:</u></string>
+    <string name="ref"><u>REFERENCE NUMBER:</u></string>
+    <string name="street"><u>REPORTED STREET ADDRESS:</u></string>
+    <string name="location"><u>LOCATION:</u></string>
+    <string name="county"><u>COUNTY:</u></string>
+    <string name="builders"><u>ARCHITECTS/BUILDERS:</u></string>
 </resources>
