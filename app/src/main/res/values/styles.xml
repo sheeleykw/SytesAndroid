@@ -26,7 +26,7 @@
         <item name="android:layout_height">0.8dp</item>
         <item name="android:background">@color/dividerBar</item>
     </style>
-    
+
     <style name="ImageButton" parent="android:Widget.ImageButton">
         <item name="android:layout_width">50dp</item>
         <item name="android:layout_height">50dp</item>
@@ -61,7 +61,7 @@
     <style name="DetailText" parent="android:Widget.TextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:textColor">#000000</item>
         <item name="android:layout_marginStart">14dp</item>
         <item name="android:layout_marginRight">14dp</item>
         <item name="android:layout_marginLeft">14dp</item>
@@ -72,5 +72,14 @@
         <item name="android:layout_alignParentTop">true</item>
         <item name="android:textSize">16sp</item>
     </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 </resources>

@@ -22,6 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -233,8 +234,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     //TODO add settings button functionality
     public void startSettingsActivity(View view) {
-//        Intent intent = new Intent(this, FavoriteActivity.class);
-//        startActivity(intent);
+//        ((DrawerLayout)findViewById(R.id.drawer)).openDrawer(0);
     }
 
     public void startPdfRendererActivityPhotos(View view) {
