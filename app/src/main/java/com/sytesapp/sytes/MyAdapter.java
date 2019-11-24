@@ -1,6 +1,5 @@
 package com.sytesapp.sytes;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,18 +9,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.AdView;
-
 import java.util.ArrayList;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     private ArrayList<String> items;
-    private ArrayList<AdView> ads = new ArrayList<>();
     private OnItemClickListener listener;
 
-    MyAdapter(Context context, ArrayList<String> receivedItems) {
+    MyAdapter(ArrayList<String> receivedItems) {
         items = receivedItems;
     }
 

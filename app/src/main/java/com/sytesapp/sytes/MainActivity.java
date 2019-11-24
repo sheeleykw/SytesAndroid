@@ -38,6 +38,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnCameraIdleListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowCloseListener, ActivityCompat.OnRequestPermissionsResultCallback {
 
@@ -65,7 +66,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         ExtraneousMethods.InitializeAds(this);
 
-//        //TODO remove test id from code
         FrameLayout adSpace = findViewById(R.id.adSpace);
         adSpace.addView(ExtraneousMethods.detailAdView);
 
@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (view == null) {
             view = new View(this);
         }
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        Objects.requireNonNull(imm).hideSoftInputFromWindow(view.getWindowToken(), 0);
 
         ((ScrollView)findViewById(R.id.scrollView)).fullScroll(View.FOCUS_UP);
 

@@ -17,7 +17,7 @@ public class FavoriteActivity extends AppCompatActivity {
     private RecyclerView.Adapter mAdapter;
     private SearchView searchView;
     private ArrayList<String> displayedFavorites;
-    private ArrayList<String> searchList;
+    private ArrayList<String> searchList = new ArrayList<>();
     private String searchQuery;
 
     @Override
@@ -25,12 +25,12 @@ public class FavoriteActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favorite);
 
-        searchList = (ArrayList)MainActivity.currentFavorites.clone();
-        displayedFavorites = (ArrayList)searchList.clone();
+        searchList = new ArrayList<>(MainActivity.currentFavorites);
+        displayedFavorites = new ArrayList<>(searchList);
         RecyclerView favoritesView = findViewById(R.id.favoritesView);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
 
-        mAdapter = new MyAdapter(this, displayedFavorites);
+        mAdapter = new MyAdapter(displayedFavorites);
         ((MyAdapter) mAdapter).setOnItemClickListener(new MyAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
@@ -78,7 +78,6 @@ public class FavoriteActivity extends AppCompatActivity {
             }
             else {
                 displayedFavorites.add(searchList.get(i));
-                ExtraneousMethods.listAds.get(1).loadAd(ExtraneousMethods.adRequest);
             }
         }
     }
@@ -97,8 +96,7 @@ public class FavoriteActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        ExtraneousMethods.ResetListAds();
-        searchList = (ArrayList)MainActivity.currentFavorites.clone();
+        searchList = new ArrayList<>(MainActivity.currentFavorites);
         searchInitialize();
         super.onResume();
         mAdapter.notifyDataSetChanged();

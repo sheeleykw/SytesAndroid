@@ -13,9 +13,6 @@ import android.text.SpannableString;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.text.style.UnderlineSpan;
-import android.util.DisplayMetrics;
-import android.view.Display;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
@@ -50,14 +47,9 @@ class ExtraneousMethods {
     private static ObjectAnimator detailDownAnimation;
     private static ObjectAnimator titleUpAnimation;
     private static ObjectAnimator titleDownAnimation;
-    private static int adWidth;
-    private static int numOfFavorites;
-    private static int currentAd = -1;
-    private static int spaceBetweenAds = 5;
-    static AdRequest adRequest;
+    private static int currentAd = 0;
     static AdView detailAdView;
-    static ArrayList<AdView> listAds = new ArrayList<>();
-    private static ArrayList<FrameLayout> listFrames = new ArrayList<>();
+    private static ArrayList<AdView> listAds = new ArrayList<>();
     private static boolean itemDatabaseReady = false;
     private static boolean cityDatabaseReady = false;
     private static boolean adsReady = false;
@@ -104,7 +96,11 @@ class ExtraneousMethods {
             Cursor cursor = itemDatabase.query( ItemDetails.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
             cursor.moveToNext();
 
-            return new LatLng(cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_4)), cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_5)));
+            double lat = cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_4));
+            double longi = cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_5));
+
+            cursor.close();
+            return new LatLng(lat, longi);
         }
     }
 
@@ -122,28 +118,12 @@ class ExtraneousMethods {
         MainActivity.currentFavorites.clear();
         while (cursor.moveToNext()) {
             MainActivity.currentFavorites.add(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_1)) + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)) + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_7)));
+            int spaceBetweenAds = 5;
             if (((MainActivity.currentFavorites.size() + 1) % spaceBetweenAds) == 0) {
                 MainActivity.currentFavorites.add("Ad\n______\nnull");
             }
         }
 
-        numOfFavorites = cursor.getCount();
-        AddListAds(context);
-
-        cursor.close();
-    }
-
-    private static void GetFavoritedCount(Context context) {
-        if (!itemDatabaseReady) {
-            InitializeItemDatabase(context);
-        }
-
-        String[] projection = { ItemDetails.COL_1, ItemDetails.COL_3, ItemDetails.COL_7 };
-        String selection = ItemDetails.COL_13 + " = ?";
-        String[] selectionArgs = { "TRUE" };
-
-        Cursor cursor = itemDatabase.query( ItemDetails.TABLE_NAME, projection, selection, selectionArgs, null, null, ItemDetails.COL_3);
-        numOfFavorites = cursor.getCount();
         cursor.close();
     }
 
@@ -220,7 +200,6 @@ class ExtraneousMethods {
         }
 
         titleText.setText(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)));
-
 
         SpannableString category = new SpannableString(MessageFormat.format("CATEGORY:\n{0}", cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_7))));
         category.setSpan(new UnderlineSpan(),0, 9, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -301,7 +280,7 @@ class ExtraneousMethods {
         }
 
         for (String removal : removeStrings) {
-            markerHashMap.get(removal).remove();
+            Objects.requireNonNull(markerHashMap.get(removal)).remove();
             markerHashMap.remove(removal);
         }
     }
@@ -323,10 +302,10 @@ class ExtraneousMethods {
                 }
             });
 
-            adRequest = new AdRequest.Builder().addTestDevice("481D9EB0E450EFE1F74321C81D584BCE").build();
+            AdRequest adRequest = new AdRequest.Builder().addTestDevice("481D9EB0E450EFE1F74321C81D584BCE").build();
             float widthPixels = context.getApplicationContext().getResources().getDisplayMetrics().widthPixels;
             float density = context.getApplicationContext().getResources().getDisplayMetrics().density;
-            adWidth = (int) (widthPixels / density);
+            int adWidth = (int) (widthPixels / density);
 
             detailAdView = new AdView(context);
             detailAdView.setAdUnitId("ca-app-pub-3281339494640251/9986601233");
@@ -334,8 +313,16 @@ class ExtraneousMethods {
             detailAdView.setAdSize(AdSize.getPortraitAnchoredAdaptiveBannerAdSize(context, adWidth));
             detailAdView.loadAd(adRequest);
 
-            GetFavoritedCount(context);
-            AddListAds(context);
+            for (int i = 0; i < 6; i ++) {
+                AdView listAdView = new AdView(context);
+                listAdView.setAdUnitId("ca-app-pub-3281339494640251/4734274558");
+
+                listAdView.setAdSize(AdSize.getPortraitAnchoredAdaptiveBannerAdSize(context, adWidth - 16));
+                listAdView.loadAd(adRequest);
+                listAds.add(listAdView);
+            }
+
+            System.out.println(listAds.size());
 
             adsReady = true;
         }
@@ -411,33 +398,20 @@ class ExtraneousMethods {
         }
     }
 
-    private static void AddListAds(Context context) {
-        while(listAds.size() < (numOfFavorites / spaceBetweenAds)) {
-            AdView listAdView = new AdView(context);
-            listAdView.setAdUnitId("ca-app-pub-3281339494640251/4734274558");
-
-            listAdView.setAdSize(AdSize.getPortraitAnchoredAdaptiveBannerAdSize(context, adWidth - 16));
-            listAdView.loadAd(adRequest);
-            listAds.add(listAdView);
-        }
-    }
-
     static void AddListAdToFrame(FrameLayout frame) {
         if (adsReady) {
-            currentAd++;
-            if (currentAd < listAds.size()) {
+            if (frame.getChildCount() == 0) {
+                if (listAds.get(currentAd).getParent() != null) {
+                    ((FrameLayout)listAds.get(currentAd).getParent()).removeAllViews();
+                }
                 frame.addView(listAds.get(currentAd));
-                listFrames.add(frame);
+                currentAd++;
+
+                if (currentAd >= 6) {
+                    currentAd = 0;
+                }
             }
         }
-    }
-
-    static void ResetListAds() {
-        currentAd = -1;
-        for(FrameLayout layout: listFrames) {
-            layout.removeAllViews();
-        }
-        listFrames.clear();
     }
 
     private static Bitmap BitmapFromDrawable(Drawable drawable) {
