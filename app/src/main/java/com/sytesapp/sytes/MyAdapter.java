@@ -72,7 +72,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             holder.categoryText.setVisibility(View.GONE);
             holder.adSpace.setVisibility(View.VISIBLE);
 
-            ExtraneousMethods.AddListAdToFrame(holder.adSpace);
+            ExtraneousMethods.AddListAdToFrame(holder.adSpace, position);
         }
         else {
             holder.nameText.setVisibility(View.VISIBLE);

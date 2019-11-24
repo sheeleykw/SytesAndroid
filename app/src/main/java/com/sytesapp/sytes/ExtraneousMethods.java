@@ -47,7 +47,6 @@ class ExtraneousMethods {
     private static ObjectAnimator detailDownAnimation;
     private static ObjectAnimator titleUpAnimation;
     private static ObjectAnimator titleDownAnimation;
-    private static int currentAd = 0;
     static AdView detailAdView;
     private static ArrayList<AdView> listAds = new ArrayList<>();
     private static boolean itemDatabaseReady = false;
@@ -313,7 +312,7 @@ class ExtraneousMethods {
             detailAdView.setAdSize(AdSize.getPortraitAnchoredAdaptiveBannerAdSize(context, adWidth));
             detailAdView.loadAd(adRequest);
 
-            for (int i = 0; i < 6; i ++) {
+            for (int i = 0; i < 9; i ++) {
                 AdView listAdView = new AdView(context);
                 listAdView.setAdUnitId("ca-app-pub-3281339494640251/4734274558");
 
@@ -321,8 +320,6 @@ class ExtraneousMethods {
                 listAdView.loadAd(adRequest);
                 listAds.add(listAdView);
             }
-
-            System.out.println(listAds.size());
 
             adsReady = true;
         }
@@ -398,17 +395,18 @@ class ExtraneousMethods {
         }
     }
 
-    static void AddListAdToFrame(FrameLayout frame) {
+    static void AddListAdToFrame(FrameLayout frame, int listPosition) {
         if (adsReady) {
+            int currentAd = ((listPosition - 4) / 5) % 9;
             if (frame.getChildCount() == 0) {
                 if (listAds.get(currentAd).getParent() != null) {
-                    ((FrameLayout)listAds.get(currentAd).getParent()).removeAllViews();
+                    if (listAds.get(8 - currentAd).getParent() != null) {
+                        ((FrameLayout)listAds.get(8 - currentAd).getParent()).removeAllViews();
+                    }
+                    frame.addView(listAds.get(8 - currentAd));
                 }
-                frame.addView(listAds.get(currentAd));
-                currentAd++;
-
-                if (currentAd >= 6) {
-                    currentAd = 0;
+                else {
+                    frame.addView(listAds.get(currentAd));
                 }
             }
         }

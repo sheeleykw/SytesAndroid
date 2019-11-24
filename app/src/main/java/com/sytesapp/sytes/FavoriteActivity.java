@@ -16,6 +16,7 @@ public class FavoriteActivity extends AppCompatActivity {
 
     private RecyclerView.Adapter mAdapter;
     private SearchView searchView;
+    private RecyclerView favoritesView;
     private ArrayList<String> displayedFavorites;
     private ArrayList<String> searchList = new ArrayList<>();
     private String searchQuery;
@@ -27,7 +28,7 @@ public class FavoriteActivity extends AppCompatActivity {
 
         searchList = new ArrayList<>(MainActivity.currentFavorites);
         displayedFavorites = new ArrayList<>(searchList);
-        RecyclerView favoritesView = findViewById(R.id.favoritesView);
+        favoritesView = findViewById(R.id.favoritesView);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
 
         mAdapter = new MyAdapter(displayedFavorites);
@@ -96,6 +97,7 @@ public class FavoriteActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        favoritesView.scrollToPosition(0);
         searchList = new ArrayList<>(MainActivity.currentFavorites);
         searchInitialize();
         super.onResume();
