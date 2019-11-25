@@ -6,12 +6,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.SearchView;
@@ -49,6 +51,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private BiMap<String, Marker> markerHashMap = HashBiMap.create();
 
     private SearchView searchView;
+    private ImageButton homeButton;
+    private ImageButton settingsButton;
 
     private String currentFavorited;
     public static String searchQuery;
@@ -56,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public static String photosLink = null;
     public static String docsLink = null;
     public static boolean goingToPoint = false;
+    private static boolean showingSettings = false;
     public static Location userLocation = null;
     public static ArrayList<String> currentFavorites = new ArrayList<>();
 
@@ -69,6 +74,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         FrameLayout adSpace = findViewById(R.id.adSpace);
         adSpace.addView(ExtraneousMethods.detailAdView);
+
+        homeButton = findViewById(R.id.homeButton);
+        settingsButton = findViewById(R.id.settingsButton);
 
         searchView = findViewById(R.id.searchView);
         searchView.setOnClickListener(new View.OnClickListener() {
@@ -232,9 +240,32 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         startActivity(intent);
     }
 
+    public void startHomeActivity(View view) {
+        if (showingSettings) {
+            settingsButton.setColorFilter(Color.parseColor("#797979"));
+            homeButton.setColorFilter(Color.parseColor("#5F90FE"));
+            homeButton.setClickable(false);
+            showingSettings = false;
+            ExtraneousMethods.ChangeSettingsViewStatus(false);
+        }
+    }
+
     //TODO add settings button functionality
     public void startSettingsActivity(View view) {
-//        ((DrawerLayout)findViewById(R.id.drawer)).openDrawer(0);
+        if (showingSettings) {
+            settingsButton.setColorFilter(Color.parseColor("#797979"));
+            homeButton.setColorFilter(Color.parseColor("#5F90FE"));
+            homeButton.setClickable(false);
+            showingSettings = false;
+            ExtraneousMethods.ChangeSettingsViewStatus(false);
+        }
+        else {
+            settingsButton.setColorFilter(Color.parseColor("#5F90FE"));
+            homeButton.setColorFilter(Color.parseColor("#797979"));
+            homeButton.setClickable(true);
+            showingSettings = true;
+            ExtraneousMethods.ChangeSettingsViewStatus(true);
+        }
     }
 
     public void startPdfRendererActivityPhotos(View view) {
@@ -280,7 +311,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onStart();
         mMapView.onStart();
 
-        ExtraneousMethods.InitializeAnimations(this, (TableLayout)findViewById(R.id.detailView), (RelativeLayout)findViewById(R.id.titleView));
+        ExtraneousMethods.InitializeAnimations(this, (TableLayout)findViewById(R.id.detailView), (RelativeLayout)findViewById(R.id.titleView), (RelativeLayout)findViewById(R.id.settingsView));
     }
 
     @Override

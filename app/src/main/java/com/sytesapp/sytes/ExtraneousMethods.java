@@ -47,6 +47,8 @@ class ExtraneousMethods {
     private static ObjectAnimator detailDownAnimation;
     private static ObjectAnimator titleUpAnimation;
     private static ObjectAnimator titleDownAnimation;
+    private static ObjectAnimator settingsLeftAnimation;
+    private static ObjectAnimator settingsRightAnimation;
     static AdView detailAdView;
     private static ArrayList<AdView> listAds = new ArrayList<>();
     private static boolean itemDatabaseReady = false;
@@ -325,16 +327,21 @@ class ExtraneousMethods {
         }
     }
 
-    static void InitializeAnimations(Context context, TableLayout detailView, RelativeLayout titleView) {
+    static void InitializeAnimations(Context context, TableLayout detailView, RelativeLayout titleView, RelativeLayout settingsView) {
         detailUpAnimation = ObjectAnimator.ofFloat(detailView, "translationY", 0);
-        detailUpAnimation.setDuration(600);
-        detailDownAnimation = ObjectAnimator.ofFloat(detailView, "translationY", 500 * context.getApplicationContext().getResources().getDisplayMetrics().density);
         detailUpAnimation.setDuration(400);
+        detailDownAnimation = ObjectAnimator.ofFloat(detailView, "translationY", 500 * context.getApplicationContext().getResources().getDisplayMetrics().density);
+        detailDownAnimation.setDuration(350);
 
         titleDownAnimation = ObjectAnimator.ofFloat(titleView, "translationY", 0);
         titleDownAnimation.setDuration(400);
         titleUpAnimation = ObjectAnimator.ofFloat(titleView, "translationY", -500 * context.getApplicationContext().getResources().getDisplayMetrics().density);
-        titleUpAnimation.setDuration(400);
+        titleUpAnimation.setDuration(350);
+
+        settingsLeftAnimation = ObjectAnimator.ofFloat(settingsView, "translationX", 0);
+        settingsLeftAnimation.setDuration(500);
+        settingsRightAnimation = ObjectAnimator.ofFloat(settingsView, "translationX", 500 * context.getApplicationContext().getResources().getDisplayMetrics().density);
+        settingsRightAnimation.setDuration(500);
     }
 
     private static void InitializeItemDatabase(Context context) {
@@ -430,6 +437,15 @@ class ExtraneousMethods {
     static void HideViews() {
         detailDownAnimation.start();
         titleUpAnimation.start();
+    }
+
+    static void ChangeSettingsViewStatus(boolean showSettings) {
+        if (showSettings) {
+            settingsLeftAnimation.start();
+        }
+        else {
+            settingsRightAnimation.start();
+        }
     }
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     //End Other non-related methods

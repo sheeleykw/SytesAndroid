@@ -382,7 +382,8 @@
                 android:tint="#5F90FE"
                 app:layout_constraintEnd_toStartOf="@+id/settingsButton"
                 app:layout_constraintStart_toEndOf="@+id/favoritesButton"
-                android:clickable="false"/>
+                android:clickable="false"
+                android:onClick="startHomeActivity"/>
 
             <ImageButton
                 android:id="@+id/settingsButton"
@@ -405,5 +406,30 @@
         android:layout_height="0dp"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.4" />
+
+    <RelativeLayout
+        android:id="@+id/settingsView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/mapView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchDivider"
+        android:translationX="500dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#FFFFFF">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/county"/>
+
+        </LinearLayout>
+
+    </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
