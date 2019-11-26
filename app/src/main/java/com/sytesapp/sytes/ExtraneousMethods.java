@@ -331,12 +331,12 @@ class ExtraneousMethods {
 
     static void InitializeAnimations(Context context, TableLayout detailView, RelativeLayout titleView, RelativeLayout favoritesView, RelativeLayout settingsView) {
         detailUpAnimation = ObjectAnimator.ofFloat(detailView, "translationY", 0);
-        detailUpAnimation.setDuration(400);
+        detailUpAnimation.setDuration(600);
         detailDownAnimation = ObjectAnimator.ofFloat(detailView, "translationY", 500 * context.getApplicationContext().getResources().getDisplayMetrics().density);
         detailDownAnimation.setDuration(350);
 
         titleDownAnimation = ObjectAnimator.ofFloat(titleView, "translationY", 0);
-        titleDownAnimation.setDuration(400);
+        titleDownAnimation.setDuration(600);
         titleUpAnimation = ObjectAnimator.ofFloat(titleView, "translationY", -500 * context.getApplicationContext().getResources().getDisplayMetrics().density);
         titleUpAnimation.setDuration(350);
 

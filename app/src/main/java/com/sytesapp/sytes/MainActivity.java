@@ -216,8 +216,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onInfoWindowClose(Marker marker) {
-        if(!goingToPoint) {
+        if (!goingToPoint) {
             ExtraneousMethods.HideViews();
+        }
+        if (currentView.equals("Home")) {
+            currentId = null;
         }
     }
 
@@ -282,8 +285,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void switchToFavoritesView(View view) {
         resetViews();
         searchView.setQueryHint("Search Favorites");
-        favoritesButton.setColorFilter(Color.parseColor("#5F90FE"));
-//        mMapView.setVisibility(View.INVISIBLE);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -297,26 +298,30 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 return false;
             }
         });
+
+        favoritesButton.setColorFilter(Color.parseColor("#5F90FE"));
+        favoritesButton.setClickable(false);
+
         if (updateFavorites) {
             ExtraneousMethods.GetFavorited(this);
             searchInitialize();
             mAdapter.notifyDataSetChanged();
             updateFavorites = false;
         }
+
+        ExtraneousMethods.ChangeView(currentView, "Favorites");
+        currentView = "Favorites";
+
+        //        mMapView.setVisibility(View.INVISIBLE);
         Marker marker = markerHashMap.get(currentId);
         if (marker != null) {
             marker.hideInfoWindow();
         }
-        favoritesButton.setClickable(false);
-        ExtraneousMethods.ChangeView(currentView, "Favorites");
-        currentView = "Favorites";
     }
 
     public void switchToHomeView(View view) {
         resetViews();
         searchView.setQueryHint("Search Database");
-        homeButton.setColorFilter(Color.parseColor("#5F90FE"));
-//        mMapView.setVisibility(View.VISIBLE);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -329,26 +334,32 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 return false;
             }
         });
+        homeButton.setColorFilter(Color.parseColor("#5F90FE"));
+        homeButton.setClickable(false);
+
+        ExtraneousMethods.ChangeView(currentView, "Home");
+        currentView = "Home";
+
+        //        mMapView.setVisibility(View.VISIBLE);
         Marker marker = markerHashMap.get(currentId);
         if (marker != null) {
             onMarkerClick(marker);
         }
-        homeButton.setClickable(false);
-        ExtraneousMethods.ChangeView(currentView, "Home");
-        currentView = "Home";
     }
 
     public void switchToSettingsView(View view) {
         resetViews();
         settingsButton.setColorFilter(Color.parseColor("#5F90FE"));
-//        mMapView.setVisibility(View.INVISIBLE);
+        settingsButton.setClickable(false);
+
+        ExtraneousMethods.ChangeView(currentView, "Settings");
+        currentView = "Settings";
+
+        //        mMapView.setVisibility(View.INVISIBLE);
         Marker marker = markerHashMap.get(currentId);
         if (marker != null) {
             marker.hideInfoWindow();
         }
-        settingsButton.setClickable(false);
-        ExtraneousMethods.ChangeView(currentView, "Settings");
-        currentView = "Settings";
     }
 
     private void resetViews() {
