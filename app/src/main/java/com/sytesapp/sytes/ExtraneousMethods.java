@@ -47,6 +47,8 @@ class ExtraneousMethods {
     private static ObjectAnimator detailDownAnimation;
     private static ObjectAnimator titleUpAnimation;
     private static ObjectAnimator titleDownAnimation;
+    private static ObjectAnimator favoritesLeftAnimation;
+    private static ObjectAnimator favoritesRightAnimation;
     private static ObjectAnimator settingsLeftAnimation;
     private static ObjectAnimator settingsRightAnimation;
     static AdView detailAdView;
@@ -327,7 +329,7 @@ class ExtraneousMethods {
         }
     }
 
-    static void InitializeAnimations(Context context, TableLayout detailView, RelativeLayout titleView, RelativeLayout settingsView) {
+    static void InitializeAnimations(Context context, TableLayout detailView, RelativeLayout titleView, RelativeLayout favoritesView, RelativeLayout settingsView) {
         detailUpAnimation = ObjectAnimator.ofFloat(detailView, "translationY", 0);
         detailUpAnimation.setDuration(400);
         detailDownAnimation = ObjectAnimator.ofFloat(detailView, "translationY", 500 * context.getApplicationContext().getResources().getDisplayMetrics().density);
@@ -337,6 +339,11 @@ class ExtraneousMethods {
         titleDownAnimation.setDuration(400);
         titleUpAnimation = ObjectAnimator.ofFloat(titleView, "translationY", -500 * context.getApplicationContext().getResources().getDisplayMetrics().density);
         titleUpAnimation.setDuration(350);
+
+        favoritesRightAnimation = ObjectAnimator.ofFloat(favoritesView, "translationX", 0);
+        favoritesRightAnimation.setDuration(500);
+        favoritesLeftAnimation = ObjectAnimator.ofFloat(favoritesView, "translationX", -500 * context.getApplicationContext().getResources().getDisplayMetrics().density);
+        favoritesLeftAnimation.setDuration(500);
 
         settingsLeftAnimation = ObjectAnimator.ofFloat(settingsView, "translationX", 0);
         settingsLeftAnimation.setDuration(500);
@@ -439,12 +446,22 @@ class ExtraneousMethods {
         titleUpAnimation.start();
     }
 
-    static void ChangeSettingsViewStatus(boolean showSettings) {
-        if (showSettings) {
-            settingsLeftAnimation.start();
+    static void ChangeView(String previousView, String currentView) {
+        switch (previousView) {
+            case "Settings":
+                settingsRightAnimation.start();
+                break;
+            case "Favorites":
+                favoritesLeftAnimation.start();
+                break;
         }
-        else {
-            settingsRightAnimation.start();
+        switch (currentView) {
+            case "Favorites":
+                favoritesRightAnimation.start();
+                break;
+            case "Settings":
+                settingsLeftAnimation.start();
+                break;
         }
     }
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

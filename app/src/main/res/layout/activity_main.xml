@@ -287,44 +287,6 @@
 
                         </LinearLayout>
 
-<!--                        <RelativeLayout-->
-<!--                            android:layout_width="match_parent"-->
-<!--                            android:layout_height="60dp">-->
-
-<!--                            <ImageView-->
-<!--                                android:id="@+id/categoryImage"-->
-<!--                                android:layout_width="50dp"-->
-<!--                                android:layout_height="50dp"-->
-<!--                                android:layout_alignParentStart="true"/>-->
-<!--                            <TextView-->
-<!--                                android:id="@+id/categoryLabel"-->
-<!--                                android:layout_width="wrap_content"-->
-<!--                                android:layout_height="wrap_content"-->
-<!--                                android:layout_marginStart="14dp"-->
-<!--                                android:layout_marginLeft="14dp"-->
-<!--                                android:layout_marginEnd="14dp"-->
-<!--                                android:layout_marginRight="14dp"-->
-<!--                                android:lineSpacingExtra="2dp"-->
-<!--                                android:layout_alignEnd="@+id/categoryImage"-->
-<!--                                android:layout_alignParentTop="true"-->
-<!--                                android:textSize="16sp"-->
-<!--                                android:textStyle="bold"-->
-<!--                                android:textColor="#FFFFFF"/>-->
-<!--                            <TextView-->
-<!--                                android:id="@+id/categoryText"-->
-<!--                                android:layout_width="match_parent"-->
-<!--                                android:layout_height="wrap_content"-->
-<!--                                android:layout_marginStart="14dp"-->
-<!--                                android:layout_marginLeft="14dp"-->
-<!--                                android:layout_marginEnd="14dp"-->
-<!--                                android:layout_marginRight="14dp"-->
-<!--                                android:layout_below="@+id/categoryLabel"-->
-<!--                                android:lineSpacingExtra="2dp"-->
-<!--                                android:textSize="16sp"-->
-<!--                                android:textStyle="bold"-->
-<!--                                android:textColor="#FFFFFF"/>-->
-
-<!--                        </RelativeLayout>-->
                     </ScrollView>
 
             </TableRow>
@@ -374,7 +336,7 @@
                 android:id="@+id/favoritesButton"
                 style="@style/FavoritesImageButton"
                 app:layout_constraintEnd_toStartOf="@+id/homeButton"
-                android:onClick="startFavoritesActivity"/>
+                android:onClick="switchToFavoritesView"/>
 
             <ImageButton
                 android:id="@+id/homeButton"
@@ -383,13 +345,13 @@
                 app:layout_constraintEnd_toStartOf="@+id/settingsButton"
                 app:layout_constraintStart_toEndOf="@+id/favoritesButton"
                 android:clickable="false"
-                android:onClick="startHomeActivity"/>
+                android:onClick="switchToHomeView"/>
 
             <ImageButton
                 android:id="@+id/settingsButton"
                 style="@style/SettingsImageButton"
                 app:layout_constraintStart_toEndOf="@+id/homeButton"
-                android:onClick="startSettingsActivity"/>
+                android:onClick="switchToSettingsView"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -400,36 +362,49 @@
 
     </RelativeLayout>
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/halfwayLine"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.4" />
-
     <RelativeLayout
         android:id="@+id/settingsView"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:background="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="@+id/mapView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/searchDivider"
         android:translationX="500dp">
 
-        <LinearLayout
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#FFFFFF">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:text="@string/county"/>
-
-        </LinearLayout>
+            android:gravity="center"
+            android:text="@string/county"/>
 
     </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/favoritesView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="@+id/mapView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchDivider"
+        android:translationX="-500dp">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/listView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"/>
+
+    </RelativeLayout>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/halfwayLine"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.4" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
