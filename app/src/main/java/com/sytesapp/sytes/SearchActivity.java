@@ -79,19 +79,11 @@ public class SearchActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-//    //TODO add settings button functionality
-//    public void startSettingsActivity(View view) {
-//        Intent intent = new Intent(this, FavoriteActivity.class);
-//        startActivity(intent);
-//    }
-
     @Override
     protected void onResume() {
         searchQuery = MainActivity.searchQuery;
         searchView.setQuery(searchQuery, true);
 
-//        searchView.setIconified(false);
-//        searchView.setIconified(true);
         super.onResume();
     }
 

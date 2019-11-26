@@ -55,21 +55,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ImageButton homeButton;
     private ImageButton settingsButton;
 
+    private String currentView = "Home";
     private String currentFavorited;
-    public static String searchQuery;
+    private boolean updateFavorites = false;
+    private String favoriteSearchQuery;
+    private RecyclerView.Adapter mAdapter;
+    private ArrayList<String> displayedFavorites;
+
     public static String currentId;
-    private static String currentView = "Home";
+    public static String searchQuery;
     public static String photosLink = null;
     public static String docsLink = null;
     public static boolean goingToPoint = false;
-    private static boolean showingSettings = false;
-    private boolean updateFavorites = false;
     public static Location userLocation = null;
     public static ArrayList<String> currentFavorites = new ArrayList<>();
-
-    private RecyclerView.Adapter mAdapter;
-    private ArrayList<String> displayedFavorites;
-    private ArrayList<String> searchList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,9 +78,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         ExtraneousMethods.InitializeAds(this);
         ExtraneousMethods.GetFavorited(this);
-
-        FrameLayout adSpace = findViewById(R.id.adSpace);
-        adSpace.addView(ExtraneousMethods.detailAdView);
 
         favoritesButton = findViewById(R.id.favoritesButton);
         homeButton = findViewById(R.id.homeButton);
@@ -104,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
             @Override
             public boolean onQueryTextChange(String query) {
+                searchQuery = query;
                 return false;
             }
         });
@@ -132,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 if (!((TextView) view.findViewById(R.id.idText)).getText().toString().equals("Ad")) {
                     MainActivity.goingToPoint = true;
                     MainActivity.currentId = ((TextView) view.findViewById(R.id.idText)).getText().toString();
-                    switchToHomeView(null);
+                    changeView(homeButton);
                     moveToPoint();
                 }
             }
@@ -141,6 +138,71 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         favoritesView.setHasFixedSize(true);
         favoritesView.setLayoutManager(layoutManager);
         favoritesView.setAdapter(mAdapter);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mMapView.onStart();
+
+        ExtraneousMethods.InitializeAnimations(this, (TableLayout)findViewById(R.id.detailView), (RelativeLayout)findViewById(R.id.titleView), (RelativeLayout)findViewById(R.id.favoritesView), (RelativeLayout)findViewById(R.id.settingsView));
+
+        FrameLayout adSpace = findViewById(R.id.adSpace);
+        adSpace.addView(ExtraneousMethods.detailAdView);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mMapView.onResume();
+
+        searchQuery = SearchActivity.searchQuery;
+        searchView.setQuery(searchQuery, false);
+
+        if (goingToPoint) {
+            moveToPoint();
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        Bundle mapViewBundle = outState.getBundle(MAPVIEW_BUNDLE_KEY);
+        if (mapViewBundle == null) {
+            mapViewBundle = new Bundle();
+            outState.putBundle(MAPVIEW_BUNDLE_KEY, mapViewBundle);
+        }
+
+        mMapView.onSaveInstanceState(mapViewBundle);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mMapView.onStop();
+
+        FrameLayout adSpace = findViewById(R.id.adSpace);
+        adSpace.removeAllViews();
+    }
+
+    @Override
+    protected void onPause() {
+        mMapView.onPause();
+        super.onPause();
+        searchView.clearFocus();
+    }
+
+    @Override
+    protected void onDestroy() {
+        mMapView.onDestroy();
+        super.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mMapView.onLowMemory();
     }
 
     @Override
@@ -224,25 +286,22 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    private void moveToPoint() {
+        LatLng pointPosition = ExtraneousMethods.GetLatLngFromId(this, currentId);
+        if (currentId.equals("0")) {
+            ExtraneousMethods.MoveMap(map, pointPosition.latitude, pointPosition.longitude, 12, false, false);
+            goingToPoint = false;
+        }
+        else {
+            ExtraneousMethods.MoveMap(map, pointPosition.latitude, pointPosition.longitude, 18, false, true);
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == 0) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 EnableUserLocation();
-            }
-        }
-    }
-
-    private void searchInitialize() {
-        displayedFavorites.clear();
-        for (int i = 0; i < currentFavorites.size(); i++) {
-            if (searchQuery != null) {
-                if (currentFavorites.get(i).split("\n")[1].toLowerCase().contains(searchQuery)) {
-                    displayedFavorites.add(currentFavorites.get(i));
-                }
-            }
-            else {
-                displayedFavorites.add(currentFavorites.get(i));
             }
         }
     }
@@ -275,100 +334,109 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    public void startSearchActivity(View view) {
-        Intent intent = new Intent(this, SearchActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        startActivity(intent);
-    }
-
-    //TODO add settings button functionality
-    public void switchToFavoritesView(View view) {
-        resetViews();
-        searchView.setQueryHint("Search Favorites");
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
+    private void searchInitialize() {
+        displayedFavorites.clear();
+        for (int i = 0; i < currentFavorites.size(); i++) {
+            if (favoriteSearchQuery != null) {
+                if (currentFavorites.get(i).split("\n")[1].toLowerCase().contains(favoriteSearchQuery.toLowerCase())) {
+                    displayedFavorites.add(currentFavorites.get(i));
+                }
             }
-            @Override
-            public boolean onQueryTextChange(String query) {
-                searchQuery = query.toLowerCase();
-                searchInitialize();
-                mAdapter.notifyDataSetChanged();
-                return false;
+            else {
+                displayedFavorites.add(currentFavorites.get(i));
             }
-        });
-
-        favoritesButton.setColorFilter(Color.parseColor("#5F90FE"));
-        favoritesButton.setClickable(false);
-
-        if (updateFavorites) {
-            ExtraneousMethods.GetFavorited(this);
-            searchInitialize();
-            mAdapter.notifyDataSetChanged();
-            updateFavorites = false;
-        }
-
-        ExtraneousMethods.ChangeView(currentView, "Favorites");
-        currentView = "Favorites";
-
-        //        mMapView.setVisibility(View.INVISIBLE);
-        Marker marker = markerHashMap.get(currentId);
-        if (marker != null) {
-            marker.hideInfoWindow();
         }
     }
 
-    public void switchToHomeView(View view) {
-        resetViews();
-        searchView.setQueryHint("Search Database");
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                searchQuery = query;
-                startSearchActivity(null);
-                return false;
-            }
-            @Override
-            public boolean onQueryTextChange(String query) {
-                return false;
-            }
-        });
-        homeButton.setColorFilter(Color.parseColor("#5F90FE"));
-        homeButton.setClickable(false);
-
-        ExtraneousMethods.ChangeView(currentView, "Home");
-        currentView = "Home";
-
-        //        mMapView.setVisibility(View.VISIBLE);
-        Marker marker = markerHashMap.get(currentId);
-        if (marker != null) {
-            onMarkerClick(marker);
-        }
-    }
-
-    public void switchToSettingsView(View view) {
-        resetViews();
-        settingsButton.setColorFilter(Color.parseColor("#5F90FE"));
-        settingsButton.setClickable(false);
-
-        ExtraneousMethods.ChangeView(currentView, "Settings");
-        currentView = "Settings";
-
-        //        mMapView.setVisibility(View.INVISIBLE);
-        Marker marker = markerHashMap.get(currentId);
-        if (marker != null) {
-            marker.hideInfoWindow();
-        }
-    }
-
-    private void resetViews() {
+    public void changeView(View view) {
         favoritesButton.setColorFilter(Color.parseColor("#797979"));
         homeButton.setColorFilter(Color.parseColor("#797979"));
         settingsButton.setColorFilter(Color.parseColor("#797979"));
         favoritesButton.setClickable(true);
         homeButton.setClickable(true);
         settingsButton.setClickable(true);
+
+
+        if (view.equals(homeButton)) {
+            System.out.println("home");
+            System.out.println(searchQuery);
+            searchView.setQueryHint("Search Database");
+            searchView.setQuery(searchQuery, false);
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    startSearchActivity(null);
+                    return false;
+                }
+                @Override
+                public boolean onQueryTextChange(String query) {
+                    searchQuery = query;
+                    return false;
+                }
+            });
+            homeButton.setColorFilter(Color.parseColor("#5F90FE"));
+            homeButton.setClickable(false);
+
+            ExtraneousMethods.ChangeView(currentView, "Home");
+            currentView = "Home";
+
+            Marker marker = markerHashMap.get(currentId);
+            if (marker != null) {
+                onMarkerClick(marker);
+            }
+        }
+        else {
+            if (view.equals(favoritesButton)) {
+                System.out.println("favorites");
+                System.out.println(favoriteSearchQuery);
+                searchView.setQueryHint("Search Favorites");
+                searchView.setQuery(favoriteSearchQuery, false);
+                searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                    @Override
+                    public boolean onQueryTextSubmit(String query) {
+                        return false;
+                    }
+                    @Override
+                    public boolean onQueryTextChange(String query) {
+                        System.out.println(query);
+                        favoriteSearchQuery = query;
+                        searchInitialize();
+                        mAdapter.notifyDataSetChanged();
+                        return false;
+                    }
+                });
+
+                favoritesButton.setColorFilter(Color.parseColor("#5F90FE"));
+                favoritesButton.setClickable(false);
+
+                if (updateFavorites) {
+                    ExtraneousMethods.GetFavorited(this);
+                    searchInitialize();
+                    mAdapter.notifyDataSetChanged();
+                    updateFavorites = false;
+                }
+
+                ExtraneousMethods.ChangeView(currentView, "Favorites");
+                currentView = "Favorites";
+            }
+            else if (view.equals(settingsButton)) {
+                settingsButton.setColorFilter(Color.parseColor("#5F90FE"));
+                settingsButton.setClickable(false);
+
+                ExtraneousMethods.ChangeView(currentView, "Settings");
+                currentView = "Settings";
+            }
+            Marker marker = markerHashMap.get(currentId);
+            if (marker != null) {
+                marker.hideInfoWindow();
+            }
+        }
+    }
+
+    public void startSearchActivity(View view) {
+        Intent intent = new Intent(this, SearchActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        startActivity(intent);
     }
 
     public void startPdfRendererActivityPhotos(View view) {
@@ -383,78 +451,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         intent.putExtra("link", docsLink);
         startActivity(intent);
-    }
-
-    private void moveToPoint() {
-        LatLng pointPosition = ExtraneousMethods.GetLatLngFromId(this, currentId);
-        if (currentId.equals("0")) {
-            ExtraneousMethods.MoveMap(map, pointPosition.latitude, pointPosition.longitude, 12, false, false);
-            goingToPoint = false;
-        }
-        else {
-            ExtraneousMethods.MoveMap(map, pointPosition.latitude, pointPosition.longitude, 18, false, true);
-        }
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        Bundle mapViewBundle = outState.getBundle(MAPVIEW_BUNDLE_KEY);
-        if (mapViewBundle == null) {
-            mapViewBundle = new Bundle();
-            outState.putBundle(MAPVIEW_BUNDLE_KEY, mapViewBundle);
-        }
-
-        mMapView.onSaveInstanceState(mapViewBundle);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mMapView.onStart();
-
-        ExtraneousMethods.InitializeAnimations(this, (TableLayout)findViewById(R.id.detailView), (RelativeLayout)findViewById(R.id.titleView), (RelativeLayout)findViewById(R.id.favoritesView), (RelativeLayout)findViewById(R.id.settingsView));
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mMapView.onResume();
-
-        searchQuery = SearchActivity.searchQuery;
-        searchView.setQuery(searchQuery, false);
-
-        if (goingToPoint) {
-            moveToPoint();
-        }
-
-        //detailAd.loadAd(adRequest);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        mMapView.onStop();
-    }
-
-    @Override
-    protected void onPause() {
-        mMapView.onPause();
-        super.onPause();
-        searchView.clearFocus();
-    }
-
-    @Override
-    protected void onDestroy() {
-        mMapView.onDestroy();
-        super.onDestroy();
-    }
-
-    @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-        mMapView.onLowMemory();
     }
 }
 

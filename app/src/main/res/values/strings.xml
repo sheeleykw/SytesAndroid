@@ -2,26 +2,7 @@
     <string name="app_name">Sytes</string>
     <string name="docs">Documents</string>
     <string name="photos">Photos</string>
-    <string name="title_activity_pdf_renderer">PdfRenderer</string>
-    <string name="category"><u>CATEGORY:</u></string>
-    <string name="date"><u>DATE ADDED TO REGISTER:</u></string>
-    <string name="ref"><u>REFERENCE NUMBER:</u></string>
-    <string name="street"><u>REPORTED STREET ADDRESS:</u></string>
-    <string name="location"><u>LOCATION:</u></string>
-    <string name="county"><u>COUNTY:</u></string>
-    <string name="builders"><u>ARCHITECTS/BUILDERS:</u></string>
-    <string name="title_activity_settings">SettingsActivity</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
-    <string name="nav_header_desc">Navigation header</string>
-    <string name="action_settings">Settings</string>
-
-    <string name="menu_home">Home</string>
-    <string name="menu_gallery">Gallery</string>
-    <string name="menu_slideshow">Slideshow</string>
-    <string name="menu_tools">Tools</string>
-    <string name="menu_share">Share</string>
-    <string name="menu_send">Send</string>
+    <string name="favorites">Favorites</string>
+    <string name="home">Home</string>
+    <string name="settings">Settings</string>
 </resources>

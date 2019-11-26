@@ -19,6 +19,7 @@
             android:id="@+id/searchView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:queryHint="Search Database"
             android:queryBackground="@android:color/transparent" />
 
         <RelativeLayout
@@ -311,7 +312,7 @@
             <TextView
                 android:id="@+id/textView3"
                 style="@style/BottomText"
-                android:text="Favorites"
+                android:text="@string/favorites"
                 app:layout_constraintEnd_toEndOf="@id/favoritesButton"
                 app:layout_constraintStart_toStartOf="@id/favoritesButton"
                 app:layout_constraintTop_toBottomOf="@+id/favoritesButton" />
@@ -319,7 +320,7 @@
             <TextView
                 android:id="@+id/textView4"
                 style="@style/BottomText"
-                android:text="Home"
+                android:text="@string/home"
                 app:layout_constraintEnd_toEndOf="@id/homeButton"
                 app:layout_constraintStart_toStartOf="@id/homeButton"
                 app:layout_constraintTop_toBottomOf="@+id/homeButton" />
@@ -327,7 +328,7 @@
             <TextView
                 android:id="@+id/textView5"
                 style="@style/BottomText"
-                android:text="Settings"
+                android:text="@string/settings"
                 app:layout_constraintEnd_toEndOf="@id/settingsButton"
                 app:layout_constraintStart_toStartOf="@id/settingsButton"
                 app:layout_constraintTop_toBottomOf="@+id/settingsButton"  />
@@ -336,7 +337,7 @@
                 android:id="@+id/favoritesButton"
                 style="@style/FavoritesImageButton"
                 app:layout_constraintEnd_toStartOf="@+id/homeButton"
-                android:onClick="switchToFavoritesView"/>
+                app:layout_constraintTop_toTopOf="parent"/>
 
             <ImageButton
                 android:id="@+id/homeButton"
@@ -344,14 +345,14 @@
                 android:tint="#5F90FE"
                 app:layout_constraintEnd_toStartOf="@+id/settingsButton"
                 app:layout_constraintStart_toEndOf="@+id/favoritesButton"
-                android:clickable="false"
-                android:onClick="switchToHomeView"/>
+                app:layout_constraintTop_toTopOf="parent"
+                android:clickable="false"/>
 
             <ImageButton
                 android:id="@+id/settingsButton"
                 style="@style/SettingsImageButton"
                 app:layout_constraintStart_toEndOf="@+id/homeButton"
-                android:onClick="switchToSettingsView"/>
+                app:layout_constraintTop_toTopOf="parent"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -377,7 +378,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:text="@string/county"/>
+            android:text="ME"/>
 
     </RelativeLayout>
 
