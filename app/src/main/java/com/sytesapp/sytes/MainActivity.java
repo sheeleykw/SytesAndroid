@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GoogleMap map;
     private MapView mMapView;
     private static final String MAPVIEW_BUNDLE_KEY = "MapViewBundleKey";
-    private BiMap<String, Marker> markerHashMap = HashBiMap.create();
+    public static BiMap<String, Marker> markerHashMap = HashBiMap.create();
 
     private SearchView searchView;
     private ImageButton favoritesButton;
@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private String currentView = "Home";
     private String currentFavorited;
-    private boolean updateFavorites = false;
+    private boolean updateFavorites = true;
     private String favoriteSearchQuery;
     private RecyclerView.Adapter mAdapter;
     private ArrayList<String> displayedFavorites;
@@ -76,12 +76,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ExtraneousMethods.InitializeAds(this);
-        ExtraneousMethods.GetFavorited(this);
+        new ExtraneousMethods.InitializeDatabases().execute(this);
+//        new ExtraneousMethods.InitializeAds().execute(this);
 
         favoritesButton = findViewById(R.id.favoritesButton);
         homeButton = findViewById(R.id.homeButton);
         settingsButton = findViewById(R.id.settingsButton);
+        TableLayout detailView = findViewById(R.id.detailView);
+        RelativeLayout titleView = findViewById(R.id.titleView);
+        RelativeLayout favoritesView = findViewById(R.id.favoritesView);
+        RelativeLayout settingsView = findViewById(R.id.settingsView);
+
+        ExtraneousMethods.InitializeAnimations(this, detailView, titleView, favoritesView, settingsView);
 
         searchView = findViewById(R.id.searchView);
         searchView.setOnClickListener(new View.OnClickListener() {
@@ -119,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         displayedFavorites = new ArrayList<>(MainActivity.currentFavorites);
-        RecyclerView favoritesView = findViewById(R.id.listView);
+        RecyclerView listView = findViewById(R.id.listView);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
 
         mAdapter = new MyAdapter(displayedFavorites);
@@ -135,9 +141,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
 
-        favoritesView.setHasFixedSize(true);
-        favoritesView.setLayoutManager(layoutManager);
-        favoritesView.setAdapter(mAdapter);
+        listView.setHasFixedSize(true);
+        listView.setLayoutManager(layoutManager);
+        listView.setAdapter(mAdapter);
     }
 
     @Override
@@ -145,10 +151,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onStart();
         mMapView.onStart();
 
-        ExtraneousMethods.InitializeAnimations(this, (TableLayout)findViewById(R.id.detailView), (RelativeLayout)findViewById(R.id.titleView), (RelativeLayout)findViewById(R.id.favoritesView), (RelativeLayout)findViewById(R.id.settingsView));
-
-        FrameLayout adSpace = findViewById(R.id.adSpace);
-        adSpace.addView(ExtraneousMethods.detailAdView);
+        if (ExtraneousMethods.adsReady) {
+            FrameLayout adSpace = findViewById(R.id.adSpace);
+            adSpace.addView(ExtraneousMethods.detailAdView);
+        }
     }
 
     @Override
@@ -268,7 +274,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Cursor cursor = ExtraneousMethods.GetCursorFromId(this, currentId);
         cursor.moveToNext();
 
-        currentFavorited = ExtraneousMethods.UpdateText(cursor, (TextView)findViewById(R.id.titleText), (TextView)findViewById(R.id.categoryText), (TextView)findViewById(R.id.dateText), (TextView)findViewById(R.id.refText), (TextView)findViewById(R.id.streetText), (TextView)findViewById(R.id.locationText), (TextView)findViewById(R.id.countyText), (TextView)findViewById(R.id.buildersText), (ImageButton)findViewById(R.id.favoriteButton));
+        //currentFavorited = ExtraneousMethods.UpdateText(cursor, (TextView)findViewById(R.id.titleText), (TextView)findViewById(R.id.categoryText), (TextView)findViewById(R.id.dateText), (TextView)findViewById(R.id.refText), (TextView)findViewById(R.id.streetText), (TextView)findViewById(R.id.locationText), (TextView)findViewById(R.id.countyText), (TextView)findViewById(R.id.buildersText), (ImageButton)findViewById(R.id.favoriteButton));
         ExtraneousMethods.DisplayViews();
 
         ExtraneousMethods.MoveMap(map, marker.getPosition().latitude, marker.getPosition().longitude, map.getCameraPosition().zoom, true, true);

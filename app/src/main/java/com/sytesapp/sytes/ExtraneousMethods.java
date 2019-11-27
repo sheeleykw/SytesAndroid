@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.RelativeSizeSpan;
@@ -18,6 +19,8 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TextView;
+
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
@@ -39,6 +42,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 
+import static com.sytesapp.sytes.MainActivity.goingToPoint;
+import static com.sytesapp.sytes.MainActivity.currentId;
+import static com.sytesapp.sytes.MainActivity.markerHashMap;
+
 class ExtraneousMethods {
 
     private static SQLiteDatabase itemDatabase;
@@ -53,18 +60,13 @@ class ExtraneousMethods {
     private static ObjectAnimator settingsRightAnimation;
     static AdView detailAdView;
     private static ArrayList<AdView> listAds = new ArrayList<>();
-    private static boolean itemDatabaseReady = false;
-    private static boolean cityDatabaseReady = false;
-    private static boolean adsReady = false;
+    static boolean adsReady = false;
+    public static boolean databasesReady = false;
 
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     //Begin Map/Database related Methods
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     static Cursor GetCursorFromRegion(Context context, VisibleRegion vr) {
-        if (!itemDatabaseReady) {
-            InitializeItemDatabase(context);
-        }
-
         String[] projection = { ItemDetails.COL_1, ItemDetails.COL_3, ItemDetails.COL_4, ItemDetails.COL_5, ItemDetails.COL_7 };
         String selection = ItemDetails.COL_4 + " < ?  AND " + ItemDetails.COL_4 + " > ? AND " + ItemDetails.COL_5 + " < ? AND " + ItemDetails.COL_5 + " > ?";
         String[] selectionArgs = {  String.valueOf(vr.latLngBounds.northeast.latitude), String.valueOf(vr.latLngBounds.southwest.latitude), String.valueOf(vr.latLngBounds.northeast.longitude), String.valueOf(vr.latLngBounds.southwest.longitude) };
@@ -73,10 +75,6 @@ class ExtraneousMethods {
     }
 
     static Cursor GetCursorFromId(Context context, String id) {
-        if (!itemDatabaseReady) {
-            InitializeItemDatabase(context);
-        }
-
         String[] projection = { ItemDetails.COL_2, ItemDetails.COL_3, ItemDetails.COL_6, ItemDetails.COL_7, ItemDetails.COL_8, ItemDetails.COL_9, ItemDetails.COL_10, ItemDetails.COL_11, ItemDetails.COL_12, ItemDetails.COL_13 };
         String selection = ItemDetails.COL_1 + " = ?";
         String[] selectionArgs = { id };
@@ -85,10 +83,6 @@ class ExtraneousMethods {
     }
 
     static LatLng GetLatLngFromId(Context context, String id) {
-        if (!itemDatabaseReady) {
-            InitializeItemDatabase(context);
-        }
-
         if (id.equals("0")) {
             return new LatLng(Double.valueOf(SearchActivity.selectedPosition.split(",")[0]), Double.valueOf(SearchActivity.selectedPosition.split(",")[1]));
         }
@@ -108,10 +102,6 @@ class ExtraneousMethods {
     }
 
     static void GetFavorited(Context context) {
-        if (!itemDatabaseReady) {
-            InitializeItemDatabase(context);
-        }
-
         String[] projection = { ItemDetails.COL_1, ItemDetails.COL_3, ItemDetails.COL_7 };
         String selection = ItemDetails.COL_13 + " = ?";
         String[] selectionArgs = { "TRUE" };
@@ -131,13 +121,6 @@ class ExtraneousMethods {
     }
 
     static void GetSearched(Context context, String searchQuery) {
-        if (!itemDatabaseReady) {
-            InitializeItemDatabase(context);
-        }
-        if (!cityDatabaseReady) {
-            InitializeCityDatabase(context);
-        }
-
         String[] projection = { ItemDetails.COL_1, ItemDetails.COL_3, ItemDetails.COL_4, ItemDetails.COL_5, ItemDetails.COL_9, ItemDetails.COL_11 };
         String selection = ItemDetails.COL_3 + " LIKE ?";
         String[] selectionArgs = { "%" + searchQuery + "%" };
@@ -149,7 +132,7 @@ class ExtraneousMethods {
             SearchActivity.searchList.add(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_1)) + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)) + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_9)) + ", " + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_11)) + "\n" + cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_4)) + "," + cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_5)));
         }
         cursor.close();
-        
+
         String[] cityProjection = { ItemDetails.COL_3, ItemDetails.COL_4, ItemDetails.COL_5, "StateName", "NumOfPoints" };
 
         cursor = cityDatabase.query( "cities", cityProjection, selection, selectionArgs, null, null, ItemDetails.COL_3);
@@ -297,38 +280,6 @@ class ExtraneousMethods {
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     //Begin Initialization related methods
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    static void InitializeAds(Context context){
-        if(!adsReady) {
-            MobileAds.initialize(context, new OnInitializationCompleteListener() {
-                @Override
-                public void onInitializationComplete(InitializationStatus initializationStatus) {
-                }
-            });
-
-            AdRequest adRequest = new AdRequest.Builder().addTestDevice("481D9EB0E450EFE1F74321C81D584BCE").build();
-            float widthPixels = context.getApplicationContext().getResources().getDisplayMetrics().widthPixels;
-            float density = context.getApplicationContext().getResources().getDisplayMetrics().density;
-            int adWidth = (int) (widthPixels / density);
-
-            detailAdView = new AdView(context);
-            detailAdView.setAdUnitId("ca-app-pub-3281339494640251/9986601233");
-
-            detailAdView.setAdSize(AdSize.getPortraitAnchoredAdaptiveBannerAdSize(context, adWidth));
-            detailAdView.loadAd(adRequest);
-
-            for (int i = 0; i < 9; i ++) {
-                AdView listAdView = new AdView(context);
-                listAdView.setAdUnitId("ca-app-pub-3281339494640251/4734274558");
-
-                listAdView.setAdSize(AdSize.getPortraitAnchoredAdaptiveBannerAdSize(context, adWidth - 16));
-                listAdView.loadAd(adRequest);
-                listAds.add(listAdView);
-            }
-
-            adsReady = true;
-        }
-    }
-
     static void InitializeAnimations(Context context, TableLayout detailView, RelativeLayout titleView, RelativeLayout favoritesView, RelativeLayout settingsView) {
         detailUpAnimation = ObjectAnimator.ofFloat(detailView, "translationY", 0);
         detailUpAnimation.setDuration(500);
@@ -351,33 +302,71 @@ class ExtraneousMethods {
         settingsRightAnimation.setDuration(500);
     }
 
-    private static void InitializeItemDatabase(Context context) {
+    public static class InitializeDatabases extends AsyncTask<Context, Void, Void> {
+        @Override
+        protected Void doInBackground(Context... contexts) {
+            ItemDatabase dbHelper = new ItemDatabase(contexts[0]);
 
-        ItemDatabase dbHelper = new ItemDatabase(context);
+            try {
+                dbHelper.updateDataBase();
+                itemDatabase = dbHelper.getWritableDatabase();
+            } catch (Exception exception) {
+                throw new Error("UnableToUpdateDatabase");
+            }
 
-        try {
-            dbHelper.updateDataBase();
-            itemDatabase = dbHelper.getWritableDatabase();
-        } catch (Exception exception) {
-            throw new Error("UnableToUpdateDatabase");
+            CityDatabase dbHelper2 = new CityDatabase(contexts[0]);
+
+            try {
+                dbHelper2.updateDataBase();
+                cityDatabase = dbHelper2.getWritableDatabase();
+            } catch (Exception exception) {
+                throw new Error("UnableToUpdateDatabase");
+            }
+
+            databasesReady = true;
+
+            return null;
         }
-
-        itemDatabaseReady = true;
     }
-    
-    private static void InitializeCityDatabase(Context context) {
 
-        CityDatabase dbHelper = new CityDatabase(context);
-
-        try {
-            dbHelper.updateDataBase();
-            cityDatabase = dbHelper.getWritableDatabase();
-        } catch (Exception exception) {
-            throw new Error("UnableToUpdateDatabase");
-        }
-        
-        cityDatabaseReady = true;
-    }
+//    public static class InitializeAds extends AsyncTask<Context, Void, Context> {
+//        @Override
+//        protected Context doInBackground(Context... contexts) {
+//            MobileAds.initialize(contexts[0], new OnInitializationCompleteListener() {
+//                @Override
+//                public void onInitializationComplete(InitializationStatus initializationStatus) {
+//                }
+//            });
+//
+//            float widthPixels = contexts[0].getApplicationContext().getResources().getDisplayMetrics().widthPixels;
+//            float density = contexts[0].getApplicationContext().getResources().getDisplayMetrics().density;
+//            adWidth = (int) (widthPixels / density);
+//
+//            return contexts[0];
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Context context) {
+//            AdRequest adRequest = new AdRequest.Builder().addTestDevice("481D9EB0E450EFE1F74321C81D584BCE").build();
+//
+//            detailAdView = new AdView(context);
+//            detailAdView.setAdUnitId("ca-app-pub-3281339494640251/9986601233");
+//
+//            detailAdView.setAdSize(AdSize.getPortraitAnchoredAdaptiveBannerAdSize(context, adWidth));
+//            detailAdView.loadAd(adRequest);
+//
+//            for (int i = 0; i < 9; i ++) {
+//                AdView listAdView = new AdView(context);
+//                listAdView.setAdUnitId("ca-app-pub-3281339494640251/4734274558");
+//
+//                listAdView.setAdSize(AdSize.getPortraitAnchoredAdaptiveBannerAdSize(context, adWidth - 16));
+//                listAdView.loadAd(adRequest);
+//                listAds.add(listAdView);
+//            }
+//
+//            adsReady = true;
+//        }
+//    }
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     //End Initialization related methods
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
