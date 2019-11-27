@@ -59,6 +59,7 @@ class ExtraneousMethods {
     private static ObjectAnimator settingsLeftAnimation;
     private static ObjectAnimator settingsRightAnimation;
     static AdView detailAdView;
+    static int adWidth;
     private static ArrayList<AdView> listAds = new ArrayList<>();
     static boolean adsReady = false;
     public static boolean databasesReady = false;
@@ -329,44 +330,44 @@ class ExtraneousMethods {
         }
     }
 
-//    public static class InitializeAds extends AsyncTask<Context, Void, Context> {
-//        @Override
-//        protected Context doInBackground(Context... contexts) {
-//            MobileAds.initialize(contexts[0], new OnInitializationCompleteListener() {
-//                @Override
-//                public void onInitializationComplete(InitializationStatus initializationStatus) {
-//                }
-//            });
-//
-//            float widthPixels = contexts[0].getApplicationContext().getResources().getDisplayMetrics().widthPixels;
-//            float density = contexts[0].getApplicationContext().getResources().getDisplayMetrics().density;
-//            adWidth = (int) (widthPixels / density);
-//
-//            return contexts[0];
-//        }
-//
-//        @Override
-//        protected void onPostExecute(Context context) {
-//            AdRequest adRequest = new AdRequest.Builder().addTestDevice("481D9EB0E450EFE1F74321C81D584BCE").build();
-//
-//            detailAdView = new AdView(context);
-//            detailAdView.setAdUnitId("ca-app-pub-3281339494640251/9986601233");
-//
-//            detailAdView.setAdSize(AdSize.getPortraitAnchoredAdaptiveBannerAdSize(context, adWidth));
-//            detailAdView.loadAd(adRequest);
-//
-//            for (int i = 0; i < 9; i ++) {
-//                AdView listAdView = new AdView(context);
-//                listAdView.setAdUnitId("ca-app-pub-3281339494640251/4734274558");
-//
-//                listAdView.setAdSize(AdSize.getPortraitAnchoredAdaptiveBannerAdSize(context, adWidth - 16));
-//                listAdView.loadAd(adRequest);
-//                listAds.add(listAdView);
-//            }
-//
-//            adsReady = true;
-//        }
-//    }
+    public static class InitializeAds extends AsyncTask<Context, Void, Context> {
+        @Override
+        protected Context doInBackground(Context... contexts) {
+            MobileAds.initialize(contexts[0], new OnInitializationCompleteListener() {
+                @Override
+                public void onInitializationComplete(InitializationStatus initializationStatus) {
+                }
+            });
+
+            float widthPixels = contexts[0].getApplicationContext().getResources().getDisplayMetrics().widthPixels;
+            float density = contexts[0].getApplicationContext().getResources().getDisplayMetrics().density;
+            adWidth = (int) (widthPixels / density);
+
+            return contexts[0];
+        }
+
+        @Override
+        protected void onPostExecute(Context context) {
+            AdRequest adRequest = new AdRequest.Builder().addTestDevice("481D9EB0E450EFE1F74321C81D584BCE").build();
+
+            detailAdView = new AdView(context);
+            detailAdView.setAdUnitId("ca-app-pub-3281339494640251/9986601233");
+
+            detailAdView.setAdSize(AdSize.getPortraitAnchoredAdaptiveBannerAdSize(context, adWidth));
+            detailAdView.loadAd(adRequest);
+
+            for (int i = 0; i < 9; i ++) {
+                AdView listAdView = new AdView(context);
+                listAdView.setAdUnitId("ca-app-pub-3281339494640251/4734274558");
+
+                listAdView.setAdSize(AdSize.getPortraitAnchoredAdaptiveBannerAdSize(context, adWidth - 16));
+                listAdView.loadAd(adRequest);
+                listAds.add(listAdView);
+            }
+
+            adsReady = true;
+        }
+    }
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     //End Initialization related methods
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
