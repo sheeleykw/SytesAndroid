@@ -69,7 +69,7 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void searchInitialize() {
-        ExtraneousMethods.GetSearched(this, searchQuery);
+        ExtraneousMethods.GetSearched(searchQuery);
         mAdapter.notifyDataSetChanged();
     }
 

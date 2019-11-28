@@ -10,7 +10,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.text.Spannable;
-import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.text.style.UnderlineSpan;
@@ -19,8 +19,6 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TextView;
-
-import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
@@ -37,14 +35,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
 import com.google.common.collect.BiMap;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
-
-import static com.sytesapp.sytes.MainActivity.goingToPoint;
-import static com.sytesapp.sytes.MainActivity.currentId;
-import static com.sytesapp.sytes.MainActivity.markerHashMap;
 
 class ExtraneousMethods {
 
@@ -58,16 +51,24 @@ class ExtraneousMethods {
     private static ObjectAnimator favoritesRightAnimation;
     private static ObjectAnimator settingsLeftAnimation;
     private static ObjectAnimator settingsRightAnimation;
+    private static SpannableStringBuilder category;
+    private static SpannableStringBuilder date;
+    private static SpannableStringBuilder ref;
+    private static SpannableStringBuilder street;
+    private static SpannableStringBuilder location;
+    private static SpannableStringBuilder county;
+    private static SpannableStringBuilder builders;
     static AdView detailAdView;
-    static int adWidth;
-    private static ArrayList<AdView> listAds = new ArrayList<>();
     static boolean adsReady = false;
-    public static boolean databasesReady = false;
+    private static int adWidth;
+    private static AdRequest adRequest;
+    private static ArrayList<AdView> listAds = new ArrayList<>();
+    private static boolean wordsReady = false;
 
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     //Begin Map/Database related Methods
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    static Cursor GetCursorFromRegion(Context context, VisibleRegion vr) {
+    static Cursor GetCursorFromRegion(VisibleRegion vr) {
         String[] projection = { ItemDetails.COL_1, ItemDetails.COL_3, ItemDetails.COL_4, ItemDetails.COL_5, ItemDetails.COL_7 };
         String selection = ItemDetails.COL_4 + " < ?  AND " + ItemDetails.COL_4 + " > ? AND " + ItemDetails.COL_5 + " < ? AND " + ItemDetails.COL_5 + " > ?";
         String[] selectionArgs = {  String.valueOf(vr.latLngBounds.northeast.latitude), String.valueOf(vr.latLngBounds.southwest.latitude), String.valueOf(vr.latLngBounds.northeast.longitude), String.valueOf(vr.latLngBounds.southwest.longitude) };
@@ -75,7 +76,7 @@ class ExtraneousMethods {
         return itemDatabase.query( ItemDetails.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
     }
 
-    static Cursor GetCursorFromId(Context context, String id) {
+    static Cursor GetCursorFromId(String id) {
         String[] projection = { ItemDetails.COL_2, ItemDetails.COL_3, ItemDetails.COL_6, ItemDetails.COL_7, ItemDetails.COL_8, ItemDetails.COL_9, ItemDetails.COL_10, ItemDetails.COL_11, ItemDetails.COL_12, ItemDetails.COL_13 };
         String selection = ItemDetails.COL_1 + " = ?";
         String[] selectionArgs = { id };
@@ -83,7 +84,7 @@ class ExtraneousMethods {
         return itemDatabase.query( ItemDetails.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
     }
 
-    static LatLng GetLatLngFromId(Context context, String id) {
+    static LatLng GetLatLngFromId(String id) {
         if (id.equals("0")) {
             return new LatLng(Double.valueOf(SearchActivity.selectedPosition.split(",")[0]), Double.valueOf(SearchActivity.selectedPosition.split(",")[1]));
         }
@@ -102,7 +103,7 @@ class ExtraneousMethods {
         }
     }
 
-    static void GetFavorited(Context context) {
+    static void GetFavorited() {
         String[] projection = { ItemDetails.COL_1, ItemDetails.COL_3, ItemDetails.COL_7 };
         String selection = ItemDetails.COL_13 + " = ?";
         String[] selectionArgs = { "TRUE" };
@@ -121,7 +122,7 @@ class ExtraneousMethods {
         cursor.close();
     }
 
-    static void GetSearched(Context context, String searchQuery) {
+    static void GetSearched(String searchQuery) {
         String[] projection = { ItemDetails.COL_1, ItemDetails.COL_3, ItemDetails.COL_4, ItemDetails.COL_5, ItemDetails.COL_9, ItemDetails.COL_11 };
         String selection = ItemDetails.COL_3 + " LIKE ?";
         String[] selectionArgs = { "%" + searchQuery + "%" };
@@ -186,43 +187,19 @@ class ExtraneousMethods {
             favoriteButton.setImageResource(R.drawable.greyheart);
         }
 
+        if (wordsReady) {
+            category.replace(10, category.length(), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_7)));
+            date.replace(24, date.length(), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_6)));
+            ref.replace(18, ref.length(), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_2)));
+            street.replace(25, street.length(), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_8)));
+            location.replace(10, location.length(), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_9)) + ", " + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_11)));
+            county.replace(8, county.length(), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_10)));
+            builders.replace(21, builders.length(), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_12)));
+        }
+
+        System.out.println(street.toString());
+
         titleText.setText(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)));
-
-        SpannableString category = new SpannableString(MessageFormat.format("CATEGORY:\n{0}", cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_7))));
-        category.setSpan(new UnderlineSpan(),0, 9, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        category.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),0, 9, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        category.setSpan(new RelativeSizeSpan(1.2f),0, 9, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-        SpannableString date = new SpannableString(MessageFormat.format("DATE ADDED TO REGISTER:\n{0}", cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_6))));
-        date.setSpan(new UnderlineSpan(),0, 23, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        date.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),0, 23, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        date.setSpan(new RelativeSizeSpan(1.2f),0, 23, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-        SpannableString ref = new SpannableString(MessageFormat.format("REFERENCE NUMBER:\n{0}", cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_2))));
-        ref.setSpan(new UnderlineSpan(),0, 17, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        ref.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),0, 17, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        ref.setSpan(new RelativeSizeSpan(1.2f),0, 17, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-        SpannableString street = new SpannableString(MessageFormat.format("REPORTED STREET ADDRESS:\n{0}", cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_8))));
-        street.setSpan(new UnderlineSpan(),0, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        street.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),0, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        street.setSpan(new RelativeSizeSpan(1.2f),0, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-        SpannableString location = new SpannableString(MessageFormat.format("LOCATION:\n{0}, {1}", cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_9)), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_11))));
-        location.setSpan(new UnderlineSpan(),0, 10, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        location.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),0, 10, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        location.setSpan(new RelativeSizeSpan(1.2f),0, 10, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-        SpannableString county = new SpannableString(MessageFormat.format("COUNTY:\n{0}", cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_10))));
-        county.setSpan(new UnderlineSpan(),0, 7, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        county.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),0, 7, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        county.setSpan(new RelativeSizeSpan(1.2f),0, 7, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-        SpannableString builders = new SpannableString(MessageFormat.format("ARCHITECTS/BUILDERS:\n{0}", cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_12))));
-        builders.setSpan(new UnderlineSpan(),0, 20, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        builders.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),0, 20, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        builders.setSpan(new RelativeSizeSpan(1.2f),0, 20, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
         categoryText.setText(category);
         dateText.setText(date);
         refText.setText(ref);
@@ -324,7 +301,42 @@ class ExtraneousMethods {
                 throw new Error("UnableToUpdateDatabase");
             }
 
-            databasesReady = true;
+            category = new SpannableStringBuilder("CATEGORY:\n");
+            category.setSpan(new UnderlineSpan(),0, 9, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            category.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),0, 9, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            category.setSpan(new RelativeSizeSpan(1.2f),0, 9, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            date = new SpannableStringBuilder("DATE ADDED TO REGISTER:\n");
+            date.setSpan(new UnderlineSpan(),0, 23, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            date.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),0, 23, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            date.setSpan(new RelativeSizeSpan(1.2f),0, 23, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            ref = new SpannableStringBuilder("REFERENCE NUMBER:\n");
+            ref.setSpan(new UnderlineSpan(),0, 17, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            ref.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),0, 17, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            ref.setSpan(new RelativeSizeSpan(1.2f),0, 17, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            street = new SpannableStringBuilder("REPORTED STREET ADDRESS:\n");
+            street.setSpan(new UnderlineSpan(),0, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            street.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),0, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            street.setSpan(new RelativeSizeSpan(1.2f),0, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            location = new SpannableStringBuilder("LOCATION:\n");
+            location.setSpan(new UnderlineSpan(),0, 10, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            location.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),0, 10, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            location.setSpan(new RelativeSizeSpan(1.2f),0, 10, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            county = new SpannableStringBuilder("COUNTY:\n");
+            county.setSpan(new UnderlineSpan(),0, 7, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            county.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),0, 7, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            county.setSpan(new RelativeSizeSpan(1.2f),0, 7, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            builders = new SpannableStringBuilder("ARCHITECTS/BUILDERS:\n");
+            builders.setSpan(new UnderlineSpan(),0, 20, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            builders.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),0, 20, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            builders.setSpan(new RelativeSizeSpan(1.2f),0, 20, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            wordsReady = true;
 
             return null;
         }
@@ -343,18 +355,20 @@ class ExtraneousMethods {
             float density = contexts[0].getApplicationContext().getResources().getDisplayMetrics().density;
             adWidth = (int) (widthPixels / density);
 
+            adRequest = new AdRequest.Builder().addTestDevice("481D9EB0E450EFE1F74321C81D584BCE").build();
+
             return contexts[0];
         }
 
         @Override
         protected void onPostExecute(Context context) {
-            AdRequest adRequest = new AdRequest.Builder().addTestDevice("481D9EB0E450EFE1F74321C81D584BCE").build();
-
             detailAdView = new AdView(context);
             detailAdView.setAdUnitId("ca-app-pub-3281339494640251/9986601233");
 
             detailAdView.setAdSize(AdSize.getPortraitAnchoredAdaptiveBannerAdSize(context, adWidth));
             detailAdView.loadAd(adRequest);
+
+            adsReady = true;
 
             for (int i = 0; i < 9; i ++) {
                 AdView listAdView = new AdView(context);
@@ -364,8 +378,6 @@ class ExtraneousMethods {
                 listAdView.loadAd(adRequest);
                 listAds.add(listAdView);
             }
-
-            adsReady = true;
         }
     }
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -400,18 +412,16 @@ class ExtraneousMethods {
     }
 
     static void AddListAdToFrame(FrameLayout frame, int listPosition) {
-        if (adsReady) {
-            int currentAd = ((listPosition - 4) / 5) % 9;
-            if (frame.getChildCount() == 0) {
-                if (listAds.get(currentAd).getParent() != null) {
-                    if (listAds.get(8 - currentAd).getParent() != null) {
-                        ((FrameLayout)listAds.get(8 - currentAd).getParent()).removeAllViews();
-                    }
-                    frame.addView(listAds.get(8 - currentAd));
+        int currentAd = ((listPosition - 4) / 5) % 9;
+        if (frame.getChildCount() == 0) {
+            if (listAds.get(currentAd).getParent() != null) {
+                if (listAds.get(8 - currentAd).getParent() != null) {
+                    ((FrameLayout)listAds.get(8 - currentAd).getParent()).removeAllViews();
                 }
-                else {
-                    frame.addView(listAds.get(currentAd));
-                }
+                frame.addView(listAds.get(8 - currentAd));
+            }
+            else {
+                frame.addView(listAds.get(currentAd));
             }
         }
     }

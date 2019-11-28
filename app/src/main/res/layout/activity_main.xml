@@ -161,134 +161,133 @@
 
             <TableRow android:layout_weight="1.0">
 
-                    <ScrollView
-                        android:id="@+id/scrollView"
+                <ScrollView
+                    android:id="@+id/scrollView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#FFFFFF"
+                    android:layout_span="4">
+
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_span="3"
-                        android:layout_weight="1.0"
-                        android:background="#FFFFFF">
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical">
+                        <RelativeLayout style="@style/DetailItem">
 
-                            <RelativeLayout style="@style/DetailItem">
+                            <ImageView
+                                android:id="@+id/categoryImage"
+                                android:layout_width="50dp"
+                                android:layout_height="50dp"
+                                android:layout_alignParentStart="true"/>
+                            <TextView
+                                android:id="@+id/categoryText"
+                                style="@style/DetailText"
+                                android:layout_toEndOf="@+id/categoryImage"/>
 
-                                <ImageView
-                                    android:id="@+id/categoryImage"
-                                    android:layout_width="50dp"
-                                    android:layout_height="50dp"
-                                    android:layout_alignParentStart="true"/>
-                                <TextView
-                                    android:id="@+id/categoryText"
-                                    style="@style/DetailText"
-                                    android:layout_toEndOf="@+id/categoryImage"/>
+                        </RelativeLayout>
 
-                            </RelativeLayout>
+                        <View style="@style/DividerBar"/>
 
-                            <View style="@style/DividerBar"/>
+                        <RelativeLayout style="@style/DetailItem">
 
-                            <RelativeLayout style="@style/DetailItem">
+                            <ImageView
+                                android:id="@+id/dateImage"
+                                android:layout_width="50dp"
+                                android:layout_height="50dp"
+                                android:layout_alignParentStart="true"/>
+                            <TextView
+                                android:id="@+id/dateText"
+                                style="@style/DetailText"
+                                android:layout_toEndOf="@+id/dateImage"/>
 
-                                <ImageView
-                                    android:id="@+id/dateImage"
-                                    android:layout_width="50dp"
-                                    android:layout_height="50dp"
-                                    android:layout_alignParentStart="true"/>
-                                <TextView
-                                    android:id="@+id/dateText"
-                                    style="@style/DetailText"
-                                    android:layout_toEndOf="@+id/dateImage"/>
+                        </RelativeLayout>
 
-                            </RelativeLayout>
+                        <View style="@style/DividerBar"/>
 
-                            <View style="@style/DividerBar"/>
+                        <RelativeLayout style="@style/DetailItem">
 
-                            <RelativeLayout style="@style/DetailItem">
+                            <ImageView
+                                android:id="@+id/refImage"
+                                android:layout_width="50dp"
+                                android:layout_height="50dp"
+                                android:layout_alignParentStart="true"/>
+                            <TextView
+                                android:id="@+id/refText"
+                                style="@style/DetailText"
+                                android:layout_toEndOf="@+id/refImage"/>
 
-                                <ImageView
-                                    android:id="@+id/refImage"
-                                    android:layout_width="50dp"
-                                    android:layout_height="50dp"
-                                    android:layout_alignParentStart="true"/>
-                                <TextView
-                                    android:id="@+id/refText"
-                                    style="@style/DetailText"
-                                    android:layout_toEndOf="@+id/refImage"/>
+                        </RelativeLayout>
 
-                            </RelativeLayout>
+                        <View style="@style/DividerBar"/>
 
-                            <View style="@style/DividerBar"/>
+                        <RelativeLayout style="@style/DetailItem">
 
-                            <RelativeLayout style="@style/DetailItem">
+                            <ImageView
+                                android:id="@+id/streetImage"
+                                android:layout_width="50dp"
+                                android:layout_height="50dp"
+                                android:layout_alignParentStart="true"/>
+                            <TextView
+                                android:id="@+id/streetText"
+                                style="@style/DetailText"
+                                android:layout_toEndOf="@+id/streetImage"/>
 
-                                <ImageView
-                                    android:id="@+id/streetImage"
-                                    android:layout_width="50dp"
-                                    android:layout_height="50dp"
-                                    android:layout_alignParentStart="true"/>
-                                <TextView
-                                    android:id="@+id/streetText"
-                                    style="@style/DetailText"
-                                    android:layout_toEndOf="@+id/streetImage"/>
+                        </RelativeLayout>
 
-                            </RelativeLayout>
+                        <View style="@style/DividerBar"/>
 
-                            <View style="@style/DividerBar"/>
+                        <RelativeLayout style="@style/DetailItem">
 
-                            <RelativeLayout style="@style/DetailItem">
+                            <ImageView
+                                android:id="@+id/locationImage"
+                                android:layout_width="50dp"
+                                android:layout_height="50dp"
+                                android:layout_alignParentStart="true"/>
+                            <TextView
+                                android:id="@+id/locationText"
+                                style="@style/DetailText"
+                                android:layout_toEndOf="@+id/locationImage"/>
 
-                                <ImageView
-                                    android:id="@+id/locationImage"
-                                    android:layout_width="50dp"
-                                    android:layout_height="50dp"
-                                    android:layout_alignParentStart="true"/>
-                                <TextView
-                                    android:id="@+id/locationText"
-                                    style="@style/DetailText"
-                                    android:layout_toEndOf="@+id/locationImage"/>
+                        </RelativeLayout>
 
-                            </RelativeLayout>
+                        <View style="@style/DividerBar"/>
 
-                            <View style="@style/DividerBar"/>
+                        <RelativeLayout style="@style/DetailItem">
 
-                            <RelativeLayout style="@style/DetailItem">
+                            <ImageView
+                                android:id="@+id/countyImage"
+                                android:layout_width="50dp"
+                                android:layout_height="50dp"
+                                android:layout_alignParentStart="true"/>
+                            <TextView
+                                android:id="@+id/countyText"
+                                style="@style/DetailText"
+                                android:layout_toEndOf="@+id/countyImage"/>
 
-                                <ImageView
-                                    android:id="@+id/countyImage"
-                                    android:layout_width="50dp"
-                                    android:layout_height="50dp"
-                                    android:layout_alignParentStart="true"/>
-                                <TextView
-                                    android:id="@+id/countyText"
-                                    style="@style/DetailText"
-                                    android:layout_toEndOf="@+id/countyImage"/>
+                        </RelativeLayout>
 
-                            </RelativeLayout>
+                        <View style="@style/DividerBar"/>
 
-                            <View style="@style/DividerBar"/>
+                        <RelativeLayout style="@style/DetailItem">
 
-                            <RelativeLayout style="@style/DetailItem">
+                            <ImageView
+                                android:id="@+id/buildersImage"
+                                android:layout_width="50dp"
+                                android:layout_height="50dp"
+                                android:layout_alignParentStart="true"/>
+                            <TextView
+                                android:id="@+id/buildersText"
+                                style="@style/DetailText"
+                                android:layout_toEndOf="@+id/buildersImage"/>
 
-                                <ImageView
-                                    android:id="@+id/buildersImage"
-                                    android:layout_width="50dp"
-                                    android:layout_height="50dp"
-                                    android:layout_alignParentStart="true"/>
-                                <TextView
-                                    android:id="@+id/buildersText"
-                                    style="@style/DetailText"
-                                    android:layout_toEndOf="@+id/buildersImage"/>
+                        </RelativeLayout>
 
-                            </RelativeLayout>
+                        <View style="@style/DividerBar"/>
 
-                            <View style="@style/DividerBar"/>
+                    </LinearLayout>
 
-                        </LinearLayout>
-
-                    </ScrollView>
+                </ScrollView>
 
             </TableRow>
 

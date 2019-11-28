@@ -184,8 +184,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onStop() {
         super.onStop();
         mMapView.onStop();
-
-        adSpace.removeAllViews();
     }
 
     @Override
@@ -235,7 +233,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onCameraIdle() {
         VisibleRegion vr = map.getProjection().getVisibleRegion();
 
-        Cursor cursor = ExtraneousMethods.GetCursorFromRegion(this, vr);
+        Cursor cursor = ExtraneousMethods.GetCursorFromRegion(vr);
         while (cursor.moveToNext()) {
             String id = cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_1));
 
@@ -264,14 +262,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
         Objects.requireNonNull(imm).hideSoftInputFromWindow(view.getWindowToken(), 0);
 
-        if (ExtraneousMethods.adsReady && adSpace.getChildCount() < 1) {
+        if (ExtraneousMethods.adsReady) {
             adSpace.addView(ExtraneousMethods.detailAdView);
+            ExtraneousMethods.adsReady = false;
         }
 
         ((ScrollView)findViewById(R.id.scrollView)).fullScroll(View.FOCUS_UP);
 
         currentId = markerHashMap.inverse().get(marker);
-        Cursor cursor = ExtraneousMethods.GetCursorFromId(this, currentId);
+        Cursor cursor = ExtraneousMethods.GetCursorFromId(currentId);
         cursor.moveToNext();
 
         currentFavorited = ExtraneousMethods.UpdateText(cursor, (TextView)findViewById(R.id.titleText), (TextView)findViewById(R.id.categoryText), (TextView)findViewById(R.id.dateText), (TextView)findViewById(R.id.refText), (TextView)findViewById(R.id.streetText), (TextView)findViewById(R.id.locationText), (TextView)findViewById(R.id.countyText), (TextView)findViewById(R.id.buildersText), (ImageButton)findViewById(R.id.favoriteButton));
@@ -293,7 +292,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void moveToPoint() {
-        LatLng pointPosition = ExtraneousMethods.GetLatLngFromId(this, currentId);
+        LatLng pointPosition = ExtraneousMethods.GetLatLngFromId(currentId);
         if (currentId.equals("0")) {
             ExtraneousMethods.MoveMap(map, pointPosition.latitude, pointPosition.longitude, 12, false, false);
             goingToPoint = false;
@@ -416,7 +415,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 favoritesButton.setClickable(false);
 
                 if (updateFavorites) {
-                    ExtraneousMethods.GetFavorited(this);
+                    ExtraneousMethods.GetFavorited();
                     searchInitialize();
                     mAdapter.notifyDataSetChanged();
                     updateFavorites = false;
