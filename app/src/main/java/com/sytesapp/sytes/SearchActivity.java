@@ -33,10 +33,15 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public void onItemClick(View view, int position) {
                 if (!((TextView) view.findViewById(R.id.idText)).getText().toString().equals("Ad")) {
-                    MainActivity.goingToPoint = true;
                     MainActivity.currentId = ((TextView) view.findViewById(R.id.idText)).getText().toString();
                     if (MainActivity.currentId.equals("0")) {
                         selectedPosition = ((TextView) view.findViewById(R.id.latLongText)).getText().toString();
+                    }
+                    if (!MainActivity.findingCity) {
+                        MainActivity.goingToPoint = true;
+                    }
+                    else {
+                        searchQuery = ((TextView) view.findViewById(R.id.nameText)).getText().toString().trim();
                     }
                     startMapActivity(null);
                 }
@@ -69,7 +74,12 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void searchInitialize() {
-        ExtraneousMethods.GetSearched(searchQuery);
+        if (MainActivity.findingCity) {
+            ExtraneousMethods.GetCitySearched(searchQuery);
+        }
+        else {
+            ExtraneousMethods.GetSearched(searchQuery);
+        }
         mAdapter.notifyDataSetChanged();
     }
 

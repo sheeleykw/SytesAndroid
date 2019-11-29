@@ -16,6 +16,7 @@ import android.text.style.StyleSpan;
 import android.text.style.UnderlineSpan;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TextView;
@@ -103,6 +104,37 @@ class ExtraneousMethods {
         }
     }
 
+    static String GetIdFromCity(String city, String state) {
+        String[] projection = { "ID" };
+        String selection = ItemDetails.COL_3 + " LIKE ? AND " + "StateName" + " LIKE ?";
+        String[] selectionArgs = { city, state };
+        Cursor cursor = cityDatabase.query( "cities", projection, selection, selectionArgs, null, null, null);
+        cursor.moveToNext();
+
+        String id = cursor.getString(cursor.getColumnIndexOrThrow("ID"));
+
+        cursor.close();
+        return id;
+    }
+
+    static String[] GetCityFromId(String id) {
+        String[] projection = { ItemDetails.COL_3, "StateName", ItemDetails.COL_4, ItemDetails.COL_5 };
+        String selection = "ID" + " LIKE ?";
+        String[] selectionArgs = { id };
+        Cursor cursor = cityDatabase.query( "cities", projection, selection, selectionArgs, null, null, null);
+        cursor.moveToNext();
+
+        String city = cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3));
+        String state = cursor.getString(cursor.getColumnIndexOrThrow("StateName"));
+        double lat = cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_4));
+        double longi = cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_5));
+
+        String[] returnArray = {city, state, String.valueOf(lat), String.valueOf(longi)};
+
+        cursor.close();
+        return returnArray;
+    }
+
     static void GetFavorited() {
         String[] projection = { ItemDetails.COL_1, ItemDetails.COL_3, ItemDetails.COL_7 };
         String selection = ItemDetails.COL_13 + " = ?";
@@ -139,6 +171,25 @@ class ExtraneousMethods {
 
         cursor = cityDatabase.query( "cities", cityProjection, selection, selectionArgs, null, null, ItemDetails.COL_3);
 
+        while (cursor.moveToNext()) {
+            SearchActivity.searchList.add("0" + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)) + ", " + cursor.getString(cursor.getColumnIndexOrThrow("StateName")) + "\n" + "Number of sites found in city: " + cursor.getString(cursor.getColumnIndexOrThrow("NumOfPoints")) + "\n" + cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_4)) + "," + cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_5)));
+        }
+        cursor.close();
+
+        if (MainActivity.userLocation != null ) {
+            SortSearchList();
+        }
+
+    }
+
+    static void GetCitySearched(String searchQuery) {
+        String[] cityProjection = { ItemDetails.COL_3, ItemDetails.COL_4, ItemDetails.COL_5, "StateName", "NumOfPoints" };
+        String selection = ItemDetails.COL_3 + " LIKE ?";
+        String[] selectionArgs = { "%" + searchQuery + "%" };
+
+        Cursor cursor = cityDatabase.query( "cities", cityProjection, selection, selectionArgs, null, null, ItemDetails.COL_3);
+
+        SearchActivity.searchList.clear();
         while (cursor.moveToNext()) {
             SearchActivity.searchList.add("0" + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)) + ", " + cursor.getString(cursor.getColumnIndexOrThrow("StateName")) + "\n" + "Number of sites found in city: " + cursor.getString(cursor.getColumnIndexOrThrow("NumOfPoints")) + "\n" + cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_4)) + "," + cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_5)));
         }
@@ -196,8 +247,6 @@ class ExtraneousMethods {
             county.replace(8, county.length(), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_10)));
             builders.replace(21, builders.length(), cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_12)));
         }
-
-        System.out.println(street.toString());
 
         titleText.setText(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)));
         categoryText.setText(category);
@@ -258,7 +307,7 @@ class ExtraneousMethods {
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     //Begin Initialization related methods
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    static void InitializeAnimations(Context context, TableLayout detailView, RelativeLayout titleView, RelativeLayout favoritesView, RelativeLayout settingsView) {
+    static void InitializeAnimations(Context context, TableLayout detailView, RelativeLayout titleView, RelativeLayout favoritesView, LinearLayout settingsView) {
         detailUpAnimation = ObjectAnimator.ofFloat(detailView, "translationY", 0);
         detailUpAnimation.setDuration(500);
         detailDownAnimation = ObjectAnimator.ofFloat(detailView, "translationY", 500 * context.getApplicationContext().getResources().getDisplayMetrics().density);

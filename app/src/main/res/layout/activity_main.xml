@@ -173,7 +173,9 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
 
-                        <RelativeLayout style="@style/DetailItem">
+                        <RelativeLayout
+                            android:id="@+id/categorySlot"
+                            style="@style/DetailItem">
 
                             <ImageView
                                 android:id="@+id/categoryImage"
@@ -362,7 +364,7 @@
 
     </RelativeLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/settingsView"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -370,16 +372,59 @@
         app:layout_constraintBottom_toBottomOf="@+id/mapView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchDivider"
-        android:translationX="500dp">
+        app:layout_constraintTop_toTopOf="parent"
+        android:translationX="500dp"
+        android:orientation="vertical">
 
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="ME"/>
+            android:layout_height="80dp"
+            android:text="@string/settings"
+            android:textSize="30sp"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            android:textAlignment="center"
+            android:gravity="center"/>
 
-    </RelativeLayout>
+        <View style="@style/DividerBar"/>
+
+        <Switch
+            android:id="@+id/userStart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="60dp"
+            android:switchMinWidth="50dp"
+            android:text="Start At User Location: "
+            android:textSize="20sp"
+            android:textColor="#000000"
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:background="@drawable/imagebutton"/>
+
+        <View style="@style/DividerBar"/>
+
+        <TextView
+            android:id="@+id/locationStart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="60dp"
+            android:gravity="center_vertical"
+            android:textSize="20sp"
+            android:textColor="#000000"
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:background="@drawable/imagebutton"
+            android:clickable="true"
+            android:focusable="true"
+            android:onClick="changeCityLocation"/>
+
+        <View style="@style/DividerBar"/>
+
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/favoritesView"

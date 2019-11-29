@@ -3,6 +3,7 @@ package com.sytesapp.sytes;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -11,11 +12,14 @@ import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.SearchView;
+import android.widget.Switch;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
@@ -40,6 +44,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -55,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ImageButton homeButton;
     private ImageButton settingsButton;
     private FrameLayout adSpace;
+    private TextView locationStart;
 
     private String currentView = "Home";
     private String currentFavorited;
@@ -62,32 +68,51 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private String favoriteSearchQuery;
     private RecyclerView.Adapter mAdapter;
     private ArrayList<String> displayedFavorites;
+    private SharedPreferences settings;
 
     public static String currentId;
     public static String searchQuery;
     public static String photosLink = null;
     public static String docsLink = null;
     public static boolean goingToPoint = false;
+    public static boolean findingCity = false;
     public static Location userLocation = null;
+    public static String startupLocation;
     public static ArrayList<String> currentFavorites = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         new ExtraneousMethods.InitializeDatabases().execute(this);
         new ExtraneousMethods.InitializeAds().execute(this);
+        settings = getApplicationContext().getSharedPreferences("SETTINGS", 0);
+        startupLocation = settings.getString("StartUpLocation", "0");
 
         favoritesButton = findViewById(R.id.favoritesButton);
         homeButton = findViewById(R.id.homeButton);
         settingsButton = findViewById(R.id.settingsButton);
+        locationStart = findViewById(R.id.locationStart);
         TableLayout detailView = findViewById(R.id.detailView);
         RelativeLayout titleView = findViewById(R.id.titleView);
         RelativeLayout favoritesView = findViewById(R.id.favoritesView);
-        RelativeLayout settingsView = findViewById(R.id.settingsView);
+        LinearLayout settingsView = findViewById(R.id.settingsView);
         adSpace = findViewById(R.id.adSpace);
+
+        Switch switchView = findViewById(R.id.userStart);
+        if (startupLocation.equals("0")) {
+            switchView.setChecked(true);
+            locationStart.setTextColor(Color.parseColor("#A5C7C7C7"));
+            locationStart.setClickable(false);
+            locationStart.setText(settings.getString("LocationSetting", "Start At City Location: Valley City, Illinois"));
+        }
+        switchView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                MainActivity.this.onCheckedChanged(isChecked);
+            }
+        });
 
         ExtraneousMethods.InitializeAnimations(this, detailView, titleView, favoritesView, settingsView);
 
@@ -146,6 +171,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         listView.setHasFixedSize(true);
         listView.setLayoutManager(layoutManager);
         listView.setAdapter(mAdapter);
+
+        setTheme(R.style.AppTheme);
     }
 
     @Override
@@ -160,7 +187,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMapView.onResume();
 
         searchQuery = SearchActivity.searchQuery;
-        searchView.setQuery(searchQuery, false);
+
+        if (findingCity) {
+            locationStart.setText(MessageFormat.format("Start At User Location: {0},{1}", searchQuery.split(",")[0], searchQuery.split(",")[1]));
+            onCheckedChanged(false);
+            findingCity = false;
+        }
+        else {
+            searchView.setQuery(searchQuery, false);
+        }
 
         if (goingToPoint) {
             moveToPoint();
@@ -216,7 +251,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         map.setOnCameraIdleListener(this);
         map.setOnMarkerClickListener(this);
         map.setOnInfoWindowCloseListener(this);
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(39.706613, -90.652503), 15));
+
+        if (!startupLocation.equals("0")) {
+            String[] returnArray = ExtraneousMethods.GetCityFromId(startupLocation);
+            locationStart.setText(MessageFormat.format("Start At User Location: {0},{1}", returnArray[0], returnArray[1]));
+
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Double.valueOf(returnArray[2]), Double.valueOf(returnArray[3])), 12));
+        }
+
 
         try {
             map.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style));
@@ -320,7 +362,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     public void onSuccess(Location location) {
                         if (location != null) {
                             userLocation = location;
-                            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()), 15));
+                            if (startupLocation.equals("0")) {
+                                map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()), 15));
+                            }
+
                         }
                     }
                 });
@@ -337,6 +382,32 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         else {
             favoriteButton.setImageResource(R.drawable.greyheart);
         }
+    }
+
+    public void onCheckedChanged(boolean isChecked) {
+        SharedPreferences.Editor editor = settings.edit();
+        if (isChecked) {
+            editor.putString("StartUpLocation", "0");
+            locationStart.setTextColor(Color.parseColor("#A5C7C7C7"));
+            locationStart.setClickable(false);
+            editor.putString("LocationSetting", locationStart.getText().toString());
+        }
+        else {
+            String cityState = locationStart.getText().toString().split(":")[1];
+            String city = cityState.split(",")[0].trim();
+            String state = cityState.split(",")[1].trim();
+            String id = ExtraneousMethods.GetIdFromCity(city, state);
+            editor.putString("StartUpLocation", id);
+            locationStart.setTextColor(Color.parseColor("#000000"));
+            locationStart.setClickable(true);
+        }
+        editor.apply();
+    }
+
+    public void changeCityLocation(View view) {
+        findingCity = true;
+        searchQuery = locationStart.getText().toString().split(":")[1].split(",")[0].trim();
+        startSearchActivity(view);
     }
 
     private void searchInitialize() {
@@ -363,10 +434,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
         if (view.equals(homeButton)) {
-            System.out.println("home");
-            System.out.println(searchQuery);
             searchView.setQueryHint("Search Database");
-            searchView.setQuery(searchQuery, false);
+            searchView.setQuery("", false);
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit(String query) {
@@ -392,10 +461,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
         else {
             if (view.equals(favoritesButton)) {
-                System.out.println("favorites");
-                System.out.println(favoriteSearchQuery);
                 searchView.setQueryHint("Search Favorites");
-                searchView.setQuery(favoriteSearchQuery, false);
+                searchView.setQuery("", false);
                 searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                     @Override
                     public boolean onQueryTextSubmit(String query) {
@@ -403,7 +470,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     }
                     @Override
                     public boolean onQueryTextChange(String query) {
-                        System.out.println(query);
                         favoriteSearchQuery = query;
                         searchInitialize();
                         mAdapter.notifyDataSetChanged();
