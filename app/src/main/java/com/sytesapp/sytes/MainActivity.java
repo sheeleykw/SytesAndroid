@@ -355,6 +355,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 EnableUserLocation();
             }
+            else {
+                Switch switchView = findViewById(R.id.userStart);
+                switchView.setTextColor(Color.parseColor("#A5C7C7C7"));
+                switchView.setClickable(false);
+            }
         }
     }
 
