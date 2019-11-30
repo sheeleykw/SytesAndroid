@@ -287,19 +287,24 @@
 
                         <View style="@style/DividerBar"/>
 
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="70dp"
-                            android:text="@string/report_issue"
-                            android:textSize="20sp"
-                            android:textColor="#000000"
-                            android:textStyle="bold"
-                            android:background="@drawable/imagebutton"
-                            android:padding="15dp"
-                            android:gravity="center"
-                            android:clickable="true"
-                            android:focusable="true"
-                            android:onClick="sendEmail"/>
+                        <RelativeLayout style="@style/DetailItem"
+                            android:background="#6B6B6B">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="65dp"
+                                android:text="@string/report_issue"
+                                android:textSize="20sp"
+                                android:textColor="#000000"
+                                android:textStyle="bold"
+                                android:background="@drawable/imagebutton"
+                                android:padding="15dp"
+                                android:gravity="center"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:onClick="sendEmail"/>
+
+                        </RelativeLayout>
 
                         <View style="@style/DividerBar"/>
 

@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         new ExtraneousMethods.InitializeDatabases().execute(this);
         new ExtraneousMethods.InitializeAds().execute(this);
         settings = getApplicationContext().getSharedPreferences("SETTINGS", 0);
-        startupLocation = settings.getString("StartUpLocation", "0");
+        startupLocation = settings.getString("StartUpLocation", "1840012541");
 
         favoritesButton = findViewById(R.id.favoritesButton);
         homeButton = findViewById(R.id.homeButton);
@@ -105,11 +105,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         adSpace = findViewById(R.id.adSpace);
 
         Switch switchView = findViewById(R.id.userStart);
+        locationStart.setText(settings.getString("LocationSetting", "Start At City Location: Valley City, Illinois"));
         if (startupLocation.equals("0")) {
             switchView.setChecked(true);
             locationStart.setTextColor(Color.parseColor("#A5C7C7C7"));
             locationStart.setClickable(false);
-            locationStart.setText(settings.getString("LocationSetting", "Start At City Location: Valley City, Illinois"));
         }
         switchView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -255,14 +255,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         map.setOnCameraIdleListener(this);
         map.setOnMarkerClickListener(this);
         map.setOnInfoWindowCloseListener(this);
-
-        if (!startupLocation.equals("0")) {
-            String[] returnArray = ExtraneousMethods.GetCityFromId(startupLocation);
-            locationStart.setText(MessageFormat.format("Start At User Location: {0}, {1}", returnArray[0].trim(), returnArray[1].trim()));
-
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Double.valueOf(returnArray[2]), Double.valueOf(returnArray[3])), 12));
-        }
-
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(39.706613, -90.652503), 12));
 
         try {
             map.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style));
@@ -272,6 +265,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             EnableUserLocation();
+        }
+        else {
+            if (!startupLocation.equals("0") && !startupLocation.equals("1840012541")) {
+                String[] returnArray = ExtraneousMethods.GetCityFromId(startupLocation);
+                locationStart.setText(MessageFormat.format("Start At User Location: {0}, {1}", returnArray[0].trim(), returnArray[1].trim()));
+
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Double.valueOf(returnArray[2]), Double.valueOf(returnArray[3])), 12));
+            }
         }
     }
 
@@ -432,7 +433,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void sendEmail(View view) {
         Log.i("Send email", "");
 
-        String[] TO = {"support@sytesapp.com"};
+        String[] TO = {"leve1incorp@gmail.com"};
         Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
         emailIntent.setData(Uri.parse("mailto:"));
 
