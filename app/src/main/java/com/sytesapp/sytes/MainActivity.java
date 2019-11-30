@@ -1,6 +1,7 @@
 package com.sytesapp.sytes;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,7 +10,9 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CompoundButton;
@@ -22,6 +25,7 @@ import android.widget.SearchView;
 import android.widget.Switch;
 import android.widget.TableLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -189,7 +193,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         searchQuery = SearchActivity.searchQuery;
 
         if (findingCity) {
-            locationStart.setText(MessageFormat.format("Start At User Location: {0},{1}", searchQuery.split(",")[0], searchQuery.split(",")[1]));
+            locationStart.setText(MessageFormat.format("Start At User Location: {0}, {1}", searchQuery.split(",")[0].trim(), searchQuery.split(",")[1]).trim());
             onCheckedChanged(false);
             findingCity = false;
         }
@@ -254,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         if (!startupLocation.equals("0")) {
             String[] returnArray = ExtraneousMethods.GetCityFromId(startupLocation);
-            locationStart.setText(MessageFormat.format("Start At User Location: {0},{1}", returnArray[0], returnArray[1]));
+            locationStart.setText(MessageFormat.format("Start At User Location: {0}, {1}", returnArray[0].trim(), returnArray[1].trim()));
 
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Double.valueOf(returnArray[2]), Double.valueOf(returnArray[3])), 12));
         }
@@ -421,6 +425,26 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             else {
                 displayedFavorites.add(currentFavorites.get(i));
             }
+        }
+    }
+
+    @SuppressLint("LongLogTag")
+    public void sendEmail(View view) {
+        Log.i("Send email", "");
+
+        String[] TO = {"support@sytesapp.com"};
+        Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
+        emailIntent.setData(Uri.parse("mailto:"));
+
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, TO);
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Reporting Issue: #" + currentId);
+        emailIntent.putExtra(Intent.EXTRA_TEXT, "An issue has been found with Unique ID point: " + currentId + "." + "\n\nExtra details from user: ");
+
+        try {
+            startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+            Log.i("Finished sending email...", "");
+        } catch (android.content.ActivityNotFoundException ex) {
+            Toast.makeText(this, "There is no email client installed.", Toast.LENGTH_SHORT).show();
         }
     }
 
