@@ -53,6 +53,7 @@ public class SearchActivity extends AppCompatActivity {
         searchListView.setAdapter(mAdapter);
 
         searchView = findViewById(R.id.searchView);
+        searchView.setQueryHint("Search Database");
         searchView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

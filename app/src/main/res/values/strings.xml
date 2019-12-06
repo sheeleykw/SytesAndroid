@@ -12,4 +12,5 @@
     <string name="copyright">Copyright</string>
     <string name="contact">Contact us at: Leve1Incorp@gmail.com</string>
     <string name="noItems">No items found in search.</string>
+    <string name="noFavorites">You have no favorites right now.</string>
 </resources>

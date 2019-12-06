@@ -408,7 +408,7 @@ class ExtraneousMethods {
             float density = contexts[0].getApplicationContext().getResources().getDisplayMetrics().density;
             adWidth = (int) (widthPixels / density);
 
-            adRequest = new AdRequest.Builder().addTestDevice("481D9EB0E450EFE1F74321C81D584BCE").build();
+            adRequest = new AdRequest.Builder().build();
 
             return contexts[0];
         }

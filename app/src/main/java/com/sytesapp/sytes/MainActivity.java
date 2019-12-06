@@ -412,7 +412,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
         TextView noItems = findViewById(R.id.noItems);
-        if (displayedFavorites.size() < 1) {
+        if (displayedFavorites.size() < 1 && currentFavorites.size() > 0) {
             noItems.setVisibility(View.VISIBLE);
         }
         else {
@@ -536,6 +536,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         searchInitialize();
                         mAdapter.notifyDataSetChanged();
                         updateFavorites = false;
+                    }
+
+                    TextView noFavorites = findViewById(R.id.noFavorites);
+                    if (currentFavorites.size() < 1) {
+                        noFavorites.setVisibility(View.VISIBLE);
+                    }
+                    else {
+                        noFavorites.setVisibility(View.GONE);
                     }
 
                     ExtraneousMethods.ChangeView(currentView, "Favorites");

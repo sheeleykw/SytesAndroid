@@ -535,6 +535,12 @@
             style="@style/NoItemText"
             android:layout_centerInParent="true"/>
 
+        <TextView
+            android:id="@+id/noFavorites"
+            style="@style/NoItemText"
+            android:text="@string/noFavorites"
+            android:layout_centerInParent="true"/>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/listView"
             android:layout_width="match_parent"
