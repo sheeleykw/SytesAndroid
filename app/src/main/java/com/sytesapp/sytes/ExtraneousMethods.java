@@ -164,7 +164,7 @@ class ExtraneousMethods {
         Cursor cursor = itemDatabase.query(ItemDetails.TABLE_NAME, projection, selection, selectionArgs, null, null, ItemDetails.COL_3);
 
         SearchActivity.searchList.clear();
-        while (cursor.moveToNext()) {
+        while (cursor.moveToNext() && SearchActivity.searchList.size() < 100) {
             SearchActivity.searchList.add(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_1)) + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)) + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_9)) + ", " + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_11)) + "\n" + cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_4)) + "," + cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_5)));
         }
         cursor.close();
@@ -173,7 +173,7 @@ class ExtraneousMethods {
 
         cursor = cityDatabase.query( "cities", cityProjection, selection, selectionArgs, null, null, ItemDetails.COL_3);
 
-        while (cursor.moveToNext()) {
+        while (cursor.moveToNext()  && SearchActivity.searchList.size() < 200) {
             SearchActivity.searchList.add("0" + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)) + ", " + cursor.getString(cursor.getColumnIndexOrThrow("StateName")) + "\n" + "Number of sites found in city: " + cursor.getString(cursor.getColumnIndexOrThrow("NumOfPoints")) + "\n" + cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_4)) + "," + cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_5)));
         }
         cursor.close();
@@ -192,7 +192,7 @@ class ExtraneousMethods {
         Cursor cursor = cityDatabase.query( "cities", cityProjection, selection, selectionArgs, null, null, ItemDetails.COL_3);
 
         SearchActivity.searchList.clear();
-        while (cursor.moveToNext()) {
+        while (cursor.moveToNext()  && SearchActivity.searchList.size() < 100) {
             SearchActivity.searchList.add("0" + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)) + ", " + cursor.getString(cursor.getColumnIndexOrThrow("StateName")) + "\n" + "Number of sites found in city: " + cursor.getString(cursor.getColumnIndexOrThrow("NumOfPoints")) + "\n" + cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_4)) + "," + cursor.getDouble(cursor.getColumnIndexOrThrow(ItemDetails.COL_5)));
         }
         cursor.close();
