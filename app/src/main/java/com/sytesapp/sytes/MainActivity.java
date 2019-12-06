@@ -12,7 +12,6 @@ import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CompoundButton;
@@ -192,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         searchQuery = SearchActivity.searchQuery;
 
-        if (findingCity) {
+        if (findingCity && searchQuery.split(",").length == 2) {
             locationStart.setText(MessageFormat.format("Start At User Location: {0}, {1}", searchQuery.split(",")[0].trim(), searchQuery.split(",")[1]).trim());
             onCheckedChanged(false);
             findingCity = false;
@@ -266,13 +265,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             EnableUserLocation();
         }
-        else {
-            if (!startupLocation.equals("0") && !startupLocation.equals("1840012541")) {
-                String[] returnArray = ExtraneousMethods.GetCityFromId(startupLocation);
-                locationStart.setText(MessageFormat.format("Start At User Location: {0}, {1}", returnArray[0].trim(), returnArray[1].trim()));
 
-                map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Double.valueOf(returnArray[2]), Double.valueOf(returnArray[3])), 12));
-            }
+        if (!startupLocation.equals("0") && !startupLocation.equals("1840012541")) {
+            String[] returnArray = ExtraneousMethods.GetCityFromId(startupLocation);
+            locationStart.setText(MessageFormat.format("Start At User Location: {0}, {1}", returnArray[0].trim(), returnArray[1].trim()));
+
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Double.valueOf(returnArray[2]), Double.valueOf(returnArray[3])), 12));
         }
     }
 
@@ -381,19 +379,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 });
     }
 
-    public void switchFavoriteStatus(View view) {
-        ImageButton favoriteButton = findViewById(R.id.favoriteButton);
-        currentFavorited = ExtraneousMethods.UpdateFavoriteStatus(currentId, currentFavorited);
-        updateFavorites = true;
-
-        if (currentFavorited.equals("TRUE")) {
-            favoriteButton.setImageResource(R.drawable.fullheart);
-        }
-        else {
-            favoriteButton.setImageResource(R.drawable.greyheart);
-        }
-    }
-
     public void onCheckedChanged(boolean isChecked) {
         SharedPreferences.Editor editor = settings.edit();
         if (isChecked) {
@@ -414,12 +399,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         editor.apply();
     }
 
-    public void changeCityLocation(View view) {
-        findingCity = true;
-        searchQuery = locationStart.getText().toString().split(":")[1].split(",")[0].trim();
-        startSearchActivity(view);
-    }
-
     private void searchInitialize() {
         displayedFavorites.clear();
         for (int i = 0; i < currentFavorites.size(); i++) {
@@ -432,12 +411,55 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 displayedFavorites.add(currentFavorites.get(i));
             }
         }
+        TextView noItems = findViewById(R.id.noItems);
+        if (displayedFavorites.size() < 1) {
+            noItems.setVisibility(View.VISIBLE);
+        }
+        else {
+            noItems.setVisibility(View.GONE);
+        }
+    }
+
+    public void switchFavoriteStatus(View view) {
+        ImageButton favoriteButton = findViewById(R.id.favoriteButton);
+        currentFavorited = ExtraneousMethods.UpdateFavoriteStatus(currentId, currentFavorited);
+        updateFavorites = true;
+
+        if (currentFavorited.equals("TRUE")) {
+            favoriteButton.setImageResource(R.drawable.fullheart);
+        }
+        else {
+            favoriteButton.setImageResource(R.drawable.greyheart);
+        }
+    }
+
+    public void changeCityLocation(View view) {
+        findingCity = true;
+        searchQuery = locationStart.getText().toString().split(":")[1].split(",")[0].trim();
+        startSearchActivity(view);
+    }
+
+    public void displayPrivacy(View view) {
+        Intent intent = new Intent(this, textview.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        intent.putExtra("text", "Policy");
+        startActivity(intent);
+    }
+    public void displayCopyright(View view) {
+        Intent intent = new Intent(this, textview.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        intent.putExtra("text", "Copyright");
+        startActivity(intent);
+    }
+    public void displayQA(View view) {
+        Intent intent = new Intent(this, textview.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        intent.putExtra("text", "Questions");
+        startActivity(intent);
     }
 
     @SuppressLint("LongLogTag")
     public void sendEmail(View view) {
-        Log.i("Send email", "");
-
         String[] TO = {"leve1incorp@gmail.com"};
         Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
         emailIntent.setData(Uri.parse("mailto:"));
@@ -448,88 +470,88 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         try {
             startActivity(Intent.createChooser(emailIntent, "Send mail..."));
-            Log.i("Finished sending email...", "");
         } catch (android.content.ActivityNotFoundException ex) {
             Toast.makeText(this, "There is no email client installed.", Toast.LENGTH_SHORT).show();
         }
     }
 
     public void changeView(View view) {
-        favoritesButton.setColorFilter(Color.parseColor("#797979"));
-        homeButton.setColorFilter(Color.parseColor("#797979"));
-        settingsButton.setColorFilter(Color.parseColor("#797979"));
-        favoritesButton.setClickable(true);
-        homeButton.setClickable(true);
-        settingsButton.setClickable(true);
+        if (ExtraneousMethods.animationsReady) {
+            favoritesButton.setColorFilter(Color.parseColor("#797979"));
+            homeButton.setColorFilter(Color.parseColor("#797979"));
+            settingsButton.setColorFilter(Color.parseColor("#797979"));
+            favoritesButton.setClickable(true);
+            homeButton.setClickable(true);
+            settingsButton.setClickable(true);
 
-
-        if (view.equals(homeButton)) {
-            searchView.setQueryHint("Search Database");
-            searchView.setQuery("", false);
-            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                @Override
-                public boolean onQueryTextSubmit(String query) {
-                    startSearchActivity(null);
-                    return false;
-                }
-                @Override
-                public boolean onQueryTextChange(String query) {
-                    searchQuery = query;
-                    return false;
-                }
-            });
-            homeButton.setColorFilter(Color.parseColor("#5F90FE"));
-            homeButton.setClickable(false);
-
-            ExtraneousMethods.ChangeView(currentView, "Home");
-            currentView = "Home";
-
-            Marker marker = markerHashMap.get(currentId);
-            if (marker != null) {
-                onMarkerClick(marker);
-            }
-        }
-        else {
-            if (view.equals(favoritesButton)) {
-                searchView.setQueryHint("Search Favorites");
+            if (view.equals(homeButton)) {
+                searchView.setQueryHint("Search Database");
                 searchView.setQuery("", false);
                 searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                     @Override
                     public boolean onQueryTextSubmit(String query) {
+                        startSearchActivity(null);
                         return false;
                     }
                     @Override
                     public boolean onQueryTextChange(String query) {
-                        favoriteSearchQuery = query;
-                        searchInitialize();
-                        mAdapter.notifyDataSetChanged();
+                        searchQuery = query;
                         return false;
                     }
                 });
+                homeButton.setColorFilter(Color.parseColor("#5F90FE"));
+                homeButton.setClickable(false);
 
-                favoritesButton.setColorFilter(Color.parseColor("#5F90FE"));
-                favoritesButton.setClickable(false);
+                ExtraneousMethods.ChangeView(currentView, "Home");
+                currentView = "Home";
 
-                if (updateFavorites) {
-                    ExtraneousMethods.GetFavorited();
-                    searchInitialize();
-                    mAdapter.notifyDataSetChanged();
-                    updateFavorites = false;
+                Marker marker = markerHashMap.get(currentId);
+                if (marker != null) {
+                    onMarkerClick(marker);
                 }
-
-                ExtraneousMethods.ChangeView(currentView, "Favorites");
-                currentView = "Favorites";
             }
-            else if (view.equals(settingsButton)) {
-                settingsButton.setColorFilter(Color.parseColor("#5F90FE"));
-                settingsButton.setClickable(false);
+            else {
+                if (view.equals(favoritesButton)) {
+                    searchView.setQueryHint("Search Favorites");
+                    searchView.setQuery("", false);
+                    searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                        @Override
+                        public boolean onQueryTextSubmit(String query) {
+                            return false;
+                        }
+                        @Override
+                        public boolean onQueryTextChange(String query) {
+                            favoriteSearchQuery = query;
+                            searchInitialize();
+                            mAdapter.notifyDataSetChanged();
+                            return false;
+                        }
+                    });
 
-                ExtraneousMethods.ChangeView(currentView, "Settings");
-                currentView = "Settings";
-            }
-            Marker marker = markerHashMap.get(currentId);
-            if (marker != null) {
-                marker.hideInfoWindow();
+                    favoritesButton.setColorFilter(Color.parseColor("#5F90FE"));
+                    favoritesButton.setClickable(false);
+
+                    if (updateFavorites) {
+                        ExtraneousMethods.GetFavorited();
+                        searchInitialize();
+                        mAdapter.notifyDataSetChanged();
+                        updateFavorites = false;
+                    }
+
+                    ExtraneousMethods.ChangeView(currentView, "Favorites");
+                    currentView = "Favorites";
+                }
+                else if (view.equals(settingsButton)) {
+                    settingsButton.setColorFilter(Color.parseColor("#5F90FE"));
+                    settingsButton.setClickable(false);
+
+                    ExtraneousMethods.ChangeView(currentView, "Settings");
+                    currentView = "Settings";
+                }
+                Marker marker = markerHashMap.get(currentId);
+                if (marker != null) {
+                    marker.hideInfoWindow();
+                }
             }
         }
     }

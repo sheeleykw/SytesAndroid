@@ -7,4 +7,9 @@
     <string name="settings">Settings</string>
     <string name="userSwitch">Start At User Location:</string>
     <string name="report_issue"><u>REPORT ISSUE</u></string>
+    <string name="frequently_asked_questions">Frequently Asked Questions</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="copyright">Copyright</string>
+    <string name="contact">Contact us at: Leve1Incorp@gmail.com</string>
+    <string name="noItems">No items found in search.</string>
 </resources>

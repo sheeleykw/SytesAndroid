@@ -445,6 +445,78 @@
 
         <View style="@style/DividerBar"/>
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="60dp"
+            android:gravity="center_vertical"
+            android:text="@string/privacy_policy"
+            android:textSize="20sp"
+            android:textColor="#000000"
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:background="@drawable/imagebutton"
+            android:clickable="true"
+            android:focusable="true"
+            android:onClick="displayPrivacy"/>
+
+        <View style="@style/DividerBar"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="60dp"
+            android:gravity="center_vertical"
+            android:text="@string/copyright"
+            android:textSize="20sp"
+            android:textColor="#000000"
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:background="@drawable/imagebutton"
+            android:clickable="true"
+            android:focusable="true"
+            android:onClick="displayCopyright"/>
+
+        <View style="@style/DividerBar"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="60dp"
+            android:gravity="center_vertical"
+            android:text="@string/frequently_asked_questions"
+            android:textSize="20sp"
+            android:textColor="#000000"
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:background="@drawable/imagebutton"
+            android:clickable="true"
+            android:focusable="true"
+            android:onClick="displayQA"/>
+
+        <View style="@style/DividerBar"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="60dp"
+            android:gravity="center_vertical"
+            android:text="@string/contact"
+            android:textSize="20sp"
+            android:textColor="#000000"
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"/>
+
+        <View style="@style/DividerBar"/>
+
     </LinearLayout>
 
     <RelativeLayout
@@ -457,6 +529,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/searchDivider"
         android:translationX="-500dp">
+
+        <TextView
+            android:id="@+id/noItems"
+            style="@style/NoItemText"
+            android:layout_centerInParent="true"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/listView"

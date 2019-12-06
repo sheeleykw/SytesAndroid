@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.MessageFormat;
 
 public class ItemDatabase extends SQLiteOpenHelper {
 
@@ -23,7 +24,7 @@ public class ItemDatabase extends SQLiteOpenHelper {
         if (android.os.Build.VERSION.SDK_INT >= 21)
             DATABASE_PATH = context.getApplicationInfo().dataDir + "/databases/";
         else
-            DATABASE_PATH = "/data/data/" + context.getPackageName() + "/databases/";
+            DATABASE_PATH = MessageFormat.format("/data/data/{0}/databases/", context.getPackageName());
         this.mContext = context;
 
         copyDataBase();
@@ -31,7 +32,7 @@ public class ItemDatabase extends SQLiteOpenHelper {
         this.getReadableDatabase();
     }
 
-    void updateDataBase() throws IOException {
+    void updateDataBase(){
         if (needsUpdate) {
             File dbFile = new File(DATABASE_PATH + DATABASE_NAME);
             if (dbFile.exists())

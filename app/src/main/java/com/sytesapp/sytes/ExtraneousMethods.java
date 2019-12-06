@@ -61,10 +61,12 @@ class ExtraneousMethods {
     private static SpannableStringBuilder builders;
     static AdView detailAdView;
     static boolean adsReady = false;
+    static boolean animationsReady = false;
     private static int adWidth;
     private static AdRequest adRequest;
     private static ArrayList<AdView> listAds = new ArrayList<>();
     private static boolean wordsReady = false;
+
 
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     //Begin Map/Database related Methods
@@ -327,6 +329,8 @@ class ExtraneousMethods {
         settingsLeftAnimation.setDuration(500);
         settingsRightAnimation = ObjectAnimator.ofFloat(settingsView, "translationX", 500 * context.getApplicationContext().getResources().getDisplayMetrics().density);
         settingsRightAnimation.setDuration(500);
+
+        animationsReady = true;
     }
 
     public static class InitializeDatabases extends AsyncTask<Context, Void, Void> {

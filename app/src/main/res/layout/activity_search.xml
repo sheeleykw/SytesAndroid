@@ -18,14 +18,19 @@
 
     <View
         android:id="@+id/searchDivider"
-        android:layout_width="0dp"
-        android:layout_height="0.8dp"
-        android:background="@color/dividerBar"
+        style="@style/DividerBar"
         app:layout_constraintBottom_toTopOf="@id/searchListView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/searchView"/>
 
+    <TextView
+        android:id="@+id/noItems"
+        style="@style/NoItemText"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/searchListView"

@@ -80,6 +80,13 @@ public class SearchActivity extends AppCompatActivity {
         else {
             ExtraneousMethods.GetSearched(searchQuery);
         }
+        TextView noItems = findViewById(R.id.noItems);
+        if (searchList.size() < 1) {
+            noItems.setVisibility(View.VISIBLE);
+        }
+        else {
+            noItems.setVisibility(View.GONE);
+        }
         mAdapter.notifyDataSetChanged();
     }
 
