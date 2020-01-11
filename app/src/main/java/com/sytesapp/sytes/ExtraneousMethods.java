@@ -148,8 +148,10 @@ class ExtraneousMethods {
         while (cursor.moveToNext()) {
             MainActivity.currentFavorites.add(cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_1)) + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_3)) + "\n" + cursor.getString(cursor.getColumnIndexOrThrow(ItemDetails.COL_7)));
             int spaceBetweenAds = 5;
-            if (((MainActivity.currentFavorites.size() + 1) % spaceBetweenAds) == 0) {
-                MainActivity.currentFavorites.add("Ad\n______\nnull");
+            if (adsReady) {
+                if (((MainActivity.currentFavorites.size() + 1) % spaceBetweenAds) == 0) {
+                    MainActivity.currentFavorites.add("Ad\n______\nnull");
+                }
             }
         }
 
@@ -398,38 +400,46 @@ class ExtraneousMethods {
     public static class InitializeAds extends AsyncTask<Context, Void, Context> {
         @Override
         protected Context doInBackground(Context... contexts) {
-            MobileAds.initialize(contexts[0], new OnInitializationCompleteListener() {
-                @Override
-                public void onInitializationComplete(InitializationStatus initializationStatus) {
-                }
-            });
+            if (!MainActivity.VERSION.equals("paid")) {
+                MobileAds.initialize(contexts[0], new OnInitializationCompleteListener() {
+                    @Override
+                    public void onInitializationComplete(InitializationStatus initializationStatus) {
+                    }
+                });
 
-            float widthPixels = contexts[0].getApplicationContext().getResources().getDisplayMetrics().widthPixels;
-            float density = contexts[0].getApplicationContext().getResources().getDisplayMetrics().density;
-            adWidth = (int) (widthPixels / density);
+                float widthPixels = contexts[0].getApplicationContext().getResources().getDisplayMetrics().widthPixels;
+                float density = contexts[0].getApplicationContext().getResources().getDisplayMetrics().density;
+                adWidth = (int) (widthPixels / density);
 
-            adRequest = new AdRequest.Builder().build();
+                adRequest = new AdRequest.Builder().build();
 
+
+            }
             return contexts[0];
         }
 
         @Override
         protected void onPostExecute(Context context) {
-            detailAdView = new AdView(context);
-            detailAdView.setAdUnitId("ca-app-pub-3281339494640251/9986601233");
+            if (!MainActivity.VERSION.equals("paid")) {
+                detailAdView = new AdView(context);
+                detailAdView.setAdUnitId("ca-app-pub-3281339494640251/9986601233");
 
-            detailAdView.setAdSize(AdSize.getPortraitAnchoredAdaptiveBannerAdSize(context, adWidth));
-            detailAdView.loadAd(adRequest);
+                detailAdView.setAdSize(AdSize.getPortraitAnchoredAdaptiveBannerAdSize(context, adWidth));
+                detailAdView.loadAd(adRequest);
 
-            adsReady = true;
+                adsReady = true;
 
-            for (int i = 0; i < 9; i ++) {
-                AdView listAdView = new AdView(context);
-                listAdView.setAdUnitId("ca-app-pub-3281339494640251/4734274558");
+                for (int i = 0; i < 9; i++) {
+                    AdView listAdView = new AdView(context);
+                    listAdView.setAdUnitId("ca-app-pub-3281339494640251/4734274558");
 
-                listAdView.setAdSize(AdSize.getPortraitAnchoredAdaptiveBannerAdSize(context, adWidth - 16));
-                listAdView.loadAd(adRequest);
-                listAds.add(listAdView);
+                    listAdView.setAdSize(AdSize.getPortraitAnchoredAdaptiveBannerAdSize(context, adWidth - 16));
+                    listAdView.loadAd(adRequest);
+                    listAds.add(listAdView);
+                }
+            }
+            else {
+                adsReady = false;
             }
         }
     }
@@ -459,7 +469,7 @@ class ExtraneousMethods {
                     String nextString = SearchActivity.searchList.get(index + 1);
                     SearchActivity.searchList.set(index, nextString);
                     SearchActivity.searchList.set(index + 1, currentString);
-                }
+                   }
             }
         }
     }

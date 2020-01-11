@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GoogleMap map;
     private MapView mMapView;
     private static final String MAPVIEW_BUNDLE_KEY = "MapViewBundleKey";
+    public static final String VERSION = "paid";
     public static BiMap<String, Marker> markerHashMap = HashBiMap.create();
 
     private SearchView searchView;
@@ -104,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         adSpace = findViewById(R.id.adSpace);
 
         Switch switchView = findViewById(R.id.userStart);
-        locationStart.setText(settings.getString("LocationSetting", "Start At City Location: Valley City, Illinois"));
+        locationStart.setText(settings.getString("LocationSetting", "Start at Location: Valley City, Illinois"));
         if (startupLocation.equals("0")) {
             switchView.setChecked(true);
             locationStart.setTextColor(Color.parseColor("#A5C7C7C7"));
@@ -192,7 +193,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         searchQuery = SearchActivity.searchQuery;
 
         if (findingCity && searchQuery.split(",").length == 2) {
-            locationStart.setText(MessageFormat.format("Start At User Location: {0}, {1}", searchQuery.split(",")[0].trim(), searchQuery.split(",")[1]).trim());
+            locationStart.setText(MessageFormat.format("Start at Location: {0}, {1}", searchQuery.split(",")[0].trim(), searchQuery.split(",")[1]).trim());
             onCheckedChanged(false);
             findingCity = false;
         }
@@ -268,7 +269,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         if (!startupLocation.equals("0") && !startupLocation.equals("1840012541")) {
             String[] returnArray = ExtraneousMethods.GetCityFromId(startupLocation);
-            locationStart.setText(MessageFormat.format("Start At User Location: {0}, {1}", returnArray[0].trim(), returnArray[1].trim()));
+            locationStart.setText(MessageFormat.format("Start at Location: {0}, {1}", returnArray[0].trim(), returnArray[1].trim()));
 
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Double.valueOf(returnArray[2]), Double.valueOf(returnArray[3])), 12));
         }

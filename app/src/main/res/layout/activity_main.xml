@@ -533,6 +533,7 @@
         <TextView
             android:id="@+id/noItems"
             style="@style/NoItemText"
+            android:text="@string/noFavoritesFound"
             android:layout_centerInParent="true"/>
 
         <TextView
